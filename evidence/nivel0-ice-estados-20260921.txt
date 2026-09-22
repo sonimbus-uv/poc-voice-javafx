@@ -1,0 +1,49 @@
+2026-09-21T14:11:02.353Z starting RTC session
+2026-09-21T14:11:02.507Z	DEBUG	livekit.transport	rtc/transport.go:856 alice SUBSCRIBER checking
+2026-09-21T14:11:02.507Z	DEBUG	livekit.transport	rtc/transport.go:867 alice SUBSCRIBER connecting
+2026-09-21T14:11:02.507Z	DEBUG	livekit.transport	rtc/transport.go:856 alice PUBLISHER checking
+2026-09-21T14:11:02.507Z	DEBUG	livekit.transport	rtc/transport.go:867 alice PUBLISHER connecting
+2026-09-21T14:11:02.514Z	DEBUG	livekit.transport	rtc/transport.go:856 alice SUBSCRIBER connected
+2026-09-21T14:11:02.516Z	DEBUG	livekit.transport	rtc/transport.go:856 alice PUBLISHER connected
+2026-09-21T14:11:02.520Z	DEBUG	livekit.transport	rtc/transport.go:867 alice SUBSCRIBER connected
+2026-09-21T14:11:02.520Z	DEBUG	livekit.transport	rtc/transport.go:867 alice PUBLISHER connected
+2026-09-21T14:11:28.710Z finishing WS
+2026-09-21T14:11:28.711Z	DEBUG	livekit.transport	rtc/transport.go:856 alice PUBLISHER closed
+2026-09-21T14:11:28.711Z	DEBUG	livekit.transport	rtc/transport.go:867 alice PUBLISHER closed
+2026-09-21T14:11:28.711Z	DEBUG	livekit.transport	rtc/transport.go:867 alice SUBSCRIBER closed
+2026-09-21T14:11:28.711Z	DEBUG	livekit.transport	rtc/transport.go:856 alice SUBSCRIBER closed
+2026-09-21T14:11:48.994Z closing room
+2026-09-21T14:12:02.050Z starting RTC session
+2026-09-21T14:12:02.200Z	DEBUG	livekit.transport	rtc/transport.go:856 alice PUBLISHER checking
+2026-09-21T14:12:02.200Z	DEBUG	livekit.transport	rtc/transport.go:867 alice PUBLISHER connecting
+2026-09-21T14:12:02.202Z	DEBUG	livekit.transport	rtc/transport.go:856 alice SUBSCRIBER checking
+2026-09-21T14:12:02.202Z	DEBUG	livekit.transport	rtc/transport.go:867 alice SUBSCRIBER connecting
+2026-09-21T14:12:02.209Z	DEBUG	livekit.transport	rtc/transport.go:856 alice PUBLISHER connected
+2026-09-21T14:12:02.211Z	DEBUG	livekit.transport	rtc/transport.go:856 alice SUBSCRIBER connected
+2026-09-21T14:12:02.214Z	DEBUG	livekit.transport	rtc/transport.go:867 alice PUBLISHER connected
+2026-09-21T14:12:02.222Z	DEBUG	livekit.transport	rtc/transport.go:867 alice SUBSCRIBER connected
+2026-09-21T14:12:03.997Z finishing WS
+2026-09-21T14:12:03.998Z	DEBUG	livekit.transport	rtc/transport.go:856 alice PUBLISHER closed
+2026-09-21T14:12:03.998Z	DEBUG	livekit.transport	rtc/transport.go:867 alice PUBLISHER closed
+2026-09-21T14:12:03.998Z	DEBUG	livekit.transport	rtc/transport.go:856 alice SUBSCRIBER closed
+2026-09-21T14:12:03.998Z	DEBUG	livekit.transport	rtc/transport.go:867 alice SUBSCRIBER closed
+2026-09-21T14:12:23.994Z closing room
+2026-09-21T14:13:21.842Z starting RTC session
+2026-09-21T14:13:21.996Z	DEBUG	livekit.transport	rtc/transport.go:856 alice PUBLISHER checking
+2026-09-21T14:13:21.996Z	DEBUG	livekit.transport	rtc/transport.go:867 alice PUBLISHER connecting
+2026-09-21T14:13:22.089Z	DEBUG	livekit.transport	rtc/transport.go:856 alice SUBSCRIBER checking
+2026-09-21T14:13:22.089Z	DEBUG	livekit.transport	rtc/transport.go:867 alice SUBSCRIBER connecting
+2026-09-21T14:13:22.102Z	DEBUG	livekit.transport	rtc/transport.go:856 alice PUBLISHER connected
+2026-09-21T14:13:22.106Z	DEBUG	livekit.transport	rtc/transport.go:856 alice SUBSCRIBER connected
+2026-09-21T14:13:22.107Z	DEBUG	livekit.transport	rtc/transport.go:867 alice PUBLISHER connected
+2026-09-21T14:13:22.118Z	DEBUG	livekit.transport	rtc/transport.go:867 alice SUBSCRIBER connected
+2026-09-21T14:13:23.690Z finishing WS
+2026-09-21T14:13:23.690Z	DEBUG	livekit.transport	rtc/transport.go:856 alice PUBLISHER closed
+2026-09-21T14:13:23.690Z	DEBUG	livekit.transport	rtc/transport.go:867 alice PUBLISHER closed
+2026-09-21T14:13:23.690Z	DEBUG	livekit.transport	rtc/transport.go:856 alice SUBSCRIBER closed
+2026-09-21T14:13:23.690Z	DEBUG	livekit.transport	rtc/transport.go:867 alice SUBSCRIBER closed
+2026-09-21T14:13:43.994Z closing room
+2026-09-21T14:15:23.125Z starting RTC session
+2026-09-21T14:15:23.128Z finishing WS
+2026-09-21T14:15:23.128Z	DEBUG	livekit.transport	rtc/transport.go:867 alice PUBLISHER closed
+2026-09-21T14:15:28.159Z	DEBUG	livekit.transport	rtc/transport.go:867 alice SUBSCRIBER closed

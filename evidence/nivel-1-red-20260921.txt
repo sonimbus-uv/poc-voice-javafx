@@ -1,0 +1,12 @@
+$ curl -sS -o /dev/null -m 15 -w '%{http_code} %{time_total}s' https://repo.maven.apache.org/maven2/dev/onvoid/webrtc/webrtc-java/maven-metadata.xml
+200 0.202391s
+$ curl -sS -o /dev/null -m 15 -w '%{http_code} %{time_total}s' https://repo.maven.apache.org/maven2/org/openjfx/javafx-controls/21.0.8/javafx-controls-21.0.8.pom
+200 0.123446s
+$ curl -sS -o /dev/null -m 15 -w '%{http_code} %{time_total}s' https://jitpack.io/api/builds/com.github.Trirrin/livekit-java-sdk
+200 0.837910s
+$ curl -sS -o /dev/null -m 15 -w '%{http_code} %{time_total}s' https://jitpack.io
+200 0.323431s
+$ curl -sS -o /dev/null -m 15 -w '%{http_code} %{time_total}s' https://hub.docker.com
+200 0.358633s
+$ curl -sS -o /dev/null -m 15 -w '%{http_code} %{time_total}s' https://registry-1.docker.io/v2/
+401 0.259060s

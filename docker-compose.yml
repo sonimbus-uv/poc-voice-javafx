@@ -1,0 +1,9 @@
+# Nivel 0: LiveKit en modo dev (devkey / secret).
+# Puertos (docs.livekit.io/transport/self-hosting/ports-firewall): 7880/TCP señal, 7881/TCP ICE/TCP, UDP 50000-60000.
+# network_mode: host recomendado por la guía oficial de despliegue para Docker.
+services:
+  livekit:
+    image: livekit/livekit-server:v1.13.7
+    command: --dev --bind 0.0.0.0
+    network_mode: host
+    restart: "no"

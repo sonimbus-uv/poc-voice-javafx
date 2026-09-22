@@ -1,0 +1,34 @@
+2026-09-21T23:57:06.976Z INFO RTC session	{"room": "poc", "participant": "bob", "remote": false, "room": "poc", "nodeID": "ND_LRFhGR7oJmfd", "numParticipants": 0, "participantInit": {"Identity": "bob", "Reconnect": false, "ReconnectReason": "RR_UNKNOWN", "Auto
+2026-09-21T23:57:06.984Z DEBUG participant joined	{"room": "poc", "participant": "bob", "clientInfo": {"sdk": "JS", "version": "2.22.2", "protocol": 17, "os": "Linux", "deviceModel": "Other", "browser": "Chrome", "browserVersion": "153.0.0", "address": "127.0.
+2026-09-21T23:57:06.985Z DEBUG signal response	{"room": "poc", "participant": "bob", "remote": false, "response": {"join": {"room": {"sid": "RM_paginj9MuRut", "name": "poc", "emptyTimeout": 300, "departureTimeout": 20, "creationTime": 1790035026, "creationTime
+2026-09-21T23:57:06.986Z DEBUG initial response	{"connID": "CO_LJiiKgeC9go9", "response": {"join": {"room": {"sid": "RM_paginj9MuRut", "name": "poc", "emptyTimeout": 300, "departureTimeout": 20, "creationTime": 1790035026, "creationTimeMs": 1790035026973, "tur
+2026-09-21T23:57:07.118Z DEBUG connection state change	{"room": "poc", "participant": "bob", "remote": false, "transport": "SUBSCRIBER", "state": "checking"}
+2026-09-21T23:57:07.118Z DEBUG connection state change	{"room": "poc", "participant": "bob", "remote": false, "transport": "SUBSCRIBER", "state": "connecting"}
+2026-09-21T23:57:07.128Z DEBUG connection state change	{"room": "poc", "participant": "bob", "remote": false, "transport": "PUBLISHER", "state": "checking"}
+2026-09-21T23:57:07.128Z DEBUG connection state change	{"room": "poc", "participant": "bob", "remote": false, "transport": "PUBLISHER", "state": "connecting"}
+2026-09-21T23:57:07.137Z DEBUG connection state change	{"room": "poc", "participant": "bob", "remote": false, "transport": "SUBSCRIBER", "state": "connected"}
+2026-09-21T23:57:07.145Z DEBUG connection state change	{"room": "poc", "participant": "bob", "remote": false, "transport": "SUBSCRIBER", "state": "connected"}
+2026-09-21T23:57:07.145Z INFO active	{"room": "poc", "participant": "bob", "remote": false, "publisherCandidates": ["[local][trickle] udp4 host 10.30.10.96:7882 (resolved: 10.30.10.96:7882)", "[local][trickle] udp4 host 192.168.122.1:7882 (resolved: 192.168.12
+2026-09-21T23:57:07.152Z DEBUG connection state change	{"room": "poc", "participant": "bob", "remote": false, "transport": "PUBLISHER", "state": "connected"}
+2026-09-21T23:57:07.163Z DEBUG connection state change	{"room": "poc", "participant": "bob", "remote": false, "transport": "PUBLISHER", "state": "connected"}
+2026-09-21T23:57:07.167Z DEBUG signal response	{"room": "poc", "participant": "bob", "remote": false, "response": {"update": {"participants": [{"sid": "PA_rXzEsdLxe4nc", "identity": "bob", "state": "ACTIVE", "tracks": [{"sid": "TR_AMpNuYzwcfqEr8", "type": "AUD
+2026-09-21T23:57:07.167Z DEBUG signal response	{"room": "poc", "participant": "bob", "remote": false, "response": {"update": {"participants": [{"sid": "PA_rXzEsdLxe4nc", "identity": "bob", "state": "ACTIVE", "tracks": [{"sid": "TR_AMpNuYzwcfqEr8", "type": "AUD
+2026-09-21T23:57:07.167Z DEBUG participant update	{"connID": "CO_LJiiKgeC9go9", "participantUpdate": {"update": {"participants": [{"sid": "PA_rXzEsdLxe4nc", "identity": "bob", "state": "ACTIVE", "tracks": [{"sid": "TR_AMpNuYzwcfqEr8", "type": "AUDIO", "source"
+2026-09-21T23:57:07.168Z DEBUG participant update	{"connID": "CO_LJiiKgeC9go9", "participantUpdate": {"update": {"participants": [{"sid": "PA_rXzEsdLxe4nc", "identity": "bob", "state": "ACTIVE", "tracks": [{"sid": "TR_AMpNuYzwcfqEr8", "type": "AUDIO", "source"
+2026-09-21T23:57:07.251Z DEBUG signal response	{"room": "poc", "participant": "bob", "remote": false, "response": {"update": {"participants": [{"sid": "PA_rXzEsdLxe4nc", "identity": "bob", "state": "ACTIVE", "tracks": [{"sid": "TR_AMpNuYzwcfqEr8", "type": "AUD
+2026-09-21T23:57:07.252Z DEBUG participant update	{"connID": "CO_LJiiKgeC9go9", "participantUpdate": {"update": {"participants": [{"sid": "PA_rXzEsdLxe4nc", "identity": "bob", "state": "ACTIVE", "tracks": [{"sid": "TR_AMpNuYzwcfqEr8", "type": "AUDIO", "source"
+2026-09-21T23:57:07.266Z DEBUG signal response	{"room": "poc", "participant": "bob", "remote": false, "response": {"update": {"participants": [{"sid": "PA_rXzEsdLxe4nc", "identity": "bob", "state": "ACTIVE", "tracks": [{"sid": "TR_AMpNuYzwcfqEr8", "type": "AUD
+2026-09-21T23:57:07.266Z DEBUG participant update	{"connID": "CO_LJiiKgeC9go9", "participantUpdate": {"update": {"participants": [{"sid": "PA_rXzEsdLxe4nc", "identity": "bob", "state": "ACTIVE", "tracks": [{"sid": "TR_AMpNuYzwcfqEr8", "type": "AUDIO", "source"
+2026-09-21T23:57:07.311Z DEBUG signal response	{"room": "poc", "participant": "bob", "remote": false, "response": {"update": {"participants": [{"sid": "PA_rXzEsdLxe4nc", "identity": "bob", "state": "ACTIVE", "tracks": [{"sid": "TR_AMpNuYzwcfqEr8", "type": "AUD
+2026-09-21T23:57:07.311Z DEBUG participant update	{"connID": "CO_LJiiKgeC9go9", "participantUpdate": {"update": {"participants": [{"sid": "PA_rXzEsdLxe4nc", "identity": "bob", "state": "ACTIVE", "tracks": [{"sid": "TR_AMpNuYzwcfqEr8", "type": "AUDIO", "source"
+2026-09-21T23:57:09.583Z DEBUG signal response	{"room": "poc", "participant": "bob", "remote": false, "response": {"update": {"participants": [{"sid": "PA_rXzEsdLxe4nc", "identity": "bob", "state": "ACTIVE", "tracks": [{"sid": "TR_AMpNuYzwcfqEr8", "type": "AUD
+2026-09-21T23:57:09.583Z DEBUG participant update	{"connID": "CO_LJiiKgeC9go9", "participantUpdate": {"update": {"participants": [{"sid": "PA_rXzEsdLxe4nc", "identity": "bob", "state": "ACTIVE", "tracks": [{"sid": "TR_AMpNuYzwcfqEr8", "type": "AUDIO", "source"
+2026-09-21T23:57:13.101Z DEBUG signal response	{"room": "poc", "participant": "bob", "remote": false, "response": {"update": {"participants": [{"sid": "PA_rXzEsdLxe4nc", "identity": "bob", "state": "ACTIVE", "tracks": [{"sid": "TR_AMpNuYzwcfqEr8", "type": "AUD
+2026-09-21T23:57:13.102Z DEBUG participant update	{"connID": "CO_LJiiKgeC9go9", "participantUpdate": {"update": {"participants": [{"sid": "PA_rXzEsdLxe4nc", "identity": "bob", "state": "ACTIVE", "tracks": [{"sid": "TR_AMpNuYzwcfqEr8", "type": "AUDIO", "muted":
+23:57:06.976 bob starting RTC session    
+23:57:06.987 bob new client WS connected    
+23:57:07.118 bob  SUBSCRIBER checking  
+23:57:07.128 bob  PUBLISHER checking  
+23:57:07.137 bob  SUBSCRIBER connected  
+23:57:07.145 bob participant active    
+23:57:07.152 bob  PUBLISHER connected  
