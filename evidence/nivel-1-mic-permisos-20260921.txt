@@ -1,0 +1,32 @@
+$ id
+uid=1000(gurov) gid=1000(gurov) groups=1000(gurov),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),100(users),114(lpadmin),127(libvirt),130(docker),993(kvm)
+$ ls -l /dev/snd
+total 0
+drwxr-xr-x  2 root root       80 Sep 21 07:11 by-path
+crw-rw----+ 1 root audio 116,  7 Sep 21 07:11 controlC0
+crw-rw----+ 1 root audio 116, 16 Sep 21 07:11 controlC1
+crw-rw----+ 1 root audio 116,  6 Sep 21 07:11 hwC0D0
+crw-rw----+ 1 root audio 116, 14 Sep 21 07:11 hwC1D0
+crw-rw----+ 1 root audio 116, 15 Sep 21 07:11 hwC1D2
+crw-rw----+ 1 root audio 116,  2 Sep 21 07:11 pcmC0D3p
+crw-rw----+ 1 root audio 116,  3 Sep 21 07:11 pcmC0D7p
+crw-rw----+ 1 root audio 116,  4 Sep 21 07:11 pcmC0D8p
+crw-rw----+ 1 root audio 116,  5 Sep 21 07:11 pcmC0D9p
+crw-rw----+ 1 root audio 116,  9 Sep 21 07:11 pcmC1D0c
+crw-rw----+ 1 root audio 116,  8 Sep 21 07:49 pcmC1D0p
+crw-rw----+ 1 root audio 116, 10 Sep 21 07:11 pcmC1D3p
+crw-rw----+ 1 root audio 116, 11 Sep 21 07:11 pcmC1D7p
+crw-rw----+ 1 root audio 116, 12 Sep 21 07:11 pcmC1D8p
+crw-rw----+ 1 root audio 116, 13 Sep 21 07:11 pcmC1D9p
+crw-rw----+ 1 root audio 116,  1 Sep 21 07:11 seq
+crw-rw----+ 1 root audio 116, 33 Sep 21 07:11 timer
+$ pactl get-source-mute @DEFAULT_SOURCE@
+Mute: yes
+$ pactl get-source-volume @DEFAULT_SOURCE@
+Volume: front-left: 14392 /  22% / -39.50 dB,   front-right: 14392 /  22% / -39.50 dB
+        balance 0.00
+$ echo XDG_SESSION_TYPE
+x11
+$ arecord test 2s
+Recording WAVE '/dev/null' : Signed 16 bit Little Endian, Rate 48000 Hz, Mono
+exit=0

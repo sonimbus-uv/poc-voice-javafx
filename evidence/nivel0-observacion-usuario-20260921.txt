@@ -1,0 +1,5 @@
+Observación del usuario (tipo: observación del usuario) — 2026-09-21
+Prueba: meet.livekit.io (Custom), ws://localhost:7880, dos pestañas (alice y bob), sala "poc", servidor livekit/livekit-server:v1.13.7 en Docker (network_mode: host, --dev).
+Respuesta literal del usuario: "confirmado si funciona"
+Incidente previo: la pestaña de alice salía "Disconnected" por error de token pegado por el usuario ("probablemente cometi un error en el token"); el servidor no registró ningún intento de alice hasta que se conectó bien (evidence/nivel0-diagnostico-desconexion-20260921.txt).
+Nota: micrófono del sistema estaba al 22 %; el usuario activó el micrófono desde la barra de meet.

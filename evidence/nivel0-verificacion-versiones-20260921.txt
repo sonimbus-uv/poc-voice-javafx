@@ -1,0 +1,35 @@
+Verificación de pendientes de CLAUDE.md — 2026-09-21 (salidas resumidas de curl/git; comandos en la sesión)
+
+1) SDK Trirrin/livekit-java-sdk (git clone, tags via ls-remote)
+   - Último commit: e729017 2026-07-21 "docs: bump documented jitpack version to v0.1.4" (~2 meses antes de hoy)
+   - Tags: v0.1.0..v0.1.4; v0.1.4 = 0fa23406 (commit 2026-07-21 aprox.)
+   - rtc/build.gradle.kts (idéntico en v0.1.4): api("dev.onvoid.webrtc:webrtc-java:0.14.0"), protobuf-java 3.25.5
+   - POM en JitPack (rtc-v0.1.4.pom, HTTP 200): webrtc-java 0.14.0 compile
+   - JitPack API build v0.1.4: status ok, módulos core, protocol, rtc, signaling
+   - README enlaza webrtc-java a github.com/niclasvaneyk/webrtc-java => HTTP 404. El groupId real
+     dev.onvoid.webrtc (oficial devopvoid) SÍ es el que usa el build. Enlace del README = error, no dependencia distinta.
+   - CONFLICTO: SDK fija 0.14.0; CLAUDE.md sugería 0.18.0. 0.18.0 sigue disponible en Central.
+
+2) webrtc-java (Maven Central maven-metadata.xml; GitHub API)
+   - Última: 0.18.0. Repo devopvoid/webrtc-java, Apache-2.0, 394 estrellas, último push 2026-09-21.
+   - JARs nativos en Central 0.18.0: linux-x86_64/aarch64/aarch32, macos-x86_64/aarch64, windows-x86_64/aarch64.
+   - 0.14.0: sin windows-aarch64 (el resto igual).
+   - Guía oficial (jrtc.dev/guide/get-started): la dependencia sin classifier añade el nativo de la plataforma
+     automáticamente; el classifier explícito es solo si falla la carga. Desde 0.17.0 PulseAudio/udev/D-Bus se
+     abren en runtime; versiones anteriores (0.14.0) los enlazan y necesitan libpulse0, libudev1, libdbus-1-3.
+   - Paquetes de sistema requeridos (Ubuntu): libx11-6 libxext6 libxfixes3 libxdamage1 libxtst6 libxrandr2
+     libxcomposite1 libglib2.0-0 libgbm1 libdrm2 (por verificar instalados; posible sudo => lo haría el usuario).
+
+3) LiveKit server
+   - GitHub releases latest: v1.13.7 (2026-09-14). Docker Hub livekit/livekit-server: tags v1.13.7, v1.13, latest (2026-09-14);
+     v1.13.3 (2026-07-03) queda desfasada.
+   - Docs oficiales /transport/self-hosting/local: `livekit-server --dev`, devkey/secret, bind 127.0.0.1:7880, --bind 0.0.0.0 para otros dispositivos.
+   - Docs oficiales /ports-firewall: 7880 TCP señal; 7881 TCP ICE/TCP (fallback); UDP 50000-60000 ICE/UDP;
+     7882 UDP opcional (rtc.udp_port, un solo puerto; entonces no se usa el rango); TURN opcional.
+   - Docs oficiales /deployment: "If running in a Dockerized environment, host networking should be used for optimal performance."
+   - Las guías de terceros coinciden con la oficial en 7881/TCP, UDP 50000-60000, 7882 y host networking.
+
+4) io.livekit:livekit-server (Maven Central maven-metadata.xml): última 0.16.0 (0.13.0 y 0.15.x existen).
+   API de tokens (AccessToken/addGrants/toJwt) NO verificada todavía: se lee del código fuente antes de usarla.
+
+5) JavaFX: javafx-controls 21.0.8 confirmado en Central (preflight); la línea 21.x sigue disponible.

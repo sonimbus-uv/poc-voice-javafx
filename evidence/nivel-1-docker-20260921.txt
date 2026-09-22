@@ -1,0 +1,10 @@
+$ docker --version
+Docker version 29.1.3, build 29.1.3-0ubuntu3~24.04.2
+$ docker compose version
+Docker Compose version 2.40.3+ds1-0ubuntu1~24.04.1
+$ id
+uid=1000(gurov) gid=1000(gurov) groups=1000(gurov),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),100(users),114(lpadmin),127(libvirt),130(docker),993(kvm)
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+$ git --version
+git version 2.43.0

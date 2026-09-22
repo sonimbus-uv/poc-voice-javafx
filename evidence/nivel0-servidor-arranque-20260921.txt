@@ -1,0 +1,5 @@
+livekit-1  | 2026-09-21T14:06:48.989Z	INFO	livekit	server/main.go:210	starting in development mode
+livekit-1  | 2026-09-21T14:06:48.989Z	INFO	livekit	server/main.go:213	no keys provided, using placeholder keys	{"API Key": "devkey", "API Secret": "secret"}
+livekit-1  | 2026-09-21T14:06:48.990Z	INFO	livekit	routing/interfaces.go:181	using single-node routing
+livekit-1  | 2026-09-21T14:06:48.993Z	INFO	livekit	service/server.go:298	starting LiveKit server	{"portHttp": 7880, "nodeID": "ND_P68NAHetNmND", "nodeIP": "148.226.81.98", "version": "1.13.7", "bindAddresses": ["0.0.0.0"], "rtc.portTCP": 7881, "rtc.portUDP": {"Start":7882,"End":0}}
+livekit-1  | 2026-09-21T14:06:48.993Z	DEBUG	livekit	service/signal.go:120	starting relay signal server	{"topic": "ND_P68NAHetNmND"}
