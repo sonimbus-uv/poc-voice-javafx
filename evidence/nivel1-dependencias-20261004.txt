@@ -1,0 +1,8 @@
+Nivel 1 - artefactos webrtc-java 0.18.0 resueltos por Maven (2026-10-04)
+# mvn dependency:tree
+[INFO] sonimbus.poc:poc-voice-javafx:jar:0.1.0
+[INFO] \- dev.onvoid.webrtc:webrtc-java:jar:0.18.0:compile
+# ls -l ~/.m2/repository/dev/onvoid/webrtc/webrtc-java/0.18.0/
+-rw-rw-r-- 1 gurov gurov  119351 Oct  4 07:17 webrtc-java-0.18.0.jar
+-rw-rw-r-- 1 gurov gurov 9823309 Oct  4 07:17 webrtc-java-0.18.0-linux-x86_64.jar
+# .so descomprimido: libwebrtc-java-linux-x86_64.so = 24877552 bytes (unzip -l)

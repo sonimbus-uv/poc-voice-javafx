@@ -1,0 +1,12 @@
+OK libx11-6
+OK libxext6
+OK libxfixes3
+OK libxdamage1
+OK libxtst6
+OK libxrandr2
+OK libxcomposite1
+FALTA libglib2.0-0
+OK libgbm1
+OK libdrm2
+OK libpulse0
+libglib2.0-0 -> en Ubuntu 24.04 se llama libglib2.0-0t64: Status: install ok installed
