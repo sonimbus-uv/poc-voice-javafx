@@ -1,0 +1,117 @@
+Nivel 3d - entradas/salidas y expulsión por identidad duplicada (2026-10-04, sin ventana, HeadlessCheck)
+Guion: 'dup' (A) entra a T+0 por 30 s; 'otro' entra a T+10 por 8 s; un segundo 'dup' (B) entra a T+12 por 12 s.
+Comando por cliente: mvn -q -B exec:java -Dexec.mainClass=sonimbus.poc.level2.HeadlessCheck -Dexec.args="ws://localhost:7880 poc <identidad> <segundos>"
+
+RESUMEN
+- Entradas y salidas normales: se notifican (A: 'entra otro'; B: 'sale otro'; listas actualizadas).
+- Al entrar B con la misma identidad, el servidor expulsa a A (DUPLICATE_IDENTITY, ver abajo).
+- A NO recibe onDisconnected: solo 'onReconnecting' y se queda así (17 s hasta que el guion llamó a disconnect).
+  No reconecta ni informa del motivo. La aplicación sigue creyéndose conectada (lista de participantes obsoleta).
+- Al llamar después a disconnect(): 'ERROR en dispose micTrack: java.lang.NullPointerException: Object handle is null'
+  (la pista ya la había dispuesto RtcClient.onLeave). Excepción capturada; sin SIGSEGV; exit=0.
+- 'otro' no ve salir/entrar a 'dup': ve retirarse su pista y publicarse otra nueva.
+
+=== cliente dupA
+[09:38:25.048] Token generado para identidad=dup sala=poc
+[09:38:25.066] Conectando a ws://localhost:7880 ...
+[09:38:25.546] evento: onConnected
+[09:38:25.547] Unido a la sala: poc (sid=RM_HYws7LBQfHNf)
+[09:38:25.547] estado: CONECTADO
+[09:38:25.548] participantes: [dup (yo)]
+[09:38:25.560] Dispositivos de entrada vistos por el SDK: 1
+[09:38:25.592] Micrófono publicado (cid=audio-de5f7d28-81d4-40e9-8286-bc8dd2d40503), oferta del publisher forzada
+[09:38:25.648] evento: pista publicada TR_AMKJqDXqHMkyaL (AUDIO) por dup
+[09:38:25.649] participantes: [dup (yo)]
+[09:38:36.093] evento: pista publicada TR_AMrCMqhVx5eZTM (AUDIO) por otro
+[09:38:36.096] participantes: [dup (yo), otro]
+[09:38:36.097] evento: entra otro
+[09:38:36.098] participantes: [dup (yo), otro]
+[09:38:36.110] evento: suscrito a TR_AMrCMqhVx5eZTM (AUDIO) de otro
+[09:38:37.711] evento: onReconnecting
+[09:38:55.086] ERROR en dispose micTrack: java.lang.NullPointerException: Object handle is null
+[09:38:55.096] evento: onDisconnected motivo=CLIENT_INITIATED
+[09:38:55.096] estado: DESCONECTADO
+[09:38:55.097] participantes: []
+[09:38:55.097] estado: DESCONECTADO
+[09:38:55.097] Desconectado.
+exit=0
+
+=== cliente otro
+[09:38:35.202] Token generado para identidad=otro sala=poc
+[09:38:35.225] Conectando a ws://localhost:7880 ...
+[09:38:35.977] evento: pista publicada TR_AMKJqDXqHMkyaL (AUDIO) por dup
+[09:38:35.981] participantes: [otro (yo), dup]
+[09:38:35.981] evento: entra dup
+[09:38:35.982] participantes: [otro (yo), dup]
+[09:38:35.982] evento: onConnected
+[09:38:35.983] Unido a la sala: poc (sid=RM_HYws7LBQfHNf)
+[09:38:35.984] estado: CONECTADO
+[09:38:35.985] participantes: [otro (yo), dup]
+[09:38:35.997] Dispositivos de entrada vistos por el SDK: 1
+[09:38:36.035] Micrófono publicado (cid=audio-336119a5-f1f9-41cf-a6d0-de46c5eb8354), oferta del publisher forzada
+[09:38:36.095] evento: pista publicada TR_AMrCMqhVx5eZTM (AUDIO) por otro
+[09:38:36.096] participantes: [otro (yo), dup]
+[09:38:36.115] evento: suscrito a TR_AMKJqDXqHMkyaL (AUDIO) de dup
+[09:38:38.311] evento: pista publicada TR_AMPDVGeKQTQBBZ (AUDIO) por dup
+[09:38:38.312] participantes: [otro (yo), dup]
+[09:38:38.313] evento: pista retirada TR_AMKJqDXqHMkyaL por dup
+[09:38:38.313] participantes: [otro (yo), dup]
+[09:38:38.326] evento: suscrito a TR_AMPDVGeKQTQBBZ (AUDIO) de dup
+[09:38:43.267] evento: onDisconnected motivo=CLIENT_INITIATED
+[09:38:43.268] estado: DESCONECTADO
+[09:38:43.269] participantes: []
+[09:38:43.270] estado: DESCONECTADO
+[09:38:43.270] Desconectado.
+exit=0
+
+=== cliente dupB
+[09:38:37.648] Token generado para identidad=dup sala=poc
+[09:38:37.668] Conectando a ws://localhost:7880 ...
+[09:38:38.220] evento: pista publicada TR_AMrCMqhVx5eZTM (AUDIO) por otro
+[09:38:38.224] participantes: [dup (yo), otro]
+[09:38:38.224] evento: entra otro
+[09:38:38.225] participantes: [dup (yo), otro]
+[09:38:38.225] evento: onConnected
+[09:38:38.226] Unido a la sala: poc (sid=RM_HYws7LBQfHNf)
+[09:38:38.226] estado: CONECTADO
+[09:38:38.227] participantes: [dup (yo), otro]
+[09:38:38.238] Dispositivos de entrada vistos por el SDK: 1
+[09:38:38.269] Micrófono publicado (cid=audio-7a1b1c1a-5071-4ec3-a88f-5946799e2744), oferta del publisher forzada
+[09:38:38.314] evento: pista publicada TR_AMPDVGeKQTQBBZ (AUDIO) por dup
+[09:38:38.314] participantes: [dup (yo), otro]
+[09:38:38.326] evento: suscrito a TR_AMrCMqhVx5eZTM (AUDIO) de otro
+[09:38:43.262] evento: sale otro
+[09:38:43.262] participantes: [dup (yo)]
+[09:38:49.700] evento: pista retirada TR_AMPDVGeKQTQBBZ por dup
+[09:38:49.708] evento: onDisconnected motivo=CLIENT_INITIATED
+[09:38:49.709] estado: DESCONECTADO
+[09:38:49.709] participantes: []
+[09:38:49.710] estado: DESCONECTADO
+[09:38:49.710] Desconectado.
+exit=0
+
+=== servidor (INFO/WARN, UTC)
+2026-10-04T15:38:25.102Z	INFO	livekit	service/roommanager.go:433	starting RTC session	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "dup", "participantID": "PA_xrGSV4uucgVw", "remote": false, "room": "poc", "nodeID": "ND_YKh3bNoCWpQh", "numParticipants": 0, "participantInit": {"Identity": "dup", "Recon
+2026-10-04T15:38:25.637Z	INFO	livekit.pub	rtc/participant.go:2423	mediaTrack published	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "dup", "participantID": "PA_xrGSV4uucgVw", "remote": false, "kind": "audio", "trackID": "TR_AMKJqDXqHMkyaL", "webrtcTrackID": "audio-de5f7d28-81d4-40e9-8286-bc8dd2d40503"
+2026-10-04T15:38:25.673Z	INFO	livekit	rtc/room.go:1284	participant active	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "dup", "participantID": "PA_xrGSV4uucgVw", "remote": false, "publisherCandidates": ["[local][trickle] udp4 host 192.168.100.8:7882 (resolved: 192.168.100.8:7882)", "[local][selected:1
+2026-10-04T15:38:35.268Z	INFO	livekit	service/roommanager.go:433	starting RTC session	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "otro", "participantID": "PA_pbABGffDHzY6", "remote": false, "room": "poc", "nodeID": "ND_YKh3bNoCWpQh", "numParticipants": 1, "participantInit": {"Identity": "otro", "Rec
+2026-10-04T15:38:36.079Z	INFO	livekit	rtc/room.go:1284	participant active	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "otro", "participantID": "PA_pbABGffDHzY6", "remote": false, "publisherCandidates": ["[local][trickle] udp4 host 192.168.100.8:7882 (resolved: 192.168.100.8:7882)", "[local][trickle] 
+2026-10-04T15:38:36.091Z	INFO	livekit.pub	rtc/participant.go:2423	mediaTrack published	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "otro", "participantID": "PA_pbABGffDHzY6", "remote": false, "kind": "audio", "trackID": "TR_AMrCMqhVx5eZTM", "webrtcTrackID": "audio-336119a5-f1f9-41cf-a6d0-de46c5eb8354
+2026-10-04T15:38:36.280Z	INFO	livekit.transport	rtc/transport.go:648	ice reconnected or switched pair	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "otro", "participantID": "PA_pbABGffDHzY6", "remote": false, "transport": "PUBLISHER", "existingPair": {"localProtocol": "udp", "localCandidateType": "host
+2026-10-04T15:38:36.521Z	INFO	livekit.transport	rtc/transport.go:648	ice reconnected or switched pair	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "otro", "participantID": "PA_pbABGffDHzY6", "remote": false, "transport": "PUBLISHER", "existingPair": {"localProtocol": "udp", "localCandidateType": "host
+2026-10-04T15:38:37.706Z	INFO	livekit	service/roommanager.go:399	removing duplicate participant	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "dup", "participantID": "PA_xrGSV4uucgVw", "remote": false}
+2026-10-04T15:38:37.706Z	INFO	livekit	rtc/participant.go:1513	participant closing	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "dup", "participantID": "PA_xrGSV4uucgVw", "remote": false, "sendLeave": true, "reason": "DUPLICATE_IDENTITY", "isExpectedToResume": false, "clientInfo": {"sdk": "UNKNOWN", "p
+2026-10-04T15:38:37.707Z	INFO	livekit	service/roommanager.go:433	starting RTC session	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "dup", "participantID": "PA_JFDDuphXFiMz", "remote": false, "room": "poc", "nodeID": "ND_YKh3bNoCWpQh", "numParticipants": 1, "participantInit": {"Identity": "dup", "Recon
+2026-10-04T15:38:38.300Z	INFO	livekit	rtc/room.go:1284	participant active	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "dup", "participantID": "PA_JFDDuphXFiMz", "remote": false, "publisherCandidates": ["[local][trickle] udp4 host 192.168.100.8:7882 (resolved: 192.168.100.8:7882)", "[local][trickle] u
+2026-10-04T15:38:38.310Z	INFO	livekit.pub	rtc/participant.go:2423	mediaTrack published	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "dup", "participantID": "PA_JFDDuphXFiMz", "remote": false, "kind": "audio", "trackID": "TR_AMPDVGeKQTQBBZ", "webrtcTrackID": "audio-7a1b1c1a-5071-4ec3-a88f-5946799e2744"
+2026-10-04T15:38:38.498Z	INFO	livekit.transport	rtc/transport.go:648	ice reconnected or switched pair	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "dup", "participantID": "PA_JFDDuphXFiMz", "remote": false, "transport": "PUBLISHER", "existingPair": {"localProtocol": "udp", "localCandidateType": "host"
+2026-10-04T15:38:38.644Z	INFO	livekit.transport	rtc/transport.go:648	ice reconnected or switched pair	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "dup", "participantID": "PA_JFDDuphXFiMz", "remote": false, "transport": "PUBLISHER", "existingPair": {"localProtocol": "udp", "localCandidateType": "host"
+2026-10-04T15:38:43.258Z	INFO	livekit	rtc/participant.go:1513	participant closing	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "otro", "participantID": "PA_pbABGffDHzY6", "remote": false, "sendLeave": true, "reason": "CLIENT_REQUEST_LEAVE", "isExpectedToResume": false, "clientInfo": {"sdk": "UNKNOWN",
+2026-10-04T15:38:43.264Z	WARN	livekit.transport	rtc/transport.go:1329	error reading data channel	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "otro", "participantID": "PA_pbABGffDHzY6", "remote": false, "transport": "SUBSCRIBER", "label": "_reliable", "error": "[0x14537882a008] abort chunk, with follo
+2026-10-04T15:38:43.264Z	WARN	livekit.transport	rtc/transport.go:1329	error reading data channel	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "otro", "participantID": "PA_pbABGffDHzY6", "remote": false, "transport": "SUBSCRIBER", "label": "_data_track", "error": "[0x14537882a008] abort chunk, with fol
+2026-10-04T15:38:43.264Z	WARN	livekit.transport	rtc/transport.go:1329	error reading data channel	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "otro", "participantID": "PA_pbABGffDHzY6", "remote": false, "transport": "SUBSCRIBER", "label": "_lossy", "error": "[0x14537882a008] abort chunk, with followin
+2026-10-04T15:38:49.701Z	INFO	livekit	rtc/participant.go:1513	participant closing	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "participant": "dup", "participantID": "PA_JFDDuphXFiMz", "remote": false, "sendLeave": true, "reason": "CLIENT_REQUEST_LEAVE", "isExpectedToResume": false, "clientInfo": {"sdk": "UNKNOWN", 
+2026-10-04T15:39:09.236Z	INFO	livekit.room	rtc/room.go:822	closing room	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "reason": "IDLE_TIMEOUT"}
+2026-10-04T15:39:09.236Z	INFO	livekit	service/roommanager.go:193	deleting room state	{"room": "poc"}
+2026-10-04T15:39:09.236Z	INFO	livekit.room	service/roommanager.go:706	room closed	{"room": "poc", "roomID": "RM_HYws7LBQfHNf"}
+2026-10-04T15:39:09.236Z	INFO	livekit.room	rtc/room.go:806	closing idle room	{"room": "poc", "roomID": "RM_HYws7LBQfHNf", "reason": "departure timeout"}

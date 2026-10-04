@@ -1,0 +1,23 @@
+Oct 04, 2026 10:01:28 AM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @220f4753'
+[10:01:32.205] Token generado para identidad=javafx-2 sala=poc
+[10:01:32.221] Conectando a ws://localhost:7880 ...
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+[10:01:32.779] evento: pista publicada TR_AMV9x6xMRzWUSi (AUDIO) por javafx-1
+[10:01:32.783] evento: entra javafx-1
+[10:01:32.784] evento: pista publicada TR_AMvWubfyBxuLb9 (AUDIO) por navegador
+[10:01:32.784] evento: pista publicada TR_VCVTXYRjhqSPqy (VIDEO) por navegador
+[10:01:32.785] evento: entra navegador
+[10:01:32.785] evento: onConnected
+[10:01:32.786] Unido a la sala: poc (sid=RM_brSDRfgX2vLu)
+[10:01:32.799] Dispositivos de entrada vistos por el SDK: 1
+[10:01:32.845] Micrófono publicado (cid=audio-9c64c546-9ee6-45fc-ad7e-66c223187397), oferta del publisher forzada
+[10:01:32.910] evento: pista publicada TR_AMKkzgoJAMMxJa (AUDIO) por javafx-2
+[10:01:32.948] evento: suscrito a TR_AMV9x6xMRzWUSi (AUDIO) de javafx-1
+[10:01:32.949] evento: suscrito a TR_AMvWubfyBxuLb9 (AUDIO) de navegador
+[10:01:32.950] evento: suscrito a TR_VCVTXYRjhqSPqy (VIDEO) de navegador
+[10:02:36.939] evento: sale javafx-1
+[10:02:40.196] evento: onDisconnected motivo=CLIENT_INITIATED
+[10:02:40.197] Desconectado.

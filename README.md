@@ -39,3 +39,27 @@ PoC desechable. El resultado está en `REPORT.md`; el estado del trabajo, en `PR
    ```
 
 5. Parar el servidor: `docker compose down`.
+
+## Pruebas del Nivel 3
+
+- Log del cliente: `run-nivel2.sh` lo guarda solo en `evidence/nivel2-cliente-<identidad>-<fecha>.txt`.
+- Segunda ventana: `bash run-nivel2.sh javafx-2` (cada ventana necesita una identidad distinta; con la misma,
+  el servidor expulsa a la primera).
+- Cliente sin ventana: `mvn -q exec:java -Dexec.mainClass=sonimbus.poc.level2.HeadlessCheck -Dexec.args="ws://localhost:7880 poc <identidad> <segundos>"`
+- 10 minutos con muestreo de memoria (dos clientes sin ventana; te oirás por los auriculares):
+
+  ```
+  bash tools/soak.sh 630 > evidence/nivel3f-10min-memoria-<fecha>.txt
+  ```
+
+- Retardo micrófono → salida (graba 40 s; da palmadas con un solo micrófono abierto en la sala). Necesita `ffmpeg`:
+
+  ```
+  bash tools/latency.sh 40
+  ```
+
+- Corte de red de 10 s sobre los puertos de LiveKit (pide sudo; bloquea IPv4 e IPv6):
+
+  ```
+  sudo sh -c 'R="udp --dport 7882|udp --sport 7882|tcp --dport 7880|tcp --sport 7880"; for t in iptables ip6tables; do echo "$R" | tr "|" "\n" | while read r; do $t -I INPUT -p $r -j DROP; done; done; sleep 10; for t in iptables ip6tables; do echo "$R" | tr "|" "\n" | while read r; do $t -D INPUT -p $r -j DROP; done; done; echo red restaurada'
+  ```
