@@ -83,8 +83,10 @@
     El bucle de muestreo de tools/soak.sh murió por eso (exit 139); el script en sí no se cambió más.
 - REPORT.md COMPLETO y actualizado (recomendación: A con DOS condiciones: adoptar el SDK como código propio y
   resolver el fallo de cierre tras sesiones largas, sección 4.4.2; si no, B con navegador del sistema).
-- Pendiente opcional: repetir 10 min con webrtc-java solo (Nivel 1) para saber si el fallo de cierre es del SDK o
-  de la biblioteca nativa; cortes de red largos; eco/ruido.
+- Contraste (11:18-11:29): Nivel 1 durante 630 s (webrtc-java solo) cerró LIMPIO, exit=0. El fallo de cierre apunta
+  al SDK, no a webrtc-java. Una sola corrida, micrófono silenciado. evidence/nivel1-loopback-10min-cierre-20261004.txt
+- Pendiente opcional: localizar el fallo en el cierre del SDK (PeerConnectionEngine.close / MediaDevicesHelper.dispose);
+  cortes de red largos; eco/ruido; mover el proyecto a ext4 (evita bloqueos de ntfs3; no se espera que cambie el fallo).
 - Pregunta abierta del usuario: compartir un .exe con alguien lejos para probar. No existe: no hay empaquetado
   ni prueba en Windows, y el servidor solo escucha en esta máquina/red local en modo --dev. Sería trabajo nuevo
   (fuera del PoC): jpackage en Windows + servidor accesible desde internet.
@@ -98,4 +100,4 @@
 ## Necesita el usuario
 - Reiniciar cuando pueda (libera el archivo bloqueado por ntfs3) y después borrar
   evidence/nivel3f-10min-sin-jcmd-20261004.txt.
-- Decidir si se investiga el fallo de cierre (prueba de 10 min con webrtc-java solo) o se da el PoC por terminado.
+- Decidir si se investiga el fallo de cierre dentro del SDK o se da el PoC por terminado.

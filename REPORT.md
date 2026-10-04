@@ -150,11 +150,16 @@ Evidencia: `nivel2-problemas-sdk-20261004.txt` (D, E).
   `dev.onvoid.webrtc.media.audio.AudioDeviceModuleBase.disposeInternal`, invocada por el SDK
   (`MediaDevicesHelper.dispose` ← `PeerConnectionEngine.close` ← `RtcClient.disconnect` ← `RtcClient.shutdown`).
 - **Qué se descartó:** que lo provocara el muestreo con `jcmd` (dos de las tres ocurrencias no lo usaron).
-- **Sin determinar:** el umbral de duración y la causa dentro del código nativo (los errores apuntan a corrupción
-  de memoria o a un doble cierre del módulo de audio; no está demostrado). No se probó si ocurre con `webrtc-java`
-  solo, sin el SDK.
+- **Contraste con webrtc-java solo:** el loopback del Nivel 1 durante 10 min 30 s (misma biblioteca nativa, mismo
+  dispositivo, sin el SDK) cerró limpio: todos los `dispose` "ok", incluido el del `AudioDeviceModule`, exit=0.
+  Apunta a que el fallo está en cómo cierra el SDK y no en `webrtc-java` por sí solo. Es una sola corrida y un
+  loopback no es idéntico a una sesión contra el SFU.
+- **Sin determinar:** el umbral de duración y la causa concreta dentro del cierre del SDK (los errores apuntan a
+  corrupción de memoria o a un doble cierre del módulo de audio; no está demostrado). Tampoco se probó en ext4,
+  aunque nada apunta al sistema de archivos (los JAR se cargan desde `~/.m2`).
 - **Evidencia:** `nivel3f-10min-memoria-20261004.txt`, `nivel3f-caida-al-salir-ventana-20261004.txt`,
-  `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel3-observacion-usuario-20261004.txt` (4).
+  `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel3-observacion-usuario-20261004.txt` (4),
+  `nivel1-loopback-10min-cierre-20261004.txt`.
 
 #### 4.4.3 El primer corte de red no fue un corte (resuelto repitiendo la prueba)
 
@@ -258,15 +263,16 @@ C) voz solo en el móvil (Flutter) durante el MVP; D) cambiar el cliente de escr
   - Los fallos con causa identificada (4.3.1, 4.3.2, 4.4.1) están en la capa de señalización del SDK comunitario,
     que es pequeña y legible: las causas se localizaron leyendo su código. Es un problema de mantenimiento, no de
     viabilidad. El cierre tras sesiones largas (4.4.2) es la excepción y el mayor riesgo abierto: se reproduce
-    siempre, está en la frontera entre el SDK y el código nativo de `webrtc-java`, y su causa no está localizada.
+    siempre y su causa no está localizada, aunque `webrtc-java` solo cierra limpio tras 10 minutos, lo que
+    lo sitúa en el SDK (la capa que A ya propone adoptar y corregir).
   - El retardo (3g, ~92 ms y ~159 ms según el sentido) y el consumo (3f, memoria plana) están dentro de lo
     aceptable, y un corte de red de ~13 s se recupera solo (3e).
   - C y D resolverían un problema que la evidencia no muestra: el escritorio JavaFX sí puede hacer voz. B queda
     como salida si A se complica; no se evaluó en este PoC, así que su coste real es desconocido.
 - **Lo que debería probarse antes de comprometerse con A:**
-  1. **localizar y corregir el fallo de cierre tras sesiones largas (4.4.2)**; empezar por repetir la sesión de
-     10 minutos con `webrtc-java` solo (Nivel 1) para saber si el fallo es del SDK o de la biblioteca nativa. Si no
-     se puede corregir, A deja de ser recomendable;
+  1. **localizar y corregir el fallo de cierre tras sesiones largas (4.4.2)**; `webrtc-java` solo cierra limpio tras
+     10 minutos, así que hay que buscarlo en el cierre del SDK (`PeerConnectionEngine.close` /
+     `MediaDevicesHelper.dispose`). Si no se puede corregir, A deja de ser recomendable;
   2. probar cortes de red largos y decidir cómo reconectar (4.4.1, 4.4.3);
   3. una prueba entre dos máquinas por red real, idealmente con una en Windows;
   4. eco y ruido con altavoces, con y sin las opciones de procesado.
