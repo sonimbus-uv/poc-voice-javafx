@@ -20,7 +20,34 @@
   - Observación del usuario: evidence/nivel1-observacion-usuario-20261004.txt. Sonó por altavoces, no por
     auriculares: el sistema marca el puerto de auriculares "not available" (no es fallo de webrtc-java).
     Supresión de ruido y retardo: sin evaluar todavía (retardo -> Nivel 3g).
-- Siguiente: Nivel 2 (JavaFX + SDK Trirrin). Resolver conflicto 0.14.0 (SDK) vs 0.18.0 (decidido).
+- Nivel 2 (JavaFX + SDK Trirrin v0.1.4): PASA (2026-10-04), con dos workarounds explícitos sobre el SDK.
+  - Código: src/main/java/sonimbus/poc/level2/ (TokenGenerator, VoiceClient, VoiceApp, Launcher, HeadlessCheck).
+    Lanzar: `docker compose up -d` y `bash run-nivel2.sh [identidad]`.
+  - pom.xml: + JitPack, SDK rtc v0.1.4, io.livekit:livekit-server 0.16.0 (tokens), javafx-controls 21.0.8.
+    webrtc-java queda en 0.18.0 (el SDK pide 0.14.0): compila y corre.
+  - Sin ventana: conecta, publica y el servidor registra "mediaTrack published". Evidencia: evidence/nivel2-headless-2-20261004.txt
+  - La ventana arranca sin errores. Evidencia: evidence/nivel2-ventana-arranque-20261004.txt
+  - Dos fallos del SDK rodeados con workaround EXPLÍCITO (evidence/nivel2-problemas-sdk-20261004.txt):
+    1) nunca envía la oferta del publisher -> se llama a RtcClient.onPublisherNegotiationNeeded() tras publicar.
+    2) SIGSEGV al salir si la pista se dispone tras shutdown() -> orden: unpublish, dispose pista, shutdown.
+  - Otros hallazgos (mismo archivo): protocolo 13 (no 17); código del tag v0.1.4 es de 2025-12-06; sin AEC/NS
+    configurable; sin getStats; 1236 clases duplicadas entre el SDK y io.livekit:livekit-server.
+  - Primera prueba del usuario con el navegador (14:43-14:50Z): participantes visibles en ambos lados, Salir funciona.
+    El servidor recibió voz de AMBOS micrófonos y la reenvió en ambos sentidos con 0 pérdidas
+    (evidence/nivel2-servidor-audio-bidireccional-20261004.txt). El usuario NO confirmó que se oyera: con un solo
+    micrófono físico abierto en los dos clientes a la vez no se distingue quién suena.
+  - Hallazgo abierto: el servidor expulsó a javafx-1 por DUPLICATE_IDENTITY (dos conexiones con la misma identidad).
+    El usuario dice que algo "se bloqueó". Sospecha SIN reproducir: tras una salida iniciada por el servidor,
+    VoiceClient conserva `client` y Conectar responde "Ya hay una conexión activa"; además RtcClient.onLeave
+    dispone la pista sin quitarla del sender. Reproducir en Nivel 3d (no se guardó el log del cliente esa vez).
+  - run-nivel2.sh ahora guarda el log del cliente en evidence/nivel2-cliente-<identidad>-<fecha>.txt.
+  - Prueba audible por sentidos separados (09:26-09:32 local): el usuario dice "se escucha bien de los 2 lados y me
+    pude desconectar todo correcto no hay fallas". Evidencia: evidence/nivel2-observacion-usuario-20261004.txt (3),
+    nivel2-cliente-javafx-1-20261004-092228.txt, nivel2-servidor-prueba-audible-20261004.txt.
+    También funcionó Salir -> Conectar en la misma ventana y el mute se reflejó en ambos sentidos (adelanto de 3c).
+  - REPORT.md rellenado hasta el Nivel 2 (versiones, tabla, sección 4.3, tamaño: 41 JARs, ~37,6 MiB).
+- Siguiente: Nivel 3 (interoperabilidad y robustez). Pendiente del OK del usuario para empezar.
+  Incluir en 3d la reproducción de la expulsión por identidad duplicada.
 
 ## Decisiones (versiones a fijar, tras OK)
 - Java 21 (source /media/.../env.sh o export JAVA_HOME), Maven 3.8.7
@@ -32,3 +59,4 @@
 - Auriculares: el sistema no detecta el conector (puerto "not available"). Conviene arreglarlo antes del
   Nivel 3 (navegador + JavaFX en la misma máquina se acoplan por altavoces).
 - Posibles apt-get de librerías nativas (sudo): lo hará el usuario.
+- Nivel 3e: cortar la red 10 s requiere sudo; el comando se le dará al usuario para que lo ejecute.

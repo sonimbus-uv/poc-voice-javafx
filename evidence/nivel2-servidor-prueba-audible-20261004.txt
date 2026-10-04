@@ -1,0 +1,68 @@
+Nivel 2 - servidor LiveKit durante la prueba audible por sentidos separados (2026-10-04, horas en UTC = local + 6 h)
+Fuente: docker compose logs (livekit v1.13.7). Extraído el 2026-10-04T09:34:24-06:00. Log del cliente: evidence/nivel2-cliente-javafx-1-20261004-092228.txt
+
+## 1. Línea de tiempo (INFO/WARN)
+2026-10-04T14:50:08.458Z	INFO	livekit	rtc/participant.go:1513	participant closing	{"room": "poc", "roomID": "RM_eBKKTJnpuHuz", "participant": "javafx-1", "participantID": "PA_AavbkrrzPmHL", "remote": false, "sendLeave": true, "reason": "CLIENT_REQUEST_LEAVE", "isExpectedToResume": false, "clientInfo": {"sdk": "UNKNO
+2026-10-04T14:50:08.462Z	WARN	livekit.transport	rtc/transport.go:1329	error reading data channel	{"room": "poc", "roomID": "RM_eBKKTJnpuHuz", "participant": "javafx-1", "participantID": "PA_AavbkrrzPmHL", "remote": false, "transport": "SUBSCRIBER", "label": "_lossy", "error": "[0x145377ca4708] abort chunk, with foll
+2026-10-04T14:50:08.462Z	WARN	livekit.transport	rtc/transport.go:1329	error reading data channel	{"room": "poc", "roomID": "RM_eBKKTJnpuHuz", "participant": "javafx-1", "participantID": "PA_AavbkrrzPmHL", "remote": false, "transport": "SUBSCRIBER", "label": "_data_track", "error": "[0x145377ca4708] abort chunk, with
+2026-10-04T14:50:08.462Z	WARN	livekit.transport	rtc/transport.go:1329	error reading data channel	{"room": "poc", "roomID": "RM_eBKKTJnpuHuz", "participant": "javafx-1", "participantID": "PA_AavbkrrzPmHL", "remote": false, "transport": "SUBSCRIBER", "label": "_reliable", "error": "[0x145377ca4708] abort chunk, with f
+2026-10-04T14:50:17.319Z	INFO	livekit	rtc/participant.go:1513	participant closing	{"room": "poc", "roomID": "RM_eBKKTJnpuHuz", "participant": "navegador", "participantID": "PA_2LRuje2hJWvK", "remote": false, "sendLeave": true, "reason": "CLIENT_REQUEST_LEAVE", "isExpectedToResume": false, "clientInfo": {"sdk": "JS",
+2026-10-04T14:50:37.236Z	INFO	livekit.room	rtc/room.go:822	closing room	{"room": "poc", "roomID": "RM_eBKKTJnpuHuz", "reason": "IDLE_TIMEOUT"}
+2026-10-04T14:50:37.237Z	INFO	livekit	service/roommanager.go:193	deleting room state	{"room": "poc"}
+2026-10-04T14:50:37.237Z	INFO	livekit.room	service/roommanager.go:706	room closed	{"room": "poc", "roomID": "RM_eBKKTJnpuHuz"}
+2026-10-04T14:50:37.237Z	INFO	livekit.room	rtc/room.go:806	closing idle room	{"room": "poc", "roomID": "RM_eBKKTJnpuHuz", "reason": "departure timeout"}
+2026-10-04T15:26:08.669Z	INFO	livekit	service/roommanager.go:433	starting RTC session	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "navegador", "participantID": "PA_MvqYV5tgarFL", "remote": false, "room": "poc", "nodeID": "ND_YKh3bNoCWpQh", "numParticipants": 0, "participantInit": {"Identity": "navega
+2026-10-04T15:26:08.802Z	INFO	livekit	rtc/room.go:1284	participant active	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "navegador", "participantID": "PA_MvqYV5tgarFL", "remote": false, "publisherCandidates": ["[local][trickle] udp4 host 192.168.100.8:7882 (resolved: 192.168.100.8:7882)", "[local][sele
+2026-10-04T15:26:08.809Z	INFO	livekit.pub	rtc/participant.go:2423	mediaTrack published	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "navegador", "participantID": "PA_MvqYV5tgarFL", "remote": false, "kind": "audio", "trackID": "TR_AMMnv4pvux2sVn", "webrtcTrackID": "c0056798-247e-4b02-b3f3-312e675fe788"
+2026-10-04T15:26:08.859Z	INFO	livekit.pub	rtc/participant.go:2423	mediaTrack published	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "navegador", "participantID": "PA_MvqYV5tgarFL", "remote": false, "kind": "video", "trackID": "TR_VCdaLCZLSXJm5D", "webrtcTrackID": "90214a8a-36f1-41c8-bc25-ed95160110ac"
+2026-10-04T15:26:08.873Z	INFO	livekit.pub	rtc/participant.go:2423	mediaTrack published	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "navegador", "participantID": "PA_MvqYV5tgarFL", "remote": false, "kind": "video", "trackID": "TR_VCdaLCZLSXJm5D", "webrtcTrackID": "90214a8a-36f1-41c8-bc25-ed95160110ac"
+2026-10-04T15:26:09.000Z	INFO	livekit.pub	rtc/participant.go:2423	mediaTrack published	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "navegador", "participantID": "PA_MvqYV5tgarFL", "remote": false, "kind": "video", "trackID": "TR_VCdaLCZLSXJm5D", "webrtcTrackID": "90214a8a-36f1-41c8-bc25-ed95160110ac"
+2026-10-04T15:26:58.296Z	INFO	livekit	service/roommanager.go:433	starting RTC session	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "javafx-1", "participantID": "PA_pxN5EB2xoRAt", "remote": false, "room": "poc", "nodeID": "ND_YKh3bNoCWpQh", "numParticipants": 1, "participantInit": {"Identity": "javafx-
+2026-10-04T15:26:58.872Z	INFO	livekit.pub	rtc/participant.go:2423	mediaTrack published	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "javafx-1", "participantID": "PA_pxN5EB2xoRAt", "remote": false, "kind": "audio", "trackID": "TR_AMLcbLE2zDLebN", "webrtcTrackID": "audio-d39a36c1-85a2-4ae2-a2f5-08e32a4e
+2026-10-04T15:26:59.014Z	INFO	livekit.transport	rtc/transport.go:648	ice reconnected or switched pair	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "javafx-1", "participantID": "PA_pxN5EB2xoRAt", "remote": false, "transport": "PUBLISHER", "existingPair": {"localProtocol": "udp", "localCandidateType": "
+2026-10-04T15:26:59.053Z	INFO	livekit	rtc/room.go:1284	participant active	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "javafx-1", "participantID": "PA_pxN5EB2xoRAt", "remote": false, "publisherCandidates": ["[local][selected:1][trickle] udp4 host 192.168.100.8:7882 (resolved: 192.168.100.8:7882)", "[
+2026-10-04T15:28:09.735Z	INFO	livekit	rtc/participant.go:1513	participant closing	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "javafx-1", "participantID": "PA_pxN5EB2xoRAt", "remote": false, "sendLeave": true, "reason": "CLIENT_REQUEST_LEAVE", "isExpectedToResume": false, "clientInfo": {"sdk": "UNKNO
+2026-10-04T15:28:09.740Z	WARN	livekit.transport	rtc/transport.go:1329	error reading data channel	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "javafx-1", "participantID": "PA_pxN5EB2xoRAt", "remote": false, "transport": "SUBSCRIBER", "label": "_reliable", "error": "[0x1453798fe008] abort chunk, with f
+2026-10-04T15:28:09.740Z	WARN	livekit.transport	rtc/transport.go:1329	error reading data channel	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "javafx-1", "participantID": "PA_pxN5EB2xoRAt", "remote": false, "transport": "SUBSCRIBER", "label": "_lossy", "error": "[0x1453798fe008] abort chunk, with foll
+2026-10-04T15:28:09.740Z	WARN	livekit.transport	rtc/transport.go:1329	error reading data channel	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "javafx-1", "participantID": "PA_pxN5EB2xoRAt", "remote": false, "transport": "SUBSCRIBER", "label": "_data_track", "error": "[0x1453798fe008] abort chunk, with
+2026-10-04T15:28:09.747Z	WARN	livekit.transport	rtc/transport.go:2648	trying to create offer on closed peer connection	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "javafx-1", "participantID": "PA_pxN5EB2xoRAt", "remote": false, "transport": "SUBSCRIBER"}
+2026-10-04T15:28:11.379Z	INFO	livekit	service/roommanager.go:433	starting RTC session	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "javafx-1", "participantID": "PA_9aWP4DgJCMy5", "remote": false, "room": "poc", "nodeID": "ND_YKh3bNoCWpQh", "numParticipants": 1, "participantInit": {"Identity": "javafx-
+2026-10-04T15:28:11.428Z	INFO	livekit	rtc/room.go:1284	participant active	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "javafx-1", "participantID": "PA_9aWP4DgJCMy5", "remote": false, "publisherCandidates": ["[local][trickle] udp4 host 192.168.100.8:7882 (resolved: 192.168.100.8:7882)", "[local][selec
+2026-10-04T15:28:11.429Z	INFO	livekit.pub	rtc/participant.go:2423	mediaTrack published	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "javafx-1", "participantID": "PA_9aWP4DgJCMy5", "remote": false, "kind": "audio", "trackID": "TR_AMVEbnspL485Qh", "webrtcTrackID": "audio-1e02b8a0-a245-4878-bf05-05c8401f
+2026-10-04T15:32:49.046Z	INFO	livekit	rtc/participant.go:1513	participant closing	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "navegador", "participantID": "PA_MvqYV5tgarFL", "remote": false, "sendLeave": true, "reason": "CLIENT_REQUEST_LEAVE", "isExpectedToResume": false, "clientInfo": {"sdk": "JS",
+2026-10-04T15:32:55.229Z	INFO	livekit	rtc/participant.go:1513	participant closing	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "javafx-1", "participantID": "PA_9aWP4DgJCMy5", "remote": false, "sendLeave": true, "reason": "CLIENT_REQUEST_LEAVE", "isExpectedToResume": false, "clientInfo": {"sdk": "UNKNO
+2026-10-04T15:32:55.230Z	WARN	livekit	service/rtcservice.go:683	error writing to request sink	{"connID": "CO_N8TNngVmHd3M", "error": "stream closed", "room": "poc", "roomID": "RM_9xYnt3XWHkwv", "participant": "javafx-1", "participantID": "PA_9aWP4DgJCMy5", "joinDuration": "0s"}
+2026-10-04T15:33:15.236Z	INFO	livekit.room	rtc/room.go:822	closing room	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "reason": "IDLE_TIMEOUT"}
+2026-10-04T15:33:15.236Z	INFO	livekit	service/roommanager.go:193	deleting room state	{"room": "poc"}
+2026-10-04T15:33:15.237Z	INFO	livekit.room	service/roommanager.go:706	room closed	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv"}
+2026-10-04T15:33:15.237Z	INFO	livekit.room	rtc/room.go:806	closing idle room	{"room": "poc", "roomID": "RM_9xYnt3XWHkwv", "reason": "departure timeout"}
+
+## 2. Estadísticas RTP de audio al cerrar cada pista (upstream = cliente->servidor; downstream = servidor->suscriptor)
+2026-10-04T14:50:08.454Z participante=javafx-1 (PA_AavbkrrzPmHL) pista=TR_AMg96iAB3LNRxP upstream duracion=2m28.649176097s paquetes=4104 bytes=670260 bitrate=36072bps
+2026-10-04T14:50:08.655Z participante=navegador (PA_2LRuje2hJWvK) pista=TR_AMg96iAB3LNRxP downstream duracion=1m57.590542899s paquetes=3268 bytes=519581 bitrate=35348bps
+2026-10-04T14:50:08.660Z participante=javafx-1 (PA_AavbkrrzPmHL) pista=TR_AMu7yz52Jfcagn downstream duracion=1m57.2361528s paquetes=3430 bytes=803435 bitrate=54825bps
+2026-10-04T14:50:17.320Z participante=navegador (PA_2LRuje2hJWvK) pista=TR_AMu7yz52Jfcagn upstream duracion=2m5.934952189s paquetes=3621 bytes=884455 bitrate=56184bps
+2026-10-04T15:28:09.733Z participante=javafx-1 (PA_pxN5EB2xoRAt) pista=TR_AMLcbLE2zDLebN upstream duracion=1m10.793319452s paquetes=3541 bytes=546244 bitrate=61728bps
+2026-10-04T15:28:09.934Z participante=navegador (PA_MvqYV5tgarFL) pista=TR_AMLcbLE2zDLebN downstream duracion=1m10.971167064s paquetes=3550 bytes=518702 bitrate=58469bps
+2026-10-04T15:28:09.937Z participante=javafx-1 (PA_pxN5EB2xoRAt) pista=TR_AMMnv4pvux2sVn downstream duracion=1m10.864040366s paquetes=576 bytes=80608 bitrate=9100bps
+2026-10-04T15:32:49.047Z participante=navegador (PA_MvqYV5tgarFL) pista=TR_AMMnv4pvux2sVn upstream duracion=6m40.218163212s paquetes=12421 bytes=3031689 bitrate=60600bps
+2026-10-04T15:32:49.247Z participante=javafx-1 (PA_9aWP4DgJCMy5) pista=TR_AMMnv4pvux2sVn downstream duracion=4m37.661775899s paquetes=9336 bytes=2243929 bitrate=64652bps
+2026-10-04T15:32:49.247Z participante=navegador (PA_MvqYV5tgarFL) pista=TR_AMVEbnspL485Qh downstream duracion=4m37.756442983s paquetes=3238 bytes=498206 bitrate=14349bps
+2026-10-04T15:32:55.230Z participante=javafx-1 (PA_9aWP4DgJCMy5) pista=TR_AMVEbnspL485Qh upstream duracion=4m43.760150963s paquetes=4060 bytes=551106 bitrate=15537bps
+Paquetes perdidos por línea (campo packetsLost):
+     11 "packetsLost": 0
+
+## 3. Peticiones de silenciar (mute) recibidas
+2026-10-04T14:49:57.483Z navegador {"mute": {"sid": "TR_AMu7yz52Jfcagn", "muted": true}}
+2026-10-04T14:49:58.731Z navegador {"mute": {"sid": "TR_AMu7yz52Jfcagn"}}
+2026-10-04T14:50:03.630Z javafx-1 {"mute": {"sid": "TR_AMg96iAB3LNRxP", "muted": true}}
+2026-10-04T14:50:15.595Z navegador {"mute": {"sid": "TR_AMu7yz52Jfcagn", "muted": true}}
+2026-10-04T14:50:16.256Z navegador {"mute": {"sid": "TR_AMu7yz52Jfcagn"}}
+2026-10-04T15:26:11.421Z navegador {"mute": {"sid": "TR_VCdaLCZLSXJm5D", "muted": true}}
+2026-10-04T15:27:32.053Z navegador {"mute": {"sid": "TR_AMMnv4pvux2sVn", "muted": true}}
+2026-10-04T15:27:33.019Z navegador {"mute": {"sid": "TR_AMMnv4pvux2sVn"}}
+2026-10-04T15:28:17.319Z navegador {"mute": {"sid": "TR_AMMnv4pvux2sVn", "muted": true}}
+2026-10-04T15:28:17.953Z navegador {"mute": {"sid": "TR_AMMnv4pvux2sVn"}}
+2026-10-04T15:29:34.436Z navegador {"mute": {"sid": "TR_AMMnv4pvux2sVn", "muted": true}}
+2026-10-04T15:29:43.778Z navegador {"mute": {"sid": "TR_AMMnv4pvux2sVn"}}
+2026-10-04T15:29:49.764Z javafx-1 {"mute": {"sid": "TR_AMVEbnspL485Qh", "muted": true}}
