@@ -1,0 +1,24 @@
+Nivel 1 - observación del usuario (2026-10-04)
+Contexto: `bash run-nivel1.sh 20` (loopback local webrtc-java 0.18.0), auriculares conectados.
+
+Respuesta literal del usuario:
+"si dije frases normales, no me escuche en los auriculares pero si me escuche en mi maquina, no capte eco, por el momento"
+
+Estado del sistema justo después (pactl list sinks / sources, wpctl get-volume):
+  Salida: alsa_output.pci-0000_00_1f.3.analog-stereo, vol 0.62, sin mute
+    analog-output-speaker: Speakers (availability unknown)   <- Active Port
+    analog-output-headphones: Headphones (not available)
+  Entrada: alsa_input.pci-0000_00_1f.3.analog-stereo, vol 0.52, sin mute
+    analog-input-internal-mic: Internal Microphone            <- Active Port
+    analog-input-headset-mic: Headset Microphone (not available)
+
+Interpretación (del asistente, no del usuario):
+  - "me escuche en mi maquina" = el audio salió por los altavoces del portátil. El sistema marca el
+    puerto de auriculares como "not available" (no detecta el conector), así que el sink por defecto
+    enruta a altavoces. webrtc-java reproduce por el sink por defecto: no es un fallo de la biblioteca.
+  - Criterio del Nivel 1 ("se oye"): CUMPLIDO, por altavoces.
+  - "no capte eco": con altavoces + micrófono interno abiertos a la vez y sin acople audible, es
+    indicio a favor de que la cancelación de eco (AudioOptions.echoCancellation=true) actúa. No es una
+    medición: no se probó con echoCancellation=false para comparar.
+  - Supresión de ruido: el usuario no comentó nada; queda SIN evaluar al oído.
+  - Retardo: el usuario no lo cuantificó; se medirá en el Nivel 3g.

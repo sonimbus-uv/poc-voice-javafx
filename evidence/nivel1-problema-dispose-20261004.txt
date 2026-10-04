@@ -1,0 +1,20 @@
+Nivel 1 - problema al liberar recursos nativos (2026-10-04)
+
+Síntoma (webrtc-java 0.18.0, linux-x86_64), al terminar el loopback:
+  [ERROR] Failed to execute goal org.codehaus.mojo:exec-maven-plugin:3.5.0:java (default-cli) on project
+  poc-voice-javafx: An exception occurred while executing the Java class. Native object was not deleted.
+  A reference is still around somewhere.
+Aislado con try/catch por recurso:
+  dispose micTrack: ERROR java.lang.Error: Native object was not deleted. A reference is still around somewhere.
+  dispose factory: ok
+  dispose adm: ok
+
+Causa observada: AudioTrack.dispose() lanza java.lang.Error (no RuntimeException) si el RTCRtpSender del
+PeerConnection aún referencia el track, incluso después de RTCPeerConnection.close().
+
+Qué se probó:
+  1) close() de ambos PC y luego micTrack.dispose()            -> falla (error de arriba)
+  2) caller.removeTrack(sender) antes de close(), luego dispose -> ok (dispose micTrack/factory/adm: ok)
+
+Solución aplicada: (2). Implicación para el Nivel 2: el orden de liberación importa y el fallo es un
+java.lang.Error; hay que quitar el track del sender antes de disponerlo (p. ej. al pulsar "Salir").
