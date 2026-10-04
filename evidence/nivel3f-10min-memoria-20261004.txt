@@ -1,0 +1,112 @@
+# Nivel 3f - 630 s, clientes soak-a y soak-b. Inicio: 2026-10-04T09:39:21-06:00
+# t_s cliente pid rss_kib hilos heap_usado_tras_gc_kib
+15 soak-a 23395 188516 56 12254
+15 soak-b 23396 187236 54 12253
+46 soak-a 23395 188836 54 12258
+46 soak-b 23396 187544 54 12257
+77 soak-a 23395 188840 53 12258
+77 soak-b 23396 187568 53 12257
+108 soak-a 23395 188904 53 12258
+108 soak-b 23396 187592 53 12257
+139 soak-a 23395 188900 52 12258
+139 soak-b 23396 187600 52 12257
+170 soak-a 23395 188900 52 12258
+170 soak-b 23396 187696 52 12257
+201 soak-a 23395 189080 52 12258
+201 soak-b 23396 187724 52 12257
+232 soak-a 23395 189232 52 12258
+232 soak-b 23396 187764 52 12257
+263 soak-a 23395 189276 52 12529
+263 soak-b 23396 187780 52 12257
+294 soak-a 23395 189280 52 12258
+294 soak-b 23396 187824 52 12257
+325 soak-a 23395 189284 52 12259
+325 soak-b 23396 187828 52 12258
+356 soak-a 23395 189304 52 12259
+356 soak-b 23396 187856 52 12258
+387 soak-a 23395 189316 52 12259
+387 soak-b 23396 187876 52 12258
+418 soak-a 23395 189324 52 12259
+418 soak-b 23396 187880 52 12348
+449 soak-a 23395 189352 52 12258
+449 soak-b 23396 187892 52 12258
+480 soak-a 23395 189368 52 12258
+480 soak-b 23396 187908 52 12258
+511 soak-a 23395 189408 52 12258
+511 soak-b 23396 187916 52 12258
+542 soak-a 23395 189444 52 12259
+542 soak-b 23396 187948 52 12258
+573 soak-a 23395 189476 52 12259
+573 soak-b 23396 188020 52 12258
+604 soak-a 23395 189484 52 12259
+604 soak-b 23396 188028 52 12258
+tools/soak.sh: line 8: 23396 Aborted                 (core dumped) mvn -q -B exec:java -Dexec.mainClass=sonimbus.poc.level2.HeadlessCheck -Dexec.args="ws://localhost:7880 poc $1 $SECS" > "$TMP/$1.log" 2>&1
+
+=== log del cliente soak-a
+[09:39:24.942] Token generado para identidad=soak-a sala=poc
+[09:39:24.969] Conectando a ws://localhost:7880 ...
+[09:39:25.612] evento: onConnected
+[09:39:25.614] Unido a la sala: poc (sid=RM_pqMkGYpu9hir)
+[09:39:25.614] estado: CONECTADO
+[09:39:25.615] participantes: [soak-a (yo)]
+[09:39:25.626] Dispositivos de entrada vistos por el SDK: 1
+[09:39:25.663] Micrófono publicado (cid=audio-54a1dcb0-9281-45cf-ad0a-ff7c3a23e85a), oferta del publisher forzada
+[09:39:25.733] evento: pista publicada TR_AMQrRVeq6xH5am (AUDIO) por soak-a
+[09:39:25.734] participantes: [soak-a (yo)]
+[09:39:25.843] evento: pista publicada TR_AM6ABCVnQnfoQF (AUDIO) por soak-b
+[09:39:25.847] participantes: [soak-a (yo), soak-b]
+[09:39:25.848] evento: entra soak-b
+[09:39:25.849] participantes: [soak-a (yo), soak-b]
+[09:39:25.942] evento: suscrito a TR_AM6ABCVnQnfoQF (AUDIO) de soak-b
+      after 8 requests (8 known processed) with 0 events remaining.
+exit=1
+grep: /tmp/tmp.nJyrSCk8qk/soak-a.log: binary file matches
+
+=== log del cliente soak-b
+[09:39:25.101] Token generado para identidad=soak-b sala=poc
+[09:39:25.121] Conectando a ws://localhost:7880 ...
+[09:39:25.722] evento: entra soak-a
+[09:39:25.736] participantes: [soak-b (yo), soak-a [sin pistas]]
+[09:39:25.737] evento: onConnected
+[09:39:25.738] Unido a la sala: poc (sid=RM_pqMkGYpu9hir)
+[09:39:25.738] estado: CONECTADO
+[09:39:25.739] participantes: [soak-b (yo), soak-a [sin pistas]]
+[09:39:25.752] Dispositivos de entrada vistos por el SDK: 1
+[09:39:25.789] Micrófono publicado (cid=audio-443cd311-7f4c-4a4e-921f-1a75ba4d5a75), oferta del publisher forzada
+[09:39:25.833] evento: pista publicada TR_AMQrRVeq6xH5am (AUDIO) por soak-a
+[09:39:25.834] participantes: [soak-b (yo), soak-a]
+[09:39:25.842] evento: pista publicada TR_AM6ABCVnQnfoQF (AUDIO) por soak-b
+[09:39:25.843] participantes: [soak-b (yo), soak-a]
+[09:39:26.066] evento: suscrito a TR_AMQrRVeq6xH5am (AUDIO) de soak-a
+[09:49:55.014] evento: sale soak-a
+[09:49:55.014] participantes: [soak-b (yo)]
+Assertion 'pa_close(fds[0]) == 0' failed at ../src/pulsecore/core-util.c:2713, function pa_close_pipe(). Aborting.
+exit=134
+# Fin: 2026-10-04T09:50:16-06:00
+
+=== cola del log de soak-a (el grep la omitió por contener bytes no imprimibles; aquí con cat -v)
+XIO:  fatal IO error 0 (Success) on X server "^AM-=^LM-"M-#y"^M
+      after 8 requests (8 known processed) with 0 events remaining.^M
+exit=1
+
+=== servidor LiveKit (UTC): estadísticas RTP de audio de la sesión
+2026-10-04T15:49:55.008Z soak-a TR_AMQrRVeq6xH5am upstream dur=10m29.24458218s paquetes=19610 perdidos=0 jitter=81.68662428547746 maxJitter=162.55478383579612
+2026-10-04T15:49:55.152Z soak-b TR_AM6ABCVnQnfoQF upstream dur=10m29.271830752s paquetes=19873 perdidos=0 jitter=98.8045163319086 maxJitter=182.7362402587274
+2026-10-04T15:49:55.209Z soak-b TR_AMQrRVeq6xH5am downstream dur=10m29.105863996s paquetes=19604 perdidos=0 jitter=99.96950114912143 maxJitter=165.45613683498686
+2026-10-04T15:49:55.214Z soak-a TR_AM6ABCVnQnfoQF downstream dur=10m29.231384956s paquetes=19873 perdidos=0 jitter=105.33169011153144 maxJitter=187.57727950476274
+
+=== LECTURA (2026-10-04)
+- Durante los 10 min 29 s: sin desconexiones ni reconexiones en ninguno de los dos clientes; 0 paquetes perdidos
+  en los 4 flujos (~19 600-19 900 paquetes cada uno).
+- Memoria: RSS 188 516 -> 189 484 KiB (soak-a) y 187 236 -> 188 028 KiB (soak-b), es decir +~1 MiB en 10 min;
+  heap usado tras GC forzado estable en ~12 258 KiB; hilos 56/54 -> 52. Sin fuga evidente.
+  Nota: el muestreo fuerza un GC cada 30 s (jcmd GC.run), lo que no es el uso normal.
+- FALLO AL SALIR, en los dos procesos, después de los 10 min (ambos llaman a disconnect() casi a la vez):
+    soak-b: "Assertion 'pa_close(fds[0]) == 0' failed at ../src/pulsecore/core-util.c:2713, function
+            pa_close_pipe(). Aborting."  -> exit=134 (SIGABRT, core dumped)
+    soak-a: "XIO:  fatal IO error 0 (Success) on X server <bytes basura>" -> exit=1
+  Los dos mensajes son de código nativo (cliente de PulseAudio y Xlib) al encontrarse con descriptores de archivo
+  ya cerrados o reutilizados durante el cierre. No hay hs_err ni excepción Java.
+- Repetición corta inmediata (`bash tools/soak.sh 45`, mismo guion): exit=0 en los dos. NO reproducido en corto.
+  Las salidas anteriores del día (HeadlessCheck de 8-30 s y la ventana JavaFX) también fueron limpias.
+- Sin determinar: si depende de la duración de la sesión o de los ~20 adjuntos de jcmd por proceso.

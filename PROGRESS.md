@@ -46,8 +46,30 @@
     nivel2-cliente-javafx-1-20261004-092228.txt, nivel2-servidor-prueba-audible-20261004.txt.
     También funcionó Salir -> Conectar en la misma ventana y el mute se reflejó en ambos sentidos (adelanto de 3c).
   - REPORT.md rellenado hasta el Nivel 2 (versiones, tabla, sección 4.3, tamaño: 41 JARs, ~37,6 MiB).
-- Siguiente: Nivel 3 (interoperabilidad y robustez). Pendiente del OK del usuario para empezar.
-  Incluir en 3d la reproducción de la expulsión por identidad duplicada.
+- Nivel 3: EJECUTADO (2026-10-04), con varios apartados parciales. Con auriculares y micrófono de headset.
+  - 3a, 3b: PASAN (prueba audible del Nivel 2 con un micrófono silenciado cada vez).
+  - 3c: PASA. El usuario confirma que el icono de silencio cambia en ambos lados.
+  - 3d: PARCIAL. Entradas/salidas bien. Identidad duplicada reproducida: el expulsado solo recibe onReconnecting,
+    nunca onDisconnected, y queda colgado. evidence/nivel3d-entradas-salidas-identidad-duplicada-20261004.txt
+  - 3e: PARCIAL / NO CONCLUYENTE. El comando de iptables solo bloqueó IPv4; los medios siguieron por IPv6 (0 pérdidas).
+    Solo se demostró que la señalización de JavaFX aguanta ~10 s de bloqueo. Usuario: "se recupero solo".
+    evidence/nivel3e-corte-red-20261004.txt. El README trae el comando corregido (iptables + ip6tables), SIN PROBAR.
+  - 3f: PARCIAL. 10 min 29 s sin caídas, 0 pérdidas, memoria plana; al salir los dos procesos cayeron en nativo
+    (pa_close assertion / XIO fatal). No reproducido en 45 s. evidence/nivel3f-10min-memoria-20261004.txt
+  - 3g: PARCIAL. ~92 ms JavaFX -> navegador (tools/latency.sh), rtt 1-2 ms. Falta navegador -> JavaFX.
+    evidence/nivel3g-retardo-javafx-navegador-20261004.txt
+  - 3h: PARCIAL. javafx-1 + javafx-2 + navegador 64 s, 0 pérdidas; sin confirmación audible del usuario.
+    evidence/nivel3h-dos-javafx-navegador-20261004.txt
+  - Extra: natives de Windows y macOS disponibles en Maven Central, sin probar. evidence/extra-natives-windows-macos-20261004.txt
+  - Observaciones literales del usuario: evidence/nivel3-observacion-usuario-20261004.txt
+  - El log de javafx-1 de la sesión de las 09:53 no quedó guardado (167 bytes); causa sin determinar.
+- REPORT.md COMPLETO (resumen, versiones, tabla, problemas, Linux, tamaño, riesgos, recomendación: A condicionada
+  a adoptar el SDK como código propio; alternativa B con navegador del sistema).
+- Pendiente opcional si el usuario quiere cerrar los parciales: repetir 3e con el comando corregido, 3f sin jcmd,
+  3g en sentido navegador -> JavaFX, confirmar 3h al oído, eco/ruido.
+- Pregunta abierta del usuario: compartir un .exe con alguien lejos para probar. No existe: no hay empaquetado
+  ni prueba en Windows, y el servidor solo escucha en esta máquina/red local en modo --dev. Sería trabajo nuevo
+  (fuera del PoC): jpackage en Windows + servidor accesible desde internet.
 
 ## Decisiones (versiones a fijar, tras OK)
 - Java 21 (source /media/.../env.sh o export JAVA_HOME), Maven 3.8.7
@@ -56,7 +78,4 @@
 - SDK Trirrin v0.1.4 (JitPack), io.livekit:livekit-server 0.16.0, JavaFX 21.0.8
 
 ## Necesita el usuario
-- Auriculares: el sistema no detecta el conector (puerto "not available"). Conviene arreglarlo antes del
-  Nivel 3 (navegador + JavaFX en la misma máquina se acoplan por altavoces).
-- Posibles apt-get de librerías nativas (sudo): lo hará el usuario.
-- Nivel 3e: cortar la red 10 s requiere sudo; el comando se le dará al usuario para que lo ejecute.
+- Nada bloqueante. Decidir si se cierran los parciales del Nivel 3 o se da el PoC por terminado.

@@ -1,0 +1,26 @@
+Extra - disponibilidad de natives de webrtc-java 0.18.0 y JavaFX 21.0.8 en Maven Central (2026-10-04T09:41:44-06:00)
+Solo disponibilidad (HTTP HEAD). No se probó ejecutar en Windows ni macOS.
+
+webrtc-java-0.18.0-windows-x86_64.jar -> HTTP/bytes: 200 8716041
+webrtc-java-0.18.0-windows-aarch64.jar -> HTTP/bytes: 200 7401939
+webrtc-java-0.18.0-macos-x86_64.jar -> HTTP/bytes: 200 7727540
+webrtc-java-0.18.0-macos-aarch64.jar -> HTTP/bytes: 200 6635837
+webrtc-java-0.18.0-linux-x86_64.jar -> HTTP/bytes: 200 9823309
+webrtc-java-0.18.0-linux-aarch64.jar -> HTTP/bytes: 200 8778649
+webrtc-java-0.18.0-linux-aarch32.jar -> HTTP/bytes: 200 7506848
+
+javafx-graphics-21.0.8-win.jar -> HTTP/bytes: 200 5942320
+javafx-graphics-21.0.8-mac.jar -> HTTP/bytes: 200 4879444
+javafx-graphics-21.0.8-mac-aarch64.jar -> HTTP/bytes: 200 4840137
+javafx-graphics-21.0.8-linux.jar -> HTTP/bytes: 200 4697444
+javafx-graphics-21.0.8-linux-aarch64.jar -> HTTP/bytes: 404 
+javafx-controls-21.0.8-win.jar -> HTTP/bytes: 200 2585171
+javafx-controls-21.0.8-mac.jar -> HTTP/bytes: 200 2585182
+javafx-controls-21.0.8-mac-aarch64.jar -> HTTP/bytes: 200 2585197
+javafx-controls-21.0.8-linux.jar -> HTTP/bytes: 200 2585211
+javafx-controls-21.0.8-linux-aarch64.jar -> HTTP/bytes: 404 
+javafx-base-21.0.8-win.jar -> HTTP/bytes: 200 753858
+javafx-base-21.0.8-mac.jar -> HTTP/bytes: 200 753858
+javafx-base-21.0.8-mac-aarch64.jar -> HTTP/bytes: 200 753865
+javafx-base-21.0.8-linux.jar -> HTTP/bytes: 200 753865
+javafx-base-21.0.8-linux-aarch64.jar -> HTTP/bytes: 404 

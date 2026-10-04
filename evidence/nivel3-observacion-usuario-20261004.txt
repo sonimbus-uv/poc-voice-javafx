@@ -1,0 +1,18 @@
+Nivel 3 - observaciones del usuario (2026-10-04)
+Contexto: ventana JavaFX (javafx-1) + meet.livekit.io (navegador), misma máquina, sala "poc", con auriculares.
+
+1) 3c - Pregunta: al silenciar un lado, ¿cambia el icono de silencio en el otro lado?
+   Respuesta literal del usuario: "si el icono cambia en ambos lados bien vamos a pasar con el 3g listo ya lo
+   silencie dejame el comando sudo para copiar y pegar"
+   Lo que deja establecido: el icono de silencio cambia en ambos lados (3c).
+   Lo que NO menciona: si con auriculares se oye en ambos sentidos (3a/3b) ni si hay eco o ruido.
+
+2) 3e y 3h - tras darle el comando de corte de red y pedir abrir la segunda ventana.
+   Respuesta literal del usuario: "se recupero solo, me pase a la segunda ventan, puedo compartirle un .exe a alguien
+   aunque este lejos para que haga las pruebas conmigo bueno, antes de cualquier cosa terminemos de documentar las cosas"
+   Lo que deja establecido: tras el corte, la sesión "se recuperó solo" (no especifica si la ventana JavaFX, el
+   navegador o ambos, ni qué mostró el log). Abrió la segunda ventana (javafx-2).
+   Lo que NO menciona: si con las dos ventanas JavaFX y el navegador se oían los tres; si con auriculares hay eco
+   o ruido; qué se vio durante el corte.
+   Contraste técnico: evidence/nivel3e-corte-red-20261004.txt (el corte solo afectó a IPv4; no concluyente) y
+   evidence/nivel3h-dos-javafx-navegador-20261004.txt.

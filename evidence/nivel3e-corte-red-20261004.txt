@@ -1,0 +1,44 @@
+Nivel 3e - corte de red de 10 s (2026-10-04). RESULTADO: PARCIAL / NO CONCLUYENTE.
+
+Comando que ejecutó el usuario (dado por el asistente; bloquea 10 s los puertos de LiveKit con iptables = solo IPv4):
+  sudo sh -c 'for r in "udp --dport 7882" "udp --sport 7882" "tcp --dport 7880" "tcp --sport 7880"; do iptables -I INPUT -p $r -j DROP; done; sleep 10; for r in ...; do iptables -D INPUT -p $r -j DROP; done; echo red restaurada'
+Respuesta literal del usuario: "se recupero solo" (ver evidence/nivel3-observacion-usuario-20261004.txt).
+
+## Lo que registró el servidor (UTC)
+- Señalización de javafx-1 (pings cada 10 s por WebSocket IPv4): el ping emitido a las 15:59:28.939 llegó a las
+  15:59:30.727 (1,8 s tarde); el anterior llegó bien a las 15:59:18.978. Compatible con un bloqueo TCP de ~10 s
+  entre ~15:59:20 y ~15:59:30. Huecos detectados entre pings de javafx-1 (inicio -> fin, segundos):
+    15:59:18.978000 -> 15:59:30.727000 11.749
+    15:59:30.727000 -> 15:59:38.940000 8.213
+- Señalización del navegador (pings cada 5 s): NINGUNO se retrasó durante esa ventana:
+    2026-10-04T15:59:18.989Z "pingReq": {"timestamp": 1791129558988, "rtt": 1}
+    2026-10-04T15:59:23.989Z "pingReq": {"timestamp": 1791129563988, "rtt": 2}
+    2026-10-04T15:59:28.990Z "pingReq": {"timestamp": 1791129568988, "rtt": 1}
+    2026-10-04T15:59:33.989Z "pingReq": {"timestamp": 1791129573988, "rtt": 2}
+    2026-10-04T15:59:38.989Z "pingReq": {"timestamp": 1791129578988, "rtt": 2}
+- Medios: javafx-1 mantuvo el mismo participantID toda la sesión (sin reconexión ni reingreso) y el servidor
+  contó 0 paquetes de audio perdidos en su pista de subida durante 8 min 57 s (incluye la ventana del corte):
+2026-10-04T16:02:36.933Z javafx-1 TR_AMV9x6xMRzWUSi upstream dur=8m57.404626794s esperados=13446 perdidos=0 jitter=84.72455721272024 maxJitter=173.3610413008837
+- Candidatos ICE seleccionados: cada participante tenía un transporte por IPv4 (192.168.100.8:7882) y otro por
+  IPv6 ([2806:2f0:7521:fed0::3]:7882):
+    "participant": "javafx-1"
+      [local][selected:1][trickle] udp4 host 192.168.100.8:7882 (resolved: 192.168.100.8:7882)
+      [local][selected:1][trickle] udp6 host [2806:2f0:7521:fed0::3]:7882 (resolved: [2806:2f0:7521:fed0::3]:7882)
+    "participant": "navegador"
+      [local][selected:1][trickle] udp4 host 192.168.100.8:7882 (resolved: 192.168.100.8:7882)
+      [local][selected:1][trickle] udp6 host [2806:2f0:7521:fed0::3]:7882 (resolved: [2806:2f0:7521:fed0::3]:7882)
+    "participant": "javafx-2"
+      [local][selected:1][trickle] udp4 host 192.168.100.8:7882 (resolved: 192.168.100.8:7882)
+      [local][selected:1][trickle] udp6 host [2806:2f0:7521:fed0::3]:7882 (resolved: [2806:2f0:7521:fed0::3]:7882)
+
+## Lectura
+- El corte NO fue total: iptables solo filtra IPv4 y esta máquina tiene IPv6. El navegador siguió con su señalización
+  intacta y el audio de subida de javafx-1 no perdió ni un paquete, así que al menos ese transporte iba por IPv6.
+- Lo único demostrado: la conexión de señalización (WebSocket) del cliente JavaFX soportó ~10 s de bloqueo y siguió
+  funcionando sin reconectar (TCP retransmitió). El servidor no cerró al participante.
+- NO demostrado: qué hace el cliente JavaFX ante una pérdida real de medios de 10 s (si reconecta o cómo falla).
+  El hallazgo del Nivel 3d apunta a un riesgo: cuando el servidor expulsa al cliente, el SDK se queda en
+  "onReconnecting" para siempre.
+- El log de la ventana javafx-1 de esta sesión no quedó guardado (evidence/nivel2-cliente-javafx-1-20261004-095318.txt
+  solo tiene 167 bytes, las dos líneas de arranque). Causa sin determinar. No se sabe qué mostró la ventana.
+- Para repetirlo bien hay que bloquear también IPv6 (mismas reglas con ip6tables) o cortar la interfaz.

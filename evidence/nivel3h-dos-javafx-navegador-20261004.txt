@@ -1,0 +1,34 @@
+Nivel 3h - dos ventanas JavaFX + un navegador a la vez (2026-10-04). Parte técnica.
+javafx-1, javafx-2 y navegador coincidieron en la sala poc de 16:01:32Z a 16:02:36Z (64 s).
+Log de la segunda ventana: evidence/nivel2-cliente-javafx-2-20261004-100125.txt (ve entrar a javafx-1 y a navegador,
+se suscribe al audio de ambos y publica el suyo). El log de javafx-1 de esta sesión no quedó guardado.
+
+## Servidor (INFO, UTC)
+2026-10-04T15:53:38.933Z	INFO	livekit	service/roommanager.go:433	starting RTC session	{"room": "poc", "roomID": "RM_brSDRfgX2vLu", "participant": "javafx-1", "participantID": "PA_tosWdi4cpWht", "remote"
+2026-10-04T15:53:39.489Z	INFO	livekit.pub	rtc/participant.go:2423	mediaTrack published	{"room": "poc", "roomID": "RM_brSDRfgX2vLu", "participant": "javafx-1", "participantID": "PA_tosWdi4cpWht", "remote
+2026-10-04T15:53:39.666Z	INFO	livekit	rtc/room.go:1284	participant active	{"room": "poc", "roomID": "RM_brSDRfgX2vLu", "participant": "javafx-1", "participantID": "PA_tosWdi4cpWht", "remote": false, "pu
+2026-10-04T15:56:08.969Z	INFO	livekit	service/roommanager.go:433	starting RTC session	{"room": "poc", "roomID": "RM_brSDRfgX2vLu", "participant": "navegador", "participantID": "PA_x6eLwqHuhWoA", "remote
+2026-10-04T15:56:09.118Z	INFO	livekit	rtc/room.go:1284	participant active	{"room": "poc", "roomID": "RM_brSDRfgX2vLu", "participant": "navegador", "participantID": "PA_x6eLwqHuhWoA", "remote": false, "p
+2026-10-04T15:56:09.126Z	INFO	livekit.pub	rtc/participant.go:2423	mediaTrack published	{"room": "poc", "roomID": "RM_brSDRfgX2vLu", "participant": "navegador", "participantID": "PA_x6eLwqHuhWoA", "remot
+2026-10-04T16:01:32.266Z	INFO	livekit	service/roommanager.go:433	starting RTC session	{"room": "poc", "roomID": "RM_brSDRfgX2vLu", "participant": "javafx-2", "participantID": "PA_nyuohFVZsBvf", "remote"
+2026-10-04T16:01:32.905Z	INFO	livekit.pub	rtc/participant.go:2423	mediaTrack published	{"room": "poc", "roomID": "RM_brSDRfgX2vLu", "participant": "javafx-2", "participantID": "PA_nyuohFVZsBvf", "remote
+2026-10-04T16:01:33.043Z	INFO	livekit	rtc/room.go:1284	participant active	{"room": "poc", "roomID": "RM_brSDRfgX2vLu", "participant": "javafx-2", "participantID": "PA_nyuohFVZsBvf", "remote": false, "pu
+2026-10-04T16:02:36.937Z	INFO	livekit	rtc/participant.go:1513	participant closing	{"room": "poc", "roomID": "RM_brSDRfgX2vLu", "participant": "javafx-1", "participantID": "PA_tosWdi4cpWht", "remote": fa
+2026-10-04T16:02:40.188Z	INFO	livekit	rtc/participant.go:1513	participant closing	{"room": "poc", "roomID": "RM_brSDRfgX2vLu", "participant": "javafx-2", "participantID": "PA_nyuohFVZsBvf", "remote": fa
+2026-10-04T16:02:52.551Z	INFO	livekit	rtc/participant.go:1513	participant closing	{"room": "poc", "roomID": "RM_brSDRfgX2vLu", "participant": "navegador", "participantID": "PA_x6eLwqHuhWoA", "remote": f
+
+## Estadísticas RTP de audio al cerrar (cada pista reenviada a los otros dos participantes)
+2026-10-04T16:02:36.933Z javafx-1 TR_AMV9x6xMRzWUSi upstream dur=8m57.404626794s esperados=13446 perdidos=0 jitter=84.72455721272024 maxJitter=173.3610413008837
+2026-10-04T16:02:37.134Z navegador TR_AMV9x6xMRzWUSi downstream dur=6m27.895593004s esperados=7642 perdidos=0 jitter=93.35679446868114 maxJitter=152.37995536399987
+2026-10-04T16:02:37.134Z javafx-2 TR_AMV9x6xMRzWUSi downstream dur=1m3.993830362s esperados=1089 perdidos=0 jitter=89.60052732130956 maxJitter=144.04701582209384
+2026-10-04T16:02:37.139Z javafx-1 TR_AMKkzgoJAMMxJa downstream dur=1m4.148468232s esperados=1069 perdidos=0 jitter=81.50730416986939 maxJitter=160.47324837392912
+2026-10-04T16:02:37.139Z javafx-1 TR_AMvWubfyBxuLb9 downstream dur=6m27.957703099s esperados=1749 perdidos=0 jitter=22.71788947694627 maxJitter=8418.58904860771
+2026-10-04T16:02:40.185Z javafx-2 TR_AMKkzgoJAMMxJa upstream dur=1m7.195145781s esperados=1074 perdidos=0 jitter=68.42316163398833 maxJitter=160.47324837392912
+2026-10-04T16:02:40.386Z navegador TR_AMKkzgoJAMMxJa downstream dur=1m7.394977962s esperados=1085 perdidos=0 jitter=80.9032785694388 maxJitter=160.53574837392912
+2026-10-04T16:02:52.552Z navegador TR_AMvWubfyBxuLb9 upstream dur=6m43.407161457s esperados=3252 perdidos=0 jitter=177.52902641080286 maxJitter=8373.144527628305
+
+## Lectura
+- Los tres publicaron audio y cada uno quedó suscrito a los otros dos; 0 paquetes perdidos.
+- Sin expulsiones ni caídas durante la coincidencia. javafx-1 salió con Salir (CLIENT_REQUEST_LEAVE).
+- El usuario no informó de cómo se oía con los tres a la vez: la parte audible NO está confirmada.
+- Las dos ventanas comparten el mismo micrófono físico (misma máquina).
