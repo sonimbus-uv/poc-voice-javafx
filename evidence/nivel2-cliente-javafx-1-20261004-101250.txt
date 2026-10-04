@@ -1,0 +1,59 @@
+Oct 04, 2026 10:12:53 AM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @220f4753'
+[10:13:12.856] Token generado para identidad=javafx-1 sala=poc
+[10:13:12.870] Conectando a ws://localhost:7880 ...
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+[10:13:13.336] evento: onConnected
+[10:13:13.337] Unido a la sala: poc (sid=RM_TyjTR4k7e7Ve)
+[10:13:13.347] Dispositivos de entrada vistos por el SDK: 1
+[10:13:13.387] Micrófono publicado (cid=audio-198f8c96-9224-4b5b-9fe5-46ba1023319c), oferta del publisher forzada
+[10:13:13.460] evento: pista publicada TR_AM9cer6U2z7GAa (AUDIO) por javafx-1
+[10:13:40.298] evento: pista publicada TR_AMW24iSFaPLyQA (AUDIO) por navegador
+[10:13:40.303] evento: entra navegador
+[10:13:40.316] evento: suscrito a TR_AMW24iSFaPLyQA (AUDIO) de navegador
+[10:13:40.414] evento: pista publicada TR_VCQCHaQP6FdPLf (VIDEO) por navegador
+[10:13:40.570] evento: suscrito a TR_VCQCHaQP6FdPLf (VIDEO) de navegador
+[10:13:42.739] evento: navegador silenció TR_VCQCHaQP6FdPLf
+[10:13:51.641] Micrófono silenciado
+[10:13:51.643] evento: javafx-1 silenció TR_AM9cer6U2z7GAa
+[10:13:58.986] evento: navegador silenció TR_AMW24iSFaPLyQA
+[10:13:59.837] evento: navegador reactivó TR_AMW24iSFaPLyQA
+[10:14:06.962] Micrófono reactivado
+[10:14:06.965] evento: javafx-1 reactivó TR_AM9cer6U2z7GAa
+[10:14:07.907] Micrófono silenciado
+[10:14:07.910] evento: javafx-1 silenció TR_AM9cer6U2z7GAa
+[10:14:18.457] evento: navegador silenció TR_AMW24iSFaPLyQA
+[10:14:19.494] evento: navegador reactivó TR_AMW24iSFaPLyQA
+[10:16:48.070] Micrófono reactivado
+[10:16:48.072] evento: javafx-1 reactivó TR_AM9cer6U2z7GAa
+[10:18:20.177] evento: pista publicada TR_AM26RKBLteyxxW (AUDIO) por javafx-2
+[10:18:20.178] evento: entra javafx-2
+[10:18:20.203] evento: suscrito a TR_AM26RKBLteyxxW (AUDIO) de javafx-2
+[10:18:33.816] evento: javafx-2 silenció TR_AM26RKBLteyxxW
+[10:18:42.342] Micrófono silenciado
+[10:18:42.344] evento: javafx-1 silenció TR_AM9cer6U2z7GAa
+[10:18:59.313] evento: javafx-2 reactivó TR_AM26RKBLteyxxW
+[10:19:03.082] evento: navegador silenció TR_AMW24iSFaPLyQA
+[10:19:09.647] evento: navegador reactivó TR_AMW24iSFaPLyQA
+[10:19:20.053] Micrófono reactivado
+[10:19:20.055] evento: javafx-1 reactivó TR_AM9cer6U2z7GAa
+[10:20:42.134] evento: sale navegador
+[10:20:46.320] evento: sale javafx-2
+[10:20:49.409] evento: pista retirada TR_AM9cer6U2z7GAa por javafx-1
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x000071a3c6604651, pid=30909, tid=31009
+#
+# JRE version: OpenJDK Runtime Environment (21.0.12.1+1) (build 21.0.12.1+1-1-24.04.4-Ubuntu)
+# Java VM: OpenJDK 64-Bit Server VM (21.0.12.1+1-1-24.04.4-Ubuntu, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, linux-amd64)
+# Problematic frame:
+# C  [libX11.so.6+0x46651]  _XReply+0x111
+#
+# Core dump will be written. Default location: Determined by the following: "/usr/share/apport/apport -p%p -s%s -c%c -d%d -P%P -u%u -g%g -F%F -- %E" (alternatively, falling back to /media/gurov/Universidad/Septimo Semestre/Discord /poc-voice-javafx/core.30909)
+#
+# An error report file with more information is saved as:
+# /media/gurov/Universidad/Septimo Semestre/Discord /poc-voice-javafx/hs_err_pid30909.log
+corrupted double-linked list

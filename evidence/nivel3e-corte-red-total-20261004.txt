@@ -1,0 +1,85 @@
+Nivel 3e (repetición) - corte de red de ~13 s en IPv4 e IPv6 (2026-10-04, 10:17 local = 16:17Z).
+RESULTADO: PASA para un corte de ~13 s (los medios se recuperan solos, sin reconexión de señal ni reingreso).
+
+Participantes en ese momento: javafx-1 (ventana JavaFX) y navegador (meet.livekit.io). Misma máquina.
+Comando: el corte lo ejecutó el usuario con sudo. Se le había dado tools/cut-network.sh (iptables + ip6tables,
+puertos 7880/TCP, 7881/TCP, 7882/UDP). No quedó guardada la salida de ese comando: la hora y la duración del
+corte se deducen del log del servidor, no del script.
+Observación literal del usuario: ver evidence/nivel3-observacion-usuario-20261004.txt (3).
+
+## Señalización: pings recibidos por el servidor (UTC). javafx-1 emite cada 10 s, navegador cada 5 s.
+  2026-10-04T16:16:50.154Z navegador {"pingReq": {"timestamp": 1791130610152, "rtt": 2}}
+  2026-10-04T16:16:52.950Z javafx-1 {"pingReq": {"timestamp": 1791130612911}}
+  2026-10-04T16:16:55.154Z navegador {"pingReq": {"timestamp": 1791130615152, "rtt": 2}}
+  2026-10-04T16:17:00.154Z navegador {"pingReq": {"timestamp": 1791130620152, "rtt": 2}}
+  2026-10-04T16:17:02.952Z javafx-1 {"pingReq": {"timestamp": 1791130622911}}
+  2026-10-04T16:17:05.153Z navegador {"pingReq": {"timestamp": 1791130625152, "rtt": 2}}
+  2026-10-04T16:17:10.153Z navegador {"pingReq": {"timestamp": 1791130630152, "rtt": 2}}
+  2026-10-04T16:17:12.951Z javafx-1 {"pingReq": {"timestamp": 1791130632912}}
+  2026-10-04T16:17:15.153Z navegador {"pingReq": {"timestamp": 1791130635152, "rtt": 2}}
+  2026-10-04T16:17:20.154Z navegador {"pingReq": {"timestamp": 1791130640152, "rtt": 1}}
+  2026-10-04T16:17:37.190Z javafx-1 {"pingReq": {"timestamp": 1791130642912}}
+  2026-10-04T16:17:37.191Z javafx-1 {"pingReq": {"timestamp": 1791130652911}}
+  2026-10-04T16:17:38.727Z navegador {"pingReq": {"timestamp": 1791130645152, "rtt": 2}}
+  2026-10-04T16:17:38.727Z navegador {"pingReq": {"timestamp": 1791130650153, "rtt": 2}}
+  2026-10-04T16:17:38.727Z navegador {"pingReq": {"timestamp": 1791130655152, "rtt": 2}}
+  2026-10-04T16:17:40.154Z navegador {"pingReq": {"timestamp": 1791130660152, "rtt": 3575}}
+  2026-10-04T16:17:42.952Z javafx-1 {"pingReq": {"timestamp": 1791130662911}}
+  2026-10-04T16:17:45.153Z navegador {"pingReq": {"timestamp": 1791130665152, "rtt": 2}}
+  2026-10-04T16:17:50.153Z navegador {"pingReq": {"timestamp": 1791130670152, "rtt": 2}}
+  2026-10-04T16:17:52.951Z javafx-1 {"pingReq": {"timestamp": 1791130672911}}
+  2026-10-04T16:17:55.153Z navegador {"pingReq": {"timestamp": 1791130675152, "rtt": 1}}
+Lectura: el último ping a tiempo es el de 16:17:20.154 (navegador). Los pings emitidos a las 16:17:22.9 y
+16:17:32.9 (javafx-1) y a las 16:17:25/30/35 (navegador) llegaron juntos a las 16:17:37.2-38.7. Esta vez el
+navegador TAMBIÉN quedó bloqueado (en la prueba anterior no): el corte afectó a IPv4 e IPv6.
+Ventana del corte: entre ~16:17:20-22 y ~16:17:34-37, es decir unos 12-15 s.
+
+## Medios: estado ICE y calidad de conexión según el servidor (UTC)
+  2026-10-04T16:17:32.433Z navegador ice connection state change: "transport": "PUBLISHER", "state": "disconnected"
+  2026-10-04T16:17:32.557Z navegador ice connection state change: "transport": "SUBSCRIBER", "state": "disconnected"
+  2026-10-04T16:17:32.907Z javafx-1 connection quality changed: "from": "EXCELLENT", "to": "LOST"
+  2026-10-04T16:17:32.907Z navegador connection quality changed: "from": "EXCELLENT", "to": "LOST"
+  2026-10-04T16:17:33.594Z javafx-1 ice connection state change: "transport": "PUBLISHER", "state": "disconnected"
+  2026-10-04T16:17:34.434Z navegador ice connection state change: "transport": "PUBLISHER", "state": "connected"
+  2026-10-04T16:17:34.558Z navegador ice connection state change: "transport": "SUBSCRIBER", "state": "connected"
+  2026-10-04T16:17:35.595Z javafx-1 ice connection state change: "transport": "PUBLISHER", "state": "connected"
+  2026-10-04T16:17:37.907Z javafx-1 connection quality changed: "from": "LOST", "to": "POOR"
+  2026-10-04T16:17:37.907Z navegador connection quality changed: "from": "LOST", "to": "POOR"
+  2026-10-04T16:17:42.906Z javafx-1 connection quality changed: "from": "POOR", "to": "GOOD"
+  2026-10-04T16:17:42.906Z navegador connection quality changed: "from": "POOR", "to": "GOOD"
+  2026-10-04T16:17:52.906Z javafx-1 connection quality changed: "from": "GOOD", "to": "EXCELLENT"
+  2026-10-04T16:17:52.906Z navegador connection quality changed: "from": "GOOD", "to": "EXCELLENT"
+Lectura: el servidor marcó a ambos como LOST y los transportes ICE pasaron a "disconnected"; 2 s después volvieron
+a "connected" sin ICE restart ni nueva sesión. javafx-1 conservó el mismo participantID (PA_PBUUHFmkCkZZ) y la
+misma pista (TR_AM9cer6U2z7GAa) hasta que pulsó Salir a las 16:20:49. No hubo ningún "starting RTC session" nuevo
+ni "Reconnect": true para javafx-1 en toda la sesión.
+
+## Pérdidas acumuladas al cerrar las pistas de audio (toda la sesión, UTC)
+  2026-10-04T16:20:42.133Z recibe/envia=navegador pista=TR_AMW24iSFaPLyQA esperados=8102 perdidos=209 pct=2.57961 huecos=[101:1]
+  2026-10-04T16:20:42.333Z recibe/envia=navegador pista=TR_AM9cer6U2z7GAa esperados=3247 perdidos=171 pct=5.2664 huecos=[101:1]
+  2026-10-04T16:20:42.333Z recibe/envia=javafx-2 pista=TR_AMW24iSFaPLyQA esperados=2383 perdidos=0 pct=0 huecos=-
+  2026-10-04T16:20:42.333Z recibe/envia=navegador pista=TR_AM26RKBLteyxxW esperados=4517 perdidos=0 pct=0 huecos=-
+  2026-10-04T16:20:42.333Z recibe/envia=javafx-1 pista=TR_AMW24iSFaPLyQA esperados=8215 perdidos=209 pct=2.5441267 huecos=[101:1]
+  2026-10-04T16:20:46.316Z recibe/envia=javafx-2 pista=TR_AM26RKBLteyxxW esperados=4751 perdidos=0 pct=0 huecos=-
+  2026-10-04T16:20:46.518Z recibe/envia=javafx-1 pista=TR_AM26RKBLteyxxW esperados=4681 perdidos=0 pct=0 huecos=-
+  2026-10-04T16:20:46.519Z recibe/envia=javafx-2 pista=TR_AM9cer6U2z7GAa esperados=1585 perdidos=0 pct=0 huecos=-
+  2026-10-04T16:20:49.407Z recibe/envia=javafx-1 pista=TR_AM9cer6U2z7GAa esperados=4483 perdidos=171 pct=3.81441 huecos=[101:1]
+Lectura: la pista de subida de javafx-1 (TR_AM9cer6U2z7GAa) perdió 171 paquetes en UN solo hueco, y la del
+navegador (TR_AMW24iSFaPLyQA) 209 en UN solo hueco: es el corte. Fuera de él, 0 pérdidas. La pista de javafx-2
+(entró después del corte) no perdió nada.
+
+## Lo que vio el cliente JavaFX (evidence/nivel2-cliente-javafx-1-20261004-101250.txt, hora local)
+  [10:16:48.072] evento: javafx-1 reactivó TR_AM9cer6U2z7GAa
+  [10:18:20.177] evento: pista publicada TR_AM26RKBLteyxxW (AUDIO) por javafx-2
+Entre esas dos líneas (el corte fue a las 10:17:20-10:17:37) el cliente NO registró ningún evento: ni
+onReconnecting, ni onDisconnected, ni aviso de calidad. Siguió funcionando después (recibió la entrada de javafx-2
+y los cambios de silencio).
+
+## Qué demuestra y qué no
+- Demuestra: ante un corte total de ~13 s, el cliente JavaFX (webrtc-java + SDK Trirrin) recupera audio y
+  señalización solo, sin intervención y sin perder la sesión. El navegador se comportó igual.
+- No demuestra: qué pasa con cortes más largos. El servidor cierra al participante si la señalización o ICE
+  no vuelven a tiempo (no se midió ese umbral), y ahí aplica el hallazgo del Nivel 3d: el SDK no notifica
+  la desconexión iniciada por el servidor.
+- Limitación de UX: el SDK no informa a la aplicación de que la conexión se degradó; durante el corte la ventana
+  no mostró nada.

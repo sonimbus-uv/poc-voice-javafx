@@ -16,3 +16,21 @@ Contexto: ventana JavaFX (javafx-1) + meet.livekit.io (navegador), misma máquin
    o ruido; qué se vio durante el corte.
    Contraste técnico: evidence/nivel3e-corte-red-20261004.txt (el corte solo afectó a IPv4; no concluyente) y
    evidence/nivel3h-dos-javafx-navegador-20261004.txt.
+
+3) 3e (repetición), 3g (sentido inverso) y 3h (repetición) - sesión de las 10:13-10:20, tras pedirle revisar.
+   Respuesta literal del usuario: "Bien, ya hicimos las pruebas abriendo las 2 sesiones extra del live kit, despues la
+   desconexion ya quedo entonces y se conecta sin necesidad de volver a conectar, puedes revisar los logs  y continuemos"
+   Lo que deja establecido: abrió las dos sesiones adicionales (3h) y, tras el corte de red (3e), la conexión
+   volvió sola sin tener que pulsar Conectar.
+   Lo que NO menciona: si con los tres participantes se oían todos entre sí (3h audible); que la ventana javafx-1
+   se cerró con error al pulsar Salir; eco o ruido.
+   Contraste técnico: evidence/nivel3e-corte-red-total-20261004.txt, nivel3h-dos-javafx-navegador-2-20261004.txt,
+   nivel3f-caida-al-salir-ventana-20261004.txt.
+
+4) 3h audible y salida de javafx-1 - preguntas: "¿se oían los tres entre sí?" y "al pulsar Salir en javafx-1,
+   ¿la ventana se cerró sola o viste algún error?"
+   Respuesta literal del usuario: "si se oian las 3, me desconecte de la llamada y tuve que cerrar de manera manual
+   la ventana"
+   Lo que deja establecido: con dos ventanas JavaFX y el navegador se oían los tres (3h audible). En javafx-1 pulsó
+   Salir y después tuvo que cerrar la ventana a mano.
+   Lo que NO menciona: si la ventana quedó congelada o solo abierta; si vio algún mensaje de error; eco o ruido.

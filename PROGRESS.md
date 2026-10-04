@@ -63,10 +63,28 @@
   - Extra: natives de Windows y macOS disponibles en Maven Central, sin probar. evidence/extra-natives-windows-macos-20261004.txt
   - Observaciones literales del usuario: evidence/nivel3-observacion-usuario-20261004.txt
   - El log de javafx-1 de la sesión de las 09:53 no quedó guardado (167 bytes); causa sin determinar.
-- REPORT.md COMPLETO (resumen, versiones, tabla, problemas, Linux, tamaño, riesgos, recomendación: A condicionada
-  a adoptar el SDK como código propio; alternativa B con navegador del sistema).
-- Pendiente opcional si el usuario quiere cerrar los parciales: repetir 3e con el comando corregido, 3f sin jcmd,
-  3g en sentido navegador -> JavaFX, confirmar 3h al oído, eco/ruido.
+- Cierre de parciales del Nivel 3 (2026-10-04, 10:13-11:10):
+  - 3e: PASA para un corte total de ~13 s (IPv4 + IPv6, tools/cut-network.sh). ICE disconnected -> connected solo,
+    mismo participante y pista, un único hueco de 171 paquetes. La ventana no registró ningún evento durante el
+    corte. Cortes largos sin probar. evidence/nivel3e-corte-red-total-20261004.txt
+  - 3g: PASA en la misma máquina. 92 ms JavaFX -> navegador, 159 ms navegador -> JavaFX.
+    evidence/nivel3g-retardo-navegador-javafx-20261004.txt
+  - 3h: PASA. Segunda corrida de 2 min 22 s, 0 pérdidas; el usuario confirma "si se oian las 3".
+    evidence/nivel3h-dos-javafx-navegador-2-20261004.txt, nivel3-observacion-usuario-20261004.txt (3) y (4)
+  - 3f: PARCIAL y es el MAYOR RIESGO ABIERTO. Repetido sin jcmd: 10 min 29 s, memoria plana, 0 pérdidas, pero al
+    salir soak-a abortó ("Pure virtual function called!") y soak-b quedó colgado en
+    AudioDeviceModuleBase.disposeInternal (volcado de hilos guardado). Además la ventana javafx-1 (7 min 36 s) no
+    terminó de desconectar, el usuario la cerró a mano y hubo SIGSEGV en libX11. 3 de 3 sesiones largas fallan al
+    salir; jcmd descartado como causa. evidence/nivel3f-salida-sin-jcmd-20261004.txt,
+    nivel3f-caida-al-salir-ventana-20261004.txt
+  - 3d sigue PARCIAL (cliente expulsado queda colgado), sin cambios.
+  - Incidencia NTFS: evidence/nivel3f-10min-sin-jcmd-20261004.txt quedó bloqueado en el kernel (procesos en
+    estado D, pids 33271, 33666, 35929). NO escribir ni borrar ese archivo hasta reiniciar; no está en git.
+    El bucle de muestreo de tools/soak.sh murió por eso (exit 139); el script en sí no se cambió más.
+- REPORT.md COMPLETO y actualizado (recomendación: A con DOS condiciones: adoptar el SDK como código propio y
+  resolver el fallo de cierre tras sesiones largas, sección 4.4.2; si no, B con navegador del sistema).
+- Pendiente opcional: repetir 10 min con webrtc-java solo (Nivel 1) para saber si el fallo de cierre es del SDK o
+  de la biblioteca nativa; cortes de red largos; eco/ruido.
 - Pregunta abierta del usuario: compartir un .exe con alguien lejos para probar. No existe: no hay empaquetado
   ni prueba en Windows, y el servidor solo escucha en esta máquina/red local en modo --dev. Sería trabajo nuevo
   (fuera del PoC): jpackage en Windows + servidor accesible desde internet.
@@ -78,4 +96,6 @@
 - SDK Trirrin v0.1.4 (JitPack), io.livekit:livekit-server 0.16.0, JavaFX 21.0.8
 
 ## Necesita el usuario
-- Nada bloqueante. Decidir si se cierran los parciales del Nivel 3 o se da el PoC por terminado.
+- Reiniciar cuando pueda (libera el archivo bloqueado por ntfs3) y después borrar
+  evidence/nivel3f-10min-sin-jcmd-20261004.txt.
+- Decidir si se investiga el fallo de cierre (prueba de 10 min con webrtc-java solo) o se da el PoC por terminado.
