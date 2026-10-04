@@ -1,0 +1,41 @@
+# Nivel 2 - prueba sin ventana, 2a corrida (oferta forzada + orden de dispose corregido). 2026-10-04T08:35:44-06:00
+[08:35:48.790] Token generado para identidad=java-headless sala=poc
+[08:35:48.810] Conectando a ws://localhost:7880 ...
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+[08:35:49.274] evento: onConnected
+[08:35:49.275] Unido a la sala: poc (sid=RM_e9uNs8odsQuV)
+[08:35:49.275] estado: CONECTADO
+[08:35:49.276] participantes: [java-headless (yo)]
+[08:35:49.283] Dispositivos de entrada vistos por el SDK: 1
+[08:35:49.311] Micrófono publicado (cid=audio-f6985361-56a5-4ab5-8320-5b7696f83ffb), oferta del publisher forzada
+[08:35:49.358] evento: pista publicada TR_AMK2ECkSt368vg (AUDIO) por java-headless
+[08:35:49.358] participantes: [java-headless (yo)]
+[08:36:00.841] evento: pista retirada TR_AMK2ECkSt368vg por java-headless
+[08:36:00.847] evento: onDisconnected motivo=CLIENT_INITIATED
+[08:36:00.848] estado: DESCONECTADO
+[08:36:00.848] participantes: []
+[08:36:00.849] estado: DESCONECTADO
+[08:36:00.849] Desconectado.
+# exit=0
+
+# servidor: peticiones recibidas del cliente (docker compose logs, conteo por tipo)
+      1 "request": {"addTrack"
+      1 "request": {"leave"
+      1 "request": {"pingReq"
+      6 "request": {"trickle"
+# servidor: lineas clave del publisher
+livekit-1  | 2026-10-04T14:35:49.311Z	DEBUG	livekit.pub	rtc/participant_signal.go:289	sending track published	{"room": "poc", "roomID": "RM_e9uNs8odsQuV", "participant": "java-headless", "participantID": "PA_UiCUwHJjAveD", "remote": false, "cid": "audio-f69853
+livekit-1  | 2026-10-04T14:35:49.325Z	DEBUG	livekit.transport	rtc/transport.go:856	ice connection state change	{"room": "poc", "roomID": "RM_e9uNs8odsQuV", "participant": "java-headless", "participantID": "PA_UiCUwHJjAveD", "remote": false, "transport": "PUBLI
+livekit-1  | 2026-10-04T14:35:49.325Z	DEBUG	livekit.transport	rtc/transport.go:867	peer connection state change	{"room": "poc", "roomID": "RM_e9uNs8odsQuV", "participant": "java-headless", "participantID": "PA_UiCUwHJjAveD", "remote": false, "transport": "PUBL
+livekit-1  | 2026-10-04T14:35:49.325Z	DEBUG	livekit.transport	rtc/transport.go:825	ice gathering state change	{"room": "poc", "roomID": "RM_e9uNs8odsQuV", "participant": "java-headless", "participantID": "PA_UiCUwHJjAveD", "remote": false, "transport": "PUBLIS
+livekit-1  | 2026-10-04T14:35:49.341Z	DEBUG	livekit.transport	rtc/transport.go:856	ice connection state change	{"room": "poc", "roomID": "RM_e9uNs8odsQuV", "participant": "java-headless", "participantID": "PA_UiCUwHJjAveD", "remote": false, "transport": "PUBLI
+livekit-1  | 2026-10-04T14:35:49.344Z	DEBUG	livekit.transport	rtc/transport.go:867	peer connection state change	{"room": "poc", "roomID": "RM_e9uNs8odsQuV", "participant": "java-headless", "participantID": "PA_UiCUwHJjAveD", "remote": false, "transport": "PUBL
+livekit-1  | 2026-10-04T14:35:49.347Z	INFO	livekit.pub	rtc/participant.go:2423	mediaTrack published	{"room": "poc", "roomID": "RM_e9uNs8odsQuV", "participant": "java-headless", "participantID": "PA_UiCUwHJjAveD", "remote": false, "kind": "audio", "trackID": "T
+livekit-1  | 2026-10-04T14:35:49.347Z	DEBUG	livekit.pub	rtc/participant.go:3442	track published	{"room": "poc", "roomID": "RM_e9uNs8odsQuV", "participant": "java-headless", "participantID": "PA_UiCUwHJjAveD", "remote": false, "trackID": "TR_AMK2ECkSt368vg", "t
+livekit-1  | 2026-10-04T14:35:49.352Z	INFO	livekit	rtc/room.go:1284	participant active	{"room": "poc", "roomID": "RM_e9uNs8odsQuV", "participant": "java-headless", "participantID": "PA_UiCUwHJjAveD", "remote": false, "publisherCandidates": ["[local][trickle] u
+livekit-1  | 2026-10-04T14:35:49.397Z	DEBUG	livekit.transport	rtc/transport.go:825	ice gathering state change	{"room": "poc", "roomID": "RM_e9uNs8odsQuV", "participant": "java-headless", "participantID": "PA_UiCUwHJjAveD", "remote": false, "transport": "PUBLIS
+livekit-1  | 2026-10-04T14:36:00.841Z	WARN	livekit	service/rtcservice.go:583	error writing to websocket	{"connID": "CO_RvoBwwb9jE8d", "error": "websocket: close sent", "room": "poc", "roomID": "RM_e9uNs8odsQuV", "participant": "java-headless", "participantID":
+livekit-1  | 2026-10-04T14:36:00.842Z	DEBUG	livekit.transport	rtc/transport.go:856	ice connection state change	{"room": "poc", "roomID": "RM_e9uNs8odsQuV", "participant": "java-headless", "participantID": "PA_UiCUwHJjAveD", "remote": false, "transport": "PUBLI
+livekit-1  | 2026-10-04T14:36:00.842Z	DEBUG	livekit.transport	rtc/transport.go:867	peer connection state change	{"room": "poc", "roomID": "RM_e9uNs8odsQuV", "participant": "java-headless", "participantID": "PA_UiCUwHJjAveD", "remote": false, "transport": "PUBL

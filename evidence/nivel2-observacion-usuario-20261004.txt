@@ -1,0 +1,31 @@
+Nivel 2 - observaciones del usuario (2026-10-04)
+Contexto: `bash run-nivel2.sh javafx-1` (ventana JavaFX) + meet.livekit.io (Custom, ws://localhost:7880,
+identidad "navegador"), misma máquina, sala "poc".
+
+1) Pregunta: ¿aparece `navegador` en la lista de la ventana y `javafx-1` en el navegador?
+   Respuesta literal del usuario: "Aprece si aparece el navegador y javafx-1"
+
+2) Segunda respuesta literal del usuario (2026-10-04, tras la misma prueba):
+   "si revisas las cosas, ya hice la prueba si puedo salir sali desde el javafx-1 y también, entre 2 veces
+   a la sesión de live via web entonces creo que por eso se bloqueo, escanea lo realizado y veamos si se oye
+   en el navegador lo que digo en javafx y al reves pero solo me detecta el microfono por lo que solo un lado
+   detectaba el microfono"
+   Lo que deja establecido: Salir desde javafx-1 funciona; algo "se bloqueó" (sin detalle de qué ventana);
+   el usuario percibió que solo un lado detectaba el micrófono.
+   Lo que NO deja establecido: si se oyó el audio en algún sentido. Queda pendiente.
+   Contraste con el servidor (evidence/nivel2-servidor-audio-bidireccional-20261004.txt): el servidor recibió
+   audio con nivel de voz de AMBOS micrófonos y lo reenvió en ambos sentidos con 0 pérdidas. Además registra
+   una expulsión de javafx-1 por DUPLICATE_IDENTITY (14:47:39Z): hubo dos conexiones con identidad javafx-1.
+   El navegador entró 3 veces, pero una tras otra y saliendo limpio (sin duplicado).
+
+3) Prueba audible por sentidos separados (2026-10-04, 09:26-09:32 hora local). Una ventana JavaFX (javafx-1) y una
+   pestaña de meet.livekit.io (navegador), misma máquina, por altavoces.
+   Instrucción dada: Prueba A = silenciar el micrófono en el navegador y hablar (JavaFX -> navegador);
+   Prueba B = reactivarlo, pulsar Silenciar en JavaFX y hablar (navegador -> JavaFX).
+   Respuesta literal del usuario: "Bien se cierran y se escuchan bien, se escucha bien de los 2 lados y me pude
+   desconectar todo correcto no hay fallas"
+   Respaldo técnico: evidence/nivel2-cliente-javafx-1-20261004-092228.txt (log de la ventana) y
+   evidence/nivel2-servidor-prueba-audible-20261004.txt. Ahí constan: navegador silenciado 15:29:34-15:29:43Z
+   (unos 9 s, ventana de la Prueba A), javafx-1 silenciado desde 15:29:49Z (Prueba B), y un ciclo
+   Salir -> Conectar en la misma ventana (15:28:09Z -> 15:28:11Z) que volvió a publicar y suscribirse.
+   No evaluado aquí: eco, supresión de ruido, retardo (Nivel 3g).

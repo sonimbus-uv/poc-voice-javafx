@@ -13,7 +13,17 @@
     <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <webrtc.version>0.18.0</webrtc.version>
+    <javafx.version>21.0.8</javafx.version>
+    <livekit.sdk.version>v0.1.4</livekit.sdk.version>
+    <livekit.server.version>0.16.0</livekit.server.version>
   </properties>
+
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
 
   <dependencies>
     <!-- Sin classifier: el POM de webrtc-java añade el nativo de la plataforma (guía jrtc.dev/guide/get-started). -->
@@ -21,6 +31,23 @@
       <groupId>dev.onvoid.webrtc</groupId>
       <artifactId>webrtc-java</artifactId>
       <version>${webrtc.version}</version>
+    </dependency>
+    <!-- SDK comunitario NO oficial (fija webrtc-java 0.14.0; aquí gana la 0.18.0 declarada arriba). -->
+    <dependency>
+      <groupId>com.github.Trirrin.livekit-java-sdk</groupId>
+      <artifactId>rtc</artifactId>
+      <version>${livekit.sdk.version}</version>
+    </dependency>
+    <!-- SDK de servidor oficial: solo para generar tokens. -->
+    <dependency>
+      <groupId>io.livekit</groupId>
+      <artifactId>livekit-server</artifactId>
+      <version>${livekit.server.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+      <version>${javafx.version}</version>
     </dependency>
   </dependencies>
 

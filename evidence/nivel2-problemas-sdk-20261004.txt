@@ -1,0 +1,60 @@
+Nivel 2 - hallazgos sobre el SDK comunitario Trirrin/livekit-java-sdk v0.1.4 (2026-10-04)
+Fuente: lectura del código clonado en .refs/livekit-java-sdk (tag v0.1.4) + corridas sin ventana.
+
+A) Datos del tag
+   - git log -1 en v0.1.4: 0fa23406ed612198cfb2049277b3cb51d70501d1, fecha 2025-12-06,
+     "Send AddTrackRequest before publishing tracks".
+     CORRIGE la nota previa (evidence/nivel0-verificacion-versiones-20260921.txt), que decía
+     "commit 2026-07-21 aprox.": esa fecha es la del commit de documentación en main, no la del código.
+   - Protocolo de señal que envía el código: 13 (SignalClient.buildWebSocketUrl: "&protocol=13"), no 17.
+     El servidor lo registra así: "clientInfo": {"sdk": "UNKNOWN", "protocol": 13, ...}.
+   - TODOS.md del propio SDK: sin pruebas de integración ni de interoperabilidad; sin configuración de
+     cancelación de eco / supresión de ruido. Su PublishExample tiene comentada la llamada que publica.
+
+B) PROBLEMA 1 - el micrófono no se publica (el SDK nunca envía la oferta del publisher)
+   Evidencia: evidence/nivel2-headless-20261004.txt
+   Síntoma: el cliente dice "Micrófono publicado", pero el servidor solo recibe addTrack, trickle,
+   pingReq y leave; queda en "pending track added" y nunca aparece "mediaTrack published" ni el
+   transporte PUBLISHER conectado. No hay ningún error visible en el cliente.
+   Causa (leída en el código): PeerConnectionEngine.initialize() crea los data channels en el
+   publisher, lo que dispara onRenegotiationNeeded; RtcClient.onPublisherNegotiationNeeded() lo ignora
+   porque hasPublishedTracks es false. Al añadir después la pista, WebRTC no repite el evento (la
+   negociación ya estaba pendiente), así que la oferta nunca sale.
+   Solución aplicada (workaround explícito, sin cambiar de biblioteca): tras publishAudioTrack() se
+   llama al método público RtcClient.onPublisherNegotiationNeeded(). Ver VoiceClient.publishMicrophone().
+   Resultado: evidence/nivel2-headless-2-20261004.txt -> el servidor registra "mediaTrack published"
+   y el cliente recibe "pista publicada TR_... (AUDIO)".
+
+C) PROBLEMA 2 - caída nativa (SIGSEGV) al salir
+   Evidencia: evidence/nivel2-headless-20261004.txt y evidence/nivel2-crash-sigsegv-hs_err-20261004.log
+   Error exacto:
+     # A fatal error has been detected by the Java Runtime Environment:
+     #  SIGSEGV (0xb) at pc=0x00007275d5c598c6, pid=15620, tid=15683
+     # C  [libwebrtc-java-linux-x86_6414489899291519249994.so+0x6598c6]
+   Pila: Java_dev_onvoid_webrtc_media_MediaStreamTrack_dispose <- AudioTrack.dispose
+         <- io.livekit.sdk.rtc.LocalAudioTrack.dispose <- VoiceClient.disconnect
+   Causa: se dispuso la pista local después de RtcClient.shutdown(), que ya había liberado la
+   PeerConnectionFactory. RtcClient.disconnect() no libera la pista local; hay que hacerlo a mano.
+   Qué se probó:
+     1) unpublishTrack -> shutdown -> dispose pista   => SIGSEGV (tumba toda la JVM)
+     2) unpublishTrack -> dispose pista -> shutdown   => salida limpia (exit=0)
+   Solución aplicada: (2). Riesgo abierto: un orden incorrecto no lanza excepción, mata el proceso.
+   No probado: la salida iniciada por el servidor (RtcClient.onLeave dispone la pista sin quitarla
+   antes del sender; en el Nivel 1 eso lanzaba java.lang.Error).
+
+D) Otros riesgos vistos en el código (no son fallos reproducidos)
+   - Errores tragados: RtcClient.onError(String) está vacío; MediaDevicesHelper devuelve null o lista
+     vacía ante cualquier excepción.
+   - AudioOptions por defecto (no se puede activar cancelación de eco / supresión de ruido desde la
+     API del SDK; la factory es privada).
+   - MediaDevicesHelper crea un AudioDeviceModule que no se pasa a la factory: elegir micrófono por
+     deviceId no tiene efecto sobre la captura real. No hay API para elegir salida.
+   - Los PeerConnection son privados: no hay acceso a getStats() (RTT/jitter) sin reflexión.
+
+E) Conflicto de dependencias
+   - El SDK fija webrtc-java 0.14.0; el PoC declara 0.18.0 y Maven resuelve 0.18.0. Compila y corre.
+   - io.livekit:livekit-server 0.16.0 y el módulo protocol del SDK contienen 1236 clases con el mismo
+     nombre (paquete livekit.*: LivekitModels, LivekitRtc...), generadas con protobuf distinto
+     (SDK: protobuf-java 3.25.5; livekit-server pide protobuf-java-util 4.29.4). En el classpath gana
+     el jar del SDK. La generación de tokens (AccessToken.toJwt) funciona así; cualquier otro uso del
+     SDK de servidor en el mismo proceso es un riesgo.

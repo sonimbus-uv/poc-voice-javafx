@@ -1,0 +1,42 @@
+Oct 04, 2026 9:22:30 AM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @60ee9135'
+[09:26:58.238] Token generado para identidad=javafx-1 sala=poc
+[09:26:58.257] Conectando a ws://localhost:7880 ...
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+[09:26:58.755] evento: pista publicada TR_VCdaLCZLSXJm5D (VIDEO) por navegador
+[09:26:58.759] evento: pista publicada TR_AMMnv4pvux2sVn (AUDIO) por navegador
+[09:26:58.759] evento: entra navegador
+[09:26:58.760] evento: onConnected
+[09:26:58.760] Unido a la sala: poc (sid=RM_9xYnt3XWHkwv)
+[09:26:58.771] Dispositivos de entrada vistos por el SDK: 1
+[09:26:58.820] Micrófono publicado (cid=audio-d39a36c1-85a2-4ae2-a2f5-08e32a4e75c0), oferta del publisher forzada
+[09:26:58.877] evento: pista publicada TR_AMLcbLE2zDLebN (AUDIO) por javafx-1
+[09:26:58.905] evento: suscrito a TR_AMMnv4pvux2sVn (AUDIO) de navegador
+[09:26:58.906] evento: suscrito a TR_VCdaLCZLSXJm5D (VIDEO) de navegador
+[09:27:32.056] evento: navegador silenció TR_AMMnv4pvux2sVn
+[09:27:33.021] evento: navegador reactivó TR_AMMnv4pvux2sVn
+[09:28:09.744] evento: onDisconnected motivo=CLIENT_INITIATED
+[09:28:09.744] Desconectado.
+[09:28:11.374] Token generado para identidad=javafx-1 sala=poc
+[09:28:11.375] Conectando a ws://localhost:7880 ...
+[09:28:11.402] evento: pista publicada TR_AMMnv4pvux2sVn (AUDIO) por navegador
+[09:28:11.403] evento: pista publicada TR_VCdaLCZLSXJm5D (VIDEO) por navegador
+[09:28:11.403] evento: entra navegador
+[09:28:11.403] evento: onConnected
+[09:28:11.404] Unido a la sala: poc (sid=RM_9xYnt3XWHkwv)
+[09:28:11.404] Dispositivos de entrada vistos por el SDK: 1
+[09:28:11.413] Micrófono publicado (cid=audio-1e02b8a0-a245-4878-bf05-05c8401fdeb2), oferta del publisher forzada
+[09:28:11.430] evento: pista publicada TR_AMVEbnspL485Qh (AUDIO) por javafx-1
+[09:28:11.541] evento: suscrito a TR_AMMnv4pvux2sVn (AUDIO) de navegador
+[09:28:11.541] evento: suscrito a TR_VCdaLCZLSXJm5D (VIDEO) de navegador
+[09:28:17.320] evento: navegador silenció TR_AMMnv4pvux2sVn
+[09:28:17.955] evento: navegador reactivó TR_AMMnv4pvux2sVn
+[09:29:34.438] evento: navegador silenció TR_AMMnv4pvux2sVn
+[09:29:43.780] evento: navegador reactivó TR_AMMnv4pvux2sVn
+[09:29:49.763] Micrófono silenciado
+[09:29:49.765] evento: javafx-1 silenció TR_AMVEbnspL485Qh
+[09:32:49.048] evento: sale navegador
+[09:32:55.235] evento: onDisconnected motivo=CLIENT_INITIATED
+[09:32:55.236] Desconectado.

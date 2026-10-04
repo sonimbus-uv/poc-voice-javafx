@@ -1,0 +1,4 @@
+# Nivel 2 - arranque de la ventana JavaFX (10 s, sin interacción). 2026-10-04T08:36:52-06:00
+Oct 04, 2026 8:36:54 AM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @3e5acb8f'
+# exit=124 (124 = cortado por timeout con la ventana abierta)
