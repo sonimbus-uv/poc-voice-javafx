@@ -1,0 +1,165 @@
+Investigación del fallo de cierre tras sesiones largas (REPORT 4.4.2) - 2026-10-04, 11:18-12:05.
+RESULTADO: CAUSA NO LOCALIZADA. El fallo es INTERMITENTE: no ocurre en todas las sesiones largas. Tres hipótesis
+probadas y refutadas. No se consiguió una pila nativa porque las corridas instrumentadas no fallaron.
+
+## Tabla de todas las sesiones de >= 7 min del día (orden de cierre original salvo que se indique)
+  hora fin  qué                                               lanzado con      resultado al salir
+  09:51     2 clientes sin ventana, con jcmd                  mvn exec:java    FALLA los 2 (pa_close assert / XIO fatal)
+  10:20     ventana javafx-1 (7 min 36 s)                     mvn exec:java    FALLA (no termina; SIGSEGV libX11)
+  10:35     2 clientes sin ventana, sin jcmd                  mvn exec:java    FALLA los 2 (pure virtual / colgado)
+  11:29     Nivel 1, webrtc-java solo                         mvn exec:java    limpio
+  11:42     2 clientes, cierre "adm-despues" (experimento)    mvn exec:java    FALLA los 2 (pure virtual, exit=134)
+  11:54     2 clientes (uno bajo gdb)                         java -cp         limpios los 2
+  12:05     2 clientes sala poc-java                          java -cp         limpios los 2
+  12:05     2 clientes sala poc-mvn                           mvn exec:java    limpios los 2
+Total con el SDK: 7 procesos fallaron (4 sesiones) y 6 cerraron limpios (3 sesiones). Dentro de una misma sesión
+todos los procesos fallan o todos cierran bien: el factor parece ser de la sesión o del entorno, no del proceso.
+
+## Hipótesis 1 (REFUTADA): el AudioDeviceModule suelto del SDK se libera demasiado pronto
+Lectura del código (tag v0.1.4, commit 0fa2340): PeerConnectionEngine crea la factory con
+`new PeerConnectionFactory()` (sin ADM) y MediaDevicesHelper.createAudioTrack crea además `new AudioDeviceModule()`
+que no se conecta a nada; PeerConnectionEngine.close() lo libera lo PRIMERO, antes de cerrar los PeerConnection.
+Experimento: -Dpoc.cierre=adm-despues (por reflexión se aparta ese ADM antes de shutdown y se libera al final).
+Prueba de 8 s: limpia. Prueba de 630 s con dos clientes: los dos abortaron igual:
+  [11:42:47.298] evento: sale soak-b
+  libc++abi: Pure virtual function called!
+  exit=134
+  libc++abi: Pure virtual function called!
+  exit=134
+El cambio de código se revirtió (no arregla nada); el diff queda al final de este archivo.
+El defecto de diseño (dos ADM, uno huérfano) es real, pero no es la causa, o no la única.
+
+## Hipótesis 2 (REFUTADA): depende de lanzar con "mvn exec:java" en vez de "java -cp"
+Surgió porque la corrida bajo gdb (java -cp) cerró limpia. Comparación en paralelo, 630 s, cuatro clientes:
+  == java-a
+  [12:05:15.779] estado: DESCONECTADO
+  [12:05:15.779] Desconectado.
+  exit=0
+  == java-b
+  [12:05:15.701] estado: DESCONECTADO
+  [12:05:15.702] Desconectado.
+  exit=0
+  == mvn-a
+  [12:05:18.632] estado: DESCONECTADO
+  [12:05:18.632] Desconectado.
+  exit=0
+  == mvn-b
+  [12:05:18.450] estado: DESCONECTADO
+  [12:05:18.450] Desconectado.
+  exit=0
+Los cuatro cerraron limpios (exit=0), incluidos los dos lanzados con Maven.
+
+## Hipótesis 3 (REFUTADA): depende del recolector de basura
+Log de GC (-Xlog:gc) de los cuatro clientes anteriores: ninguna recolección después del arranque
+(java: 1 pausa a los 0,8 s; mvn: última a los 3,9 s) en 630 s. Y esas sesiones cerraron bien; las que fallaron
+no tenían log de GC, pero el consumo es el mismo. No hay actividad de GC que explique un umbral de minutos.
+
+## Corrida bajo gdb (para capturar la pila nativa): no falló
+  [11:54:17.136] estado: DESCONECTADO
+  [11:54:17.138] estado: DESCONECTADO
+  [11:54:17.138] Desconectado.
+  [New process 38558]
+  [Inferior 1 (process 38558) exited normally]
+  
+  === HILO QUE FALLA
+  No stack.
+  
+  === TODOS LOS HILOS
+  gdb_exit=0
+  fin
+
+## Entorno contaminado: fallos del kernel en ntfs3 durante la mañana
+journalctl -k muestra dos "kernel BUG" en el driver de la partición del proyecto:
+  Oct 04 09:53:21 Gurov kernel: kernel BUG at fs/iomap/buffered-io.c:1061!
+  Oct 04 09:53:21 Gurov kernel: Oops: invalid opcode: 0000 [#1] SMP NOPTI
+  Oct 04 09:53:21 Gurov kernel: CPU: 11 UID: 1000 PID: 27583 Comm: tee Tainted: P           OE       7.0.0-31-generic #31~24.04.1-Ubuntu PREEMPT(lazy) 
+  Oct 04 09:53:21 Gurov kernel:  ntfs_file_write_iter+0x263/0x300 [ntfs3]
+  Oct 04 10:24:33 Gurov kernel: kernel BUG at fs/iomap/buffered-io.c:1061!
+  Oct 04 10:24:33 Gurov kernel: Oops: invalid opcode: 0000 [#2] SMP NOPTI
+  Oct 04 10:24:33 Gurov kernel: CPU: 14 UID: 1000 PID: 33267 Comm: bash Tainted: P      D    OE       7.0.0-31-generic #31~24.04.1-Ubuntu PREEMPT(lazy) 
+  Oct 04 10:24:33 Gurov kernel:  ntfs_file_write_iter+0x263/0x300 [ntfs3]
+  Oct 04 12:00:50 Gurov kernel: Freezing user space processes failed after 20.002 seconds (3 tasks refusing to freeze, wq_busy=0):
+  Oct 04 12:00:50 Gurov kernel:  ntfs_file_write_iter+0x4a/0x300 [ntfs3]
+  Oct 04 12:01:10 Gurov kernel: Freezing user space processes failed after 20.005 seconds (3 tasks refusing to freeze, wq_busy=0):
+  Oct 04 12:01:10 Gurov kernel:  ntfs_file_write_iter+0x4a/0x300 [ntfs3]
+- 09:53:21: proceso "tee" (el que guardaba el log de la ventana javafx-1 en evidence/). Explica el log de cliente
+  que "no quedó guardado" (REPORT 4.4.4).
+- 10:24:33: proceso bash de tools/soak.sh escribiendo en evidence/. Explica el exit 139 del bucle de muestreo y el
+  archivo bloqueado (REPORT 5.3).
+No está demostrado que estos fallos del kernel causen el fallo de cierre del cliente (la primera caída al salir,
+09:51, es ANTERIOR al primer BUG de las 09:53), pero el sistema lleva desde entonces con procesos atascados en el
+kernel, y las pruebas hechas así no son un entorno limpio.
+
+## Qué queda sin saber y cómo seguir
+- Qué distingue las sesiones que fallan de las que no. Candidatos sin probar: estado del servidor de audio
+  (pipewire-pulse registró OVERFLOW y "overrun recover" de los clientes WEBRTC VoiceEngine), actividad de X11
+  (los errores mencionan XIO/_XReply), y el estado degradado del kernel.
+- Siguiente paso razonable: reiniciar, mover el proyecto a ext4 y repetir varias veces la sesión de 10 min con
+  los clientes bajo gdb (o con volcados de memoria activados) hasta capturar una pila nativa del aborto.
+
+## Diff del experimento revertido (-Dpoc.cierre=adm-despues)
+diff --git a/src/main/java/sonimbus/poc/level2/VoiceClient.java b/src/main/java/sonimbus/poc/level2/VoiceClient.java
+index 3f5bb6e..d94e2cf 100644
+--- a/src/main/java/sonimbus/poc/level2/VoiceClient.java
++++ b/src/main/java/sonimbus/poc/level2/VoiceClient.java
+@@ -97,12 +97,42 @@ public class VoiceClient {
+         // Disponer la pista DESPUÉS de shutdown (factory ya liberada) provoca SIGSEGV nativo.
+         step("unpublishTrack", () -> { if (track != null) c.unpublishTrack(track.getId()); });
+         step("dispose micTrack", () -> { if (track != null) track.dispose(); });
++        // EXPERIMENTO de diagnóstico (REPORT 4.4.2), solo con -Dpoc.cierre=adm-despues:
++        // el SDK crea en MediaDevicesHelper un AudioDeviceModule suelto (no es el de la factory) y lo
++        // libera lo PRIMERO en PeerConnectionEngine.close(), con los PeerConnection aún abiertos.
++        // Aquí se le quita por reflexión para liberarlo al final, como en el Nivel 1.
++        Object[] orphanAdm = new Object[1];
++        Object[] helperRef = new Object[1];
++        boolean admAfter = "adm-despues".equals(System.getProperty("poc.cierre"));
++        if (admAfter) step("apartar ADM del SDK", () -> detachSdkAdm(c, helperRef, orphanAdm));
+         step("shutdown", c::shutdown);
++        if (admAfter && orphanAdm[0] != null) {
++            step("dispose ADM del SDK (al final)",
++                    () -> ((dev.onvoid.webrtc.media.audio.AudioDeviceModule) orphanAdm[0]).dispose());
++            log.accept("cierre=adm-despues: ADM del SDK liberado después de shutdown");
++        }
+         onParticipants.accept(List.of());
+         onConnected.accept(false);
+         log.accept("Desconectado.");
+     }
+ 
++    private static void detachSdkAdm(RtcClient c, Object[] helperRef, Object[] admRef) {
++        try {
++            java.lang.reflect.Field engineField = RtcClient.class.getDeclaredField("rtcEngine");
++            engineField.setAccessible(true);
++            Object engine = engineField.get(c);
++            Object helper = engine.getClass().getMethod("getMediaDevicesHelper").invoke(engine);
++            if (helper == null) return;
++            java.lang.reflect.Field admField = helper.getClass().getDeclaredField("audioDeviceModule");
++            admField.setAccessible(true);
++            helperRef[0] = helper;
++            admRef[0] = admField.get(helper);
++            admField.set(helper, null);
++        } catch (ReflectiveOperationException e) {
++            throw new IllegalStateException(e);
++        }
++    }
++
+     private void step(String name, Runnable action) {
+         try {
+             action.run();
+diff --git a/tools/soak.sh b/tools/soak.sh
+index bc746f8..01ffe00 100644
+--- a/tools/soak.sh
++++ b/tools/soak.sh
+@@ -2,11 +2,12 @@
+ # Nivel 3f: dos clientes sin ventana en la misma sala durante N segundos, muestreando memoria.
+ # Uso: bash tools/soak.sh [segundos=630] > evidence/nivel3f-...txt
+ #   NOJCMD=1 bash tools/soak.sh ...  -> sin jcmd (solo RSS e hilos con ps), para no tocar la JVM
++#   CIERRE=adm-despues ...           -> experimento de orden de cierre (ver VoiceClient.disconnect)
+ cd "$(dirname "$0")/.." || exit 1
+ source ./env.sh
+ SECS="${1:-630}"
+ TMP="$(mktemp -d)"
+-run() { mvn -q -B exec:java -Dexec.mainClass=sonimbus.poc.level2.HeadlessCheck \
++run() { mvn -q -B exec:java ${CIERRE:+-Dpoc.cierre=$CIERRE} -Dexec.mainClass=sonimbus.poc.level2.HeadlessCheck \
+           -Dexec.args="ws://localhost:7880 poc $1 $SECS" > "$TMP/$1.log" 2>&1; echo "exit=$?" >> "$TMP/$1.log"; }
+ echo "# Nivel 3f - $SECS s, clientes soak-a y soak-b. Inicio: $(date -Iseconds)"
+ run soak-a & run soak-b &

@@ -15,7 +15,8 @@
 - **Lo que costó**: el SDK no funciona tal cual. Hicieron falta dos workarounds (no publicaba el
   micrófono; un orden de cierre incorrecto tumba la JVM con SIGSEGV). Además, cuando el servidor expulsa
   al cliente, el SDK se queda en "reconectando" para siempre, y **tras sesiones de más de ~7 minutos el
-  cliente no cierra bien**: aborta en código nativo o se queda colgado al salir (3 de 3 sesiones largas).
+  cliente a veces no cierra bien**: aborta en código nativo o se queda colgado al salir (4 de 7 sesiones largas;
+  causa sin localizar tras probar cuatro hipótesis).
 - **Lo que no se probó**: red real (todo fue en localhost), cortes de red de más de ~13 s,
   Windows y macOS (solo se comprobó que existen los natives), calidad de la
   cancelación de eco y supresión de ruido.
@@ -54,7 +55,7 @@ Valores: pasa / falla / parcial / no probado.
 | 3c | Silenciar/reactivar se refleja en ambos lados | pasa | `nivel3-observacion-usuario-20261004.txt` (1), `nivel2-cliente-javafx-1-20261004-092228.txt` |
 | 3d | Entradas/salidas de participantes | parcial: entradas y salidas normales se notifican bien; si el servidor expulsa al cliente (identidad duplicada), este no se entera y queda colgado | `nivel3d-entradas-salidas-identidad-duplicada-20261004.txt` |
 | 3e | Cortar la red 10 s: reconecta o cómo falla | pasa para un corte de ~13 s (IPv4 + IPv6): audio y señalización vuelven solos, sin reconexión ni reingreso; se pierde solo el audio del corte. La ventana no avisa de nada durante el corte. Cortes más largos sin probar. (El primer intento, solo IPv4, no fue concluyente) | `nivel3e-corte-red-total-20261004.txt`, `nivel3-observacion-usuario-20261004.txt` (3), `nivel3e-corte-red-20261004.txt` (primer intento) |
-| 3f | 10 min sin caídas ni fugas de memoria evidentes | parcial: dos corridas de 10 min 29 s sin caídas, 0 pérdidas y memoria plana (RSS +0,3 %); pero **al salir tras una sesión larga el cliente no cierra bien**: 3 de 3 sesiones de más de 7 min acabaron en aborto nativo o colgadas en `disconnect()`, con y sin `jcmd` (ver 4.4.2) | `nivel3f-10min-memoria-20261004.txt`, `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel3f-caida-al-salir-ventana-20261004.txt` |
+| 3f | 10 min sin caídas ni fugas de memoria evidentes | parcial: dos corridas de 10 min 29 s sin caídas, 0 pérdidas y memoria plana (RSS +0,3 %); pero **al salir tras una sesión larga el cliente a veces no cierra bien**: 4 de 7 sesiones de más de 7 min acabaron en aborto nativo o colgadas en `disconnect()`; causa sin localizar (ver 4.4.2) | `nivel3f-investigacion-cierre-20261004.txt`, `nivel3f-10min-memoria-20261004.txt`, `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel3f-caida-al-salir-ventana-20261004.txt` |
 | 3g | Latencia (aplauso; RTT y jitter si hay estadísticas); objetivo < 400 ms en red local | pasa en la misma máquina: ~92 ms JavaFX → navegador y ~159 ms navegador → JavaFX (ambos < 400 ms), RTT 1–2 ms. Sin red real de por medio y con una corrección de 75 ms medida aparte | `nivel3g-retardo-javafx-navegador-20261004.txt`, `nivel3g-retardo-navegador-javafx-20261004.txt` |
 | 3h | Dos instancias JavaFX + un navegador a la vez | pasa: dos corridas (64 s y 2 min 22 s) con los tres conectados, cada ventana suscrita a los otros dos, 0 pérdidas y silencios propagados; el usuario confirma que se oían los tres | `nivel3h-dos-javafx-navegador-2-20261004.txt`, `nivel3-observacion-usuario-20261004.txt` (4), `nivel3h-dos-javafx-navegador-20261004.txt`, `nivel2-cliente-javafx-2-20261004-101812.txt` |
 | Extra | Natives empaquetados para Windows y macOS (solo disponibilidad, sin probar) | disponibles en Maven Central (webrtc-java 0.18.0: windows-x86_64/aarch64, macos-x86_64/aarch64; JavaFX 21.0.8: win, mac, mac-aarch64). No ejecutados | `extra-natives-windows-macos-20261004.txt` |
@@ -133,33 +134,37 @@ Evidencia: `nivel2-problemas-sdk-20261004.txt` (D, E).
 - **Evidencia:** `nivel3d-entradas-salidas-identidad-duplicada-20261004.txt`,
   `nivel2-servidor-audio-bidireccional-20261004.txt`.
 
-#### 4.4.2 El cliente no cierra bien tras una sesión larga (sin resolver, reproducido 3 veces)
+#### 4.4.2 El cliente a veces no cierra bien tras una sesión larga (sin resolver, intermitente)
 
-- **Síntoma:** al salir después de una sesión de más de ~7 minutos, el proceso aborta en código nativo o se queda
-  colgado. El servidor sí recibe la salida (`CLIENT_REQUEST_LEAVE`): los demás participantes no lo notan; lo que
-  falla es liberar el audio local. Las salidas tras sesiones cortas (8 s a ~5 min) fueron todas limpias.
-- **Las tres ocurrencias** (todas las sesiones largas del día):
-
-  | Sesión | Duración | Qué pasó al salir |
-  |---|---|---|
-  | dos clientes sin ventana, con `jcmd` | 10 min 29 s | `Assertion 'pa_close(fds[0]) == 0' failed at ../src/pulsecore/core-util.c:2713` (exit=134) y `XIO: fatal IO error 0 (Success) on X server` (exit=1) |
-  | ventana `javafx-1`, sin `jcmd` | 7 min 36 s | la desconexión no terminó (el log no llega a "Desconectado."); el usuario cerró la ventana a mano; `SIGSEGV` en `libX11.so.6 _XReply` y `corrupted double-linked list` |
-  | dos clientes sin ventana, sin `jcmd` | 10 min 29 s | uno: `libc++abi: Pure virtual function called!`; el otro: colgado 33 min hasta matarlo |
-
-- **Dónde se cuelga** (volcado de hilos del proceso colgado): en la llamada nativa
-  `dev.onvoid.webrtc.media.audio.AudioDeviceModuleBase.disposeInternal`, invocada por el SDK
-  (`MediaDevicesHelper.dispose` ← `PeerConnectionEngine.close` ← `RtcClient.disconnect` ← `RtcClient.shutdown`).
-- **Qué se descartó:** que lo provocara el muestreo con `jcmd` (dos de las tres ocurrencias no lo usaron).
-- **Contraste con webrtc-java solo:** el loopback del Nivel 1 durante 10 min 30 s (misma biblioteca nativa, mismo
-  dispositivo, sin el SDK) cerró limpio: todos los `dispose` "ok", incluido el del `AudioDeviceModule`, exit=0.
-  Apunta a que el fallo está en cómo cierra el SDK y no en `webrtc-java` por sí solo. Es una sola corrida y un
-  loopback no es idéntico a una sesión contra el SFU.
-- **Sin determinar:** el umbral de duración y la causa concreta dentro del cierre del SDK (los errores apuntan a
-  corrupción de memoria o a un doble cierre del módulo de audio; no está demostrado). Tampoco se probó en ext4,
-  aunque nada apunta al sistema de archivos (los JAR se cargan desde `~/.m2`).
-- **Evidencia:** `nivel3f-10min-memoria-20261004.txt`, `nivel3f-caida-al-salir-ventana-20261004.txt`,
-  `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel3-observacion-usuario-20261004.txt` (4),
-  `nivel1-loopback-10min-cierre-20261004.txt`.
+- **Síntoma:** al salir después de una sesión de más de ~7 minutos, el proceso a veces aborta en código nativo o
+  se queda colgado. El servidor sí recibe la salida (`CLIENT_REQUEST_LEAVE`): los demás participantes no lo
+  notan; lo que falla es liberar el audio local. Las salidas tras sesiones cortas (8 s a ~5 min) fueron limpias.
+- **Frecuencia:** de 7 sesiones largas con el SDK, 4 fallaron (7 procesos) y 3 cerraron limpias (6 procesos).
+  Dentro de una sesión, o fallan todos los procesos o ninguno. Las 4 que fallaron fueron entre las 09:51 y las
+  11:42; las 3 limpias, entre las 11:54 y las 12:05.
+- **Errores vistos:** `Assertion 'pa_close(fds[0]) == 0' failed at ../src/pulsecore/core-util.c:2713` (exit=134);
+  `XIO: fatal IO error 0 (Success) on X server`; `SIGSEGV` en `libX11.so.6 _XReply` con
+  `corrupted double-linked list`; `libc++abi: Pure virtual function called!` (exit=134); y un proceso colgado
+  33 min en la llamada nativa `AudioDeviceModuleBase.disposeInternal`, invocada por el SDK
+  (`MediaDevicesHelper.dispose` ← `PeerConnectionEngine.close` ← `RtcClient.disconnect`).
+- **Contraste con webrtc-java solo:** el loopback del Nivel 1 durante 10 min 30 s cerró limpio. Como el fallo es
+  intermitente, una sola corrida limpia no exculpa a `webrtc-java`.
+- **Hipótesis probadas y refutadas** (cada una con una sesión de 10 min):
+  1. *El SDK libera demasiado pronto un `AudioDeviceModule` huérfano.* El defecto existe (el SDK crea un segundo
+     módulo de audio que no conecta a nada y lo libera antes de cerrar las conexiones), pero liberándolo al final
+     los dos clientes abortaron igual.
+  2. *Depende de lanzar con `mvn exec:java`.* En paralelo, dos clientes con `java -cp` y dos con Maven: los cuatro
+     cerraron limpios.
+  3. *Depende del recolector de basura.* No hubo ninguna recolección después del arranque en 630 s.
+  4. *Lo provoca `jcmd`.* Falló también sin `jcmd`.
+- **Sin determinar:** la causa, y qué distingue las sesiones que fallan de las que no. No se obtuvo pila nativa: la
+  corrida bajo `gdb` no falló. Candidatos sin probar: el estado del servidor de audio (pipewire-pulse registró
+  desbordamientos de los clientes), el uso de X11 por el módulo de audio, y el estado del kernel tras los fallos
+  de ntfs3 (5.3), aunque la primera caída es anterior al primero de ellos.
+- **Evidencia:** `nivel3f-investigacion-cierre-20261004.txt` (tabla de sesiones, hipótesis y diff del experimento),
+  `nivel3f-10min-memoria-20261004.txt`, `nivel3f-caida-al-salir-ventana-20261004.txt`,
+  `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel1-loopback-10min-cierre-20261004.txt`,
+  `nivel3-observacion-usuario-20261004.txt` (4).
 
 #### 4.4.3 El primer corte de red no fue un corte (resuelto repitiendo la prueba)
 
@@ -176,7 +181,8 @@ Evidencia: `nivel2-problemas-sdk-20261004.txt` (D, E).
 #### 4.4.4 Un log de cliente no quedó guardado
 
 `nivel2-cliente-javafx-1-20261004-095318.txt` solo tiene las dos líneas de arranque, aunque esa ventana estuvo
-conectada 9 minutos. Causa sin determinar. Por eso no hay registro de lo que mostró la ventana durante el corte.
+conectada 9 minutos. Causa (encontrada después): un `kernel BUG` del driver ntfs3 mató al proceso `tee` que
+escribía el log a las 09:53:21 (ver 5.3). Por eso no hay registro de lo que mostró la ventana durante el primer corte.
 
 ## 5. Particularidades de Linux
 
@@ -204,10 +210,13 @@ ejecutar desde ahí funcionó. webrtc-java carga su biblioteca nativa desde un a
 (`libwebrtc-java-linux-x86_64…so`), no desde la carpeta del proyecto. Evidencia:
 `nivel2-crash-sigsegv-hs_err-20261004.log`, `nivel1-loopback-tecnico-20261004.txt`.
 
-Incidencia (2026-10-04): un archivo de `evidence/` que un script estaba escribiendo quedó bloqueado en el kernel
+Incidencia (2026-10-04): el kernel registró dos `kernel BUG at fs/iomap/buffered-io.c:1061` dentro de
+`ntfs_file_write_iter` [ntfs3], a las 09:53:21 (proceso `tee`) y a las 10:24:33 (proceso `bash`), ambos escribiendo
+en `evidence/` (extracto en `nivel3f-investigacion-cierre-20261004.txt`). Tras el segundo, un archivo de
+`evidence/` quedó bloqueado en el kernel
 (procesos en estado `D` en `ntfs_file_write_iter` / `do_truncate`, imposibles de matar); cualquier escritura
 posterior sobre ese archivo se colgaba. Es un problema del driver ntfs3, no del PoC; se esquivó escribiendo la
-evidencia con otro nombre (`nivel3f-salida-sin-jcmd-20261004.txt`). Probablemente haga falta reiniciar para
+evidencia con otro nombre (`nivel3f-salida-sin-jcmd-20261004.txt`). Conviene mover el proyecto a una partición ext4. Hace falta reiniciar para
 liberar el archivo bloqueado (`nivel3f-10min-sin-jcmd-20261004.txt`, incompleto, no forma parte de la evidencia).
 
 ## 6. Tamaño y dependencias
@@ -229,7 +238,7 @@ liberar el archivo bloqueado (`nivel3f-10min-sin-jcmd-20261004.txt`, incompleto,
    recupera solo, pero la aplicación no se entera de que hubo corte, y los cortes largos (en los que el servidor
    cierra al participante) no se probaron. (4.4.1, 4.4.3)
 3. **Fallos nativos que matan el proceso**, no excepciones: SIGSEGV por orden de cierre (resuelto con workaround)
-   y el cierre tras sesiones largas, que aborta o se cuelga en las 3 sesiones largas probadas (causa sin localizar). En
+   y el cierre tras sesiones largas, que aborta o se cuelga en 4 de las 7 sesiones largas probadas (intermitente, causa sin localizar). En
    una aplicación de escritorio esto cierra o congela toda la app, y una llamada de voz normal dura más de 7 minutos. (4.3.2, 4.4.2)
 4. **Nada probado fuera de localhost.** Sin NAT, sin TURN, sin TLS (`wss`), sin pérdida ni latencia de red reales.
    El servidor corrió en modo `--dev`.
@@ -252,7 +261,8 @@ C) voz solo en el móvil (Flutter) durante el MVP; D) cambiar el cliente de escr
 - **Opción elegida: A, con dos condiciones.** (1) Tratar el SDK comunitario como código propio: copiarlo al
   repositorio (o hacer un fork), corregir en él los fallos de 4.3 y 4.4.1 en lugar de rodearlos, y fijar
   webrtc-java 0.18.0. (2) Resolver antes el fallo de cierre tras sesiones largas (4.4.2): hoy una llamada de más
-  de ~7 minutos termina con la aplicación abortada o colgada, y eso no es aceptable en un producto. Si el equipo
+  de ~7 minutos puede terminar con la aplicación abortada o colgada (pasó en 4 de 7), y eso no es aceptable en un
+  producto. Si el equipo
   no puede asumir el mantenimiento, o si 4.4.2 resulta no tener arreglo razonable, la alternativa es **B con el
   navegador del sistema**, que usa el SDK oficial de LiveKit.
 - **Justificación (ligada a la sección 3):**
@@ -263,16 +273,17 @@ C) voz solo en el móvil (Flutter) durante el MVP; D) cambiar el cliente de escr
   - Los fallos con causa identificada (4.3.1, 4.3.2, 4.4.1) están en la capa de señalización del SDK comunitario,
     que es pequeña y legible: las causas se localizaron leyendo su código. Es un problema de mantenimiento, no de
     viabilidad. El cierre tras sesiones largas (4.4.2) es la excepción y el mayor riesgo abierto: se reproduce
-    siempre y su causa no está localizada, aunque `webrtc-java` solo cierra limpio tras 10 minutos, lo que
-    lo sitúa en el SDK (la capa que A ya propone adoptar y corregir).
+    en más de la mitad de las sesiones largas y su causa no está localizada: no se sabe si está en el SDK, en
+    `webrtc-java` o en el entorno de audio de esta máquina.
   - El retardo (3g, ~92 ms y ~159 ms según el sentido) y el consumo (3f, memoria plana) están dentro de lo
     aceptable, y un corte de red de ~13 s se recupera solo (3e).
   - C y D resolverían un problema que la evidencia no muestra: el escritorio JavaFX sí puede hacer voz. B queda
     como salida si A se complica; no se evaluó en este PoC, así que su coste real es desconocido.
 - **Lo que debería probarse antes de comprometerse con A:**
-  1. **localizar y corregir el fallo de cierre tras sesiones largas (4.4.2)**; `webrtc-java` solo cierra limpio tras
-     10 minutos, así que hay que buscarlo en el cierre del SDK (`PeerConnectionEngine.close` /
-     `MediaDevicesHelper.dispose`). Si no se puede corregir, A deja de ser recomendable;
+  1. **localizar y corregir el fallo de cierre tras sesiones largas (4.4.2)**; es intermitente y cuatro hipótesis ya
+     están descartadas, así que hace falta una pila nativa: repetir sesiones de 10 minutos bajo `gdb` en un
+     entorno limpio (tras reiniciar, con el proyecto en ext4) y, a ser posible, en otra máquina. Si no se puede
+     corregir, A deja de ser recomendable;
   2. probar cortes de red largos y decidir cómo reconectar (4.4.1, 4.4.3);
   3. una prueba entre dos máquinas por red real, idealmente con una en Windows;
   4. eco y ruido con altavoces, con y sin las opciones de procesado.

@@ -83,10 +83,21 @@
     El bucle de muestreo de tools/soak.sh murió por eso (exit 139); el script en sí no se cambió más.
 - REPORT.md COMPLETO y actualizado (recomendación: A con DOS condiciones: adoptar el SDK como código propio y
   resolver el fallo de cierre tras sesiones largas, sección 4.4.2; si no, B con navegador del sistema).
-- Contraste (11:18-11:29): Nivel 1 durante 630 s (webrtc-java solo) cerró LIMPIO, exit=0. El fallo de cierre apunta
-  al SDK, no a webrtc-java. Una sola corrida, micrófono silenciado. evidence/nivel1-loopback-10min-cierre-20261004.txt
-- Pendiente opcional: localizar el fallo en el cierre del SDK (PeerConnectionEngine.close / MediaDevicesHelper.dispose);
-  cortes de red largos; eco/ruido; mover el proyecto a ext4 (evita bloqueos de ntfs3; no se espera que cambie el fallo).
+- Investigación del fallo de cierre (11:18-12:05): CAUSA NO LOCALIZADA; el fallo es INTERMITENTE.
+  evidence/nivel3f-investigacion-cierre-20261004.txt (tabla de las 8 sesiones largas del día).
+  - Sesiones largas con el SDK: 4 fallaron (09:51, 10:20, 10:35, 11:42) y 3 cerraron limpias (11:54, 12:05 x2).
+  - Nivel 1 (webrtc-java solo) 630 s: limpio (evidence/nivel1-loopback-10min-cierre-20261004.txt). No exculpa
+    a webrtc-java porque el fallo es intermitente.
+  - Refutado: (1) ADM huérfano del SDK liberado antes de tiempo (experimento -Dpoc.cierre=adm-despues, REVERTIDO,
+    diff en la evidencia); (2) lanzar con mvn exec:java vs java -cp; (3) GC; (4) jcmd.
+  - Corrida bajo gdb: no falló, sin pila nativa.
+  - journalctl -k: dos "kernel BUG" de ntfs3 (09:53:21 tee, 10:24:33 bash) escribiendo en evidence/. Explican el
+    log perdido de las 09:53 y el archivo bloqueado. No demostrado que afecten al fallo de cierre.
+  - Para lanzar sin Maven: classpath con `mvn dependency:build-classpath`, luego
+    `java -cp target/classes:<cp> sonimbus.poc.level2.HeadlessCheck ws://localhost:7880 <sala> <id> <seg>`.
+  - OJO: no redirigir salidas largas a archivos de la partición NTFS; escribir fuera y copiar al final.
+- Siguiente paso si se sigue: reiniciar, mover el proyecto a ext4, repetir sesiones de 10 min bajo gdb hasta
+  capturar la pila nativa del aborto. Otros pendientes: cortes de red largos; eco/ruido.
 - Pregunta abierta del usuario: compartir un .exe con alguien lejos para probar. No existe: no hay empaquetado
   ni prueba en Windows, y el servidor solo escucha en esta máquina/red local en modo --dev. Sería trabajo nuevo
   (fuera del PoC): jpackage en Windows + servidor accesible desde internet.
@@ -100,4 +111,4 @@
 ## Necesita el usuario
 - Reiniciar cuando pueda (libera el archivo bloqueado por ntfs3) y después borrar
   evidence/nivel3f-10min-sin-jcmd-20261004.txt.
-- Decidir si se investiga el fallo de cierre dentro del SDK o se da el PoC por terminado.
+- Decidir si se sigue investigando el fallo de cierre (tras reiniciar y mover a ext4) o se da el PoC por terminado.
