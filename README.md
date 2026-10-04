@@ -50,6 +50,7 @@ PoC desechable. El resultado está en `REPORT.md`; el estado del trabajo, en `PR
 
   ```
   bash tools/soak.sh 630 > evidence/nivel3f-10min-memoria-<fecha>.txt
+  NOJCMD=1 bash tools/soak.sh 630 > evidence/nivel3f-10min-sin-jcmd-<fecha>.txt   # sin jcmd: solo RSS e hilos
   ```
 
 - Retardo micrófono → salida (graba 40 s; da palmadas con un solo micrófono abierto en la sala). Necesita `ffmpeg`:
@@ -61,5 +62,5 @@ PoC desechable. El resultado está en `REPORT.md`; el estado del trabajo, en `PR
 - Corte de red de 10 s sobre los puertos de LiveKit (pide sudo; bloquea IPv4 e IPv6):
 
   ```
-  sudo sh -c 'R="udp --dport 7882|udp --sport 7882|tcp --dport 7880|tcp --sport 7880"; for t in iptables ip6tables; do echo "$R" | tr "|" "\n" | while read r; do $t -I INPUT -p $r -j DROP; done; done; sleep 10; for t in iptables ip6tables; do echo "$R" | tr "|" "\n" | while read r; do $t -D INPUT -p $r -j DROP; done; done; echo red restaurada'
+  sudo bash tools/cut-network.sh 10
   ```

@@ -1,0 +1,10 @@
+# 2026-10-04T10:15:46-06:00 calibración (izq=der=alsa_input.pci-0000_00_1f.3.analog-stereo, 4 s)
+duracion=4.0s pico_mic=7084 pico_salida=7723 (escala 0-32767)
+retardo_ms=-75 correlacion=0.95 (1.00 = idéntico; por debajo de ~0.3 no es fiable)
+mejores desfases (ms): [-75, -74, -76, -73, -77]
+# 2026-10-04T10:15:50-06:00 medida (40 s): izq=alsa_input.pci-0000_00_1f.3.analog-stereo der=alsa_output.pci-0000_00_1f.3.analog-stereo.monitor
+duracion=40.0s pico_mic=32767 pico_salida=28000 (escala 0-32767)
+retardo_ms=84 correlacion=0.70 (1.00 = idéntico; por debajo de ~0.3 no es fiable)
+mejores desfases (ms): [84, 83, 85, 82, 81]
+RESULTADO: retardo micrófono->salida = 159 ms (bruto 84 ms, desfase de grabación -75 ms)
+Supuesto: el desfase de grabación es el mismo con el monitor que con el micrófono (estable en 4 calibraciones).

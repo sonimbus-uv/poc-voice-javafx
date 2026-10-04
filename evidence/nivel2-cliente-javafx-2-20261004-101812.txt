@@ -1,0 +1,31 @@
+Oct 04, 2026 10:18:15 AM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @220f4753'
+[10:18:19.452] Token generado para identidad=javafx-2 sala=poc
+[10:18:19.472] Conectando a ws://localhost:7880 ...
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+[10:18:20.043] evento: pista publicada TR_AM9cer6U2z7GAa (AUDIO) por javafx-1
+[10:18:20.047] evento: entra javafx-1
+[10:18:20.047] evento: pista publicada TR_AMW24iSFaPLyQA (AUDIO) por navegador
+[10:18:20.048] evento: pista publicada TR_VCQCHaQP6FdPLf (VIDEO) por navegador
+[10:18:20.048] evento: entra navegador
+[10:18:20.049] evento: onConnected
+[10:18:20.050] Unido a la sala: poc (sid=RM_TyjTR4k7e7Ve)
+[10:18:20.062] Dispositivos de entrada vistos por el SDK: 1
+[10:18:20.113] Micrófono publicado (cid=audio-a7d725d4-5b2d-44ae-ad6c-60b538d72cda), oferta del publisher forzada
+[10:18:20.182] evento: pista publicada TR_AM26RKBLteyxxW (AUDIO) por javafx-2
+[10:18:20.225] evento: suscrito a TR_AM9cer6U2z7GAa (AUDIO) de javafx-1
+[10:18:20.226] evento: suscrito a TR_AMW24iSFaPLyQA (AUDIO) de navegador
+[10:18:20.229] evento: suscrito a TR_VCQCHaQP6FdPLf (VIDEO) de navegador
+[10:18:33.814] Micrófono silenciado
+[10:18:33.816] evento: javafx-2 silenció TR_AM26RKBLteyxxW
+[10:18:42.345] evento: javafx-1 silenció TR_AM9cer6U2z7GAa
+[10:18:59.310] Micrófono reactivado
+[10:18:59.313] evento: javafx-2 reactivó TR_AM26RKBLteyxxW
+[10:19:03.082] evento: navegador silenció TR_AMW24iSFaPLyQA
+[10:19:09.648] evento: navegador reactivó TR_AMW24iSFaPLyQA
+[10:19:20.055] evento: javafx-1 reactivó TR_AM9cer6U2z7GAa
+[10:20:42.134] evento: sale navegador
+[10:20:46.326] evento: onDisconnected motivo=CLIENT_INITIATED
+[10:20:46.327] Desconectado.

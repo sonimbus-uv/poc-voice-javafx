@@ -1,0 +1,55 @@
+Nivel 3h (repetición) - javafx-1 + javafx-2 + navegador a la vez (2026-10-04, 10:18:20-10:20:42 local, 2 min 22 s).
+RESULTADO técnico: los tres conectados, cada ventana JavaFX suscrita a los otros dos, 0 pérdidas entre los tres
+durante ese tramo, silenciar/reactivar de los tres se propagó a las dos ventanas.
+Confirmación audible: ver evidence/nivel3-observacion-usuario-20261004.txt (3).
+
+## Log de javafx-2 (evidence/nivel2-cliente-javafx-2-20261004-101812.txt, hora local)
+  [10:18:20.050] Unido a la sala: poc (sid=RM_TyjTR4k7e7Ve)
+  [10:18:20.225] evento: suscrito a TR_AM9cer6U2z7GAa (AUDIO) de javafx-1
+  [10:18:20.226] evento: suscrito a TR_AMW24iSFaPLyQA (AUDIO) de navegador
+  [10:18:20.229] evento: suscrito a TR_VCQCHaQP6FdPLf (VIDEO) de navegador
+  [10:18:33.814] Micrófono silenciado
+  [10:18:33.816] evento: javafx-2 silenció TR_AM26RKBLteyxxW
+  [10:18:42.345] evento: javafx-1 silenció TR_AM9cer6U2z7GAa
+  [10:18:59.310] Micrófono reactivado
+  [10:18:59.313] evento: javafx-2 reactivó TR_AM26RKBLteyxxW
+  [10:19:03.082] evento: navegador silenció TR_AMW24iSFaPLyQA
+  [10:19:09.648] evento: navegador reactivó TR_AMW24iSFaPLyQA
+  [10:19:20.055] evento: javafx-1 reactivó TR_AM9cer6U2z7GAa
+  [10:20:42.134] evento: sale navegador
+  [10:20:46.326] evento: onDisconnected motivo=CLIENT_INITIATED
+  [10:20:46.327] Desconectado.
+
+## Log de javafx-1 en el mismo tramo (evidence/nivel2-cliente-javafx-1-20261004-101250.txt)
+  [10:18:20.177] evento: pista publicada TR_AM26RKBLteyxxW (AUDIO) por javafx-2
+  [10:18:20.178] evento: entra javafx-2
+  [10:18:20.203] evento: suscrito a TR_AM26RKBLteyxxW (AUDIO) de javafx-2
+  [10:18:33.816] evento: javafx-2 silenció TR_AM26RKBLteyxxW
+  [10:18:42.342] Micrófono silenciado
+  [10:18:42.344] evento: javafx-1 silenció TR_AM9cer6U2z7GAa
+  [10:18:59.313] evento: javafx-2 reactivó TR_AM26RKBLteyxxW
+  [10:19:03.082] evento: navegador silenció TR_AMW24iSFaPLyQA
+  [10:19:09.647] evento: navegador reactivó TR_AMW24iSFaPLyQA
+  [10:19:20.053] Micrófono reactivado
+  [10:19:20.055] evento: javafx-1 reactivó TR_AM9cer6U2z7GAa
+  [10:20:42.134] evento: sale navegador
+  [10:20:46.320] evento: sale javafx-2
+  [10:20:49.409] evento: pista retirada TR_AM9cer6U2z7GAa por javafx-1
+
+## Estadísticas del servidor al cerrar las pistas de audio (UTC; "recibe/envia" = participante del flujo)
+  2026-10-04T16:20:42.133Z recibe/envia=navegador pista=TR_AMW24iSFaPLyQA esperados=8102 perdidos=209 pct=2.57961 huecos=[101:1]
+  2026-10-04T16:20:42.333Z recibe/envia=navegador pista=TR_AM9cer6U2z7GAa esperados=3247 perdidos=171 pct=5.2664 huecos=[101:1]
+  2026-10-04T16:20:42.333Z recibe/envia=javafx-2 pista=TR_AMW24iSFaPLyQA esperados=2383 perdidos=0 pct=0 huecos=-
+  2026-10-04T16:20:42.333Z recibe/envia=navegador pista=TR_AM26RKBLteyxxW esperados=4517 perdidos=0 pct=0 huecos=-
+  2026-10-04T16:20:42.333Z recibe/envia=javafx-1 pista=TR_AMW24iSFaPLyQA esperados=8215 perdidos=209 pct=2.5441267 huecos=[101:1]
+  2026-10-04T16:20:46.316Z recibe/envia=javafx-2 pista=TR_AM26RKBLteyxxW esperados=4751 perdidos=0 pct=0 huecos=-
+  2026-10-04T16:20:46.518Z recibe/envia=javafx-1 pista=TR_AM26RKBLteyxxW esperados=4681 perdidos=0 pct=0 huecos=-
+  2026-10-04T16:20:46.519Z recibe/envia=javafx-2 pista=TR_AM9cer6U2z7GAa esperados=1585 perdidos=0 pct=0 huecos=-
+  2026-10-04T16:20:49.407Z recibe/envia=javafx-1 pista=TR_AM9cer6U2z7GAa esperados=4483 perdidos=171 pct=3.81441 huecos=[101:1]
+Lectura: todo lo que involucra a javafx-2 (su pista TR_AM26RKBLteyxxW hacia navegador y javafx-1, y lo que
+javafx-2 recibió de los otros dos) tiene 0 pérdidas. Las pérdidas de las otras filas son el corte de red de las
+10:17, anterior a la entrada de javafx-2 (evidence/nivel3e-corte-red-total-20261004.txt).
+
+## Salida
+navegador salió 10:20:42, javafx-2 10:20:46 (onDisconnected motivo=CLIENT_INITIATED, limpio).
+javafx-1 pulsó Salir a las 10:20:49 y el proceso cayó con SIGSEGV: evidence/nivel3f-caida-al-salir-ventana-20261004.txt

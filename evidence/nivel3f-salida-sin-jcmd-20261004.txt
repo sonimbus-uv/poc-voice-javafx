@@ -1,0 +1,290 @@
+Nivel 3f (repetición SIN jcmd) - dos clientes sin ventana (soak-a, soak-b) en la sala "poc" durante 630 s.
+Inicio 2026-10-04T10:24:18-06:00. Comando: NOJCMD=1 bash tools/soak.sh 630
+RESULTADO: PARCIAL. 10 min 29 s conectados sin caídas, memoria plana y 0 pérdidas; pero al salir NINGUNO de los dos
+terminó bien: soak-a abortó en código nativo ("Pure virtual function called!") y soak-b se quedó colgado para
+siempre dentro de disconnect(). Sin jcmd de por medio: queda descartado que la caída al salir la provocara jcmd.
+
+NOTA sobre el muestreo: el bucle de soak.sh murió tras la primera muestra (el lanzador en segundo plano informó
+exit 139, causa sin determinar; los dos clientes siguieron vivos). Desde t=242 s muestreó un bucle aparte con ps.
+Hay un hueco sin muestras entre t=15 y t=242 (salvo una lectura manual en t=231: soak-a 183820 KiB/50 hilos,
+soak-b 191104 KiB/50 hilos).
+
+# t_s cliente pid rss_kib hilos heap(-: no medido)
+15 soak-a 33274 183640 52 -
+15 soak-b 33275 190920 52 -
+242 soak-a 33274 183824 50 -
+242 soak-b 33275 191104 50 -
+272 soak-a 33274 183844 50 -
+272 soak-b 33275 191128 50 -
+302 soak-a 33274 183856 50 -
+302 soak-b 33275 191136 50 -
+332 soak-a 33274 183868 50 -
+332 soak-b 33275 191152 50 -
+362 soak-a 33274 183900 50 -
+362 soak-b 33275 191196 50 -
+392 soak-a 33274 183928 50 -
+392 soak-b 33275 191224 50 -
+422 soak-a 33274 183940 50 -
+422 soak-b 33275 191240 50 -
+452 soak-a 33274 183956 50 -
+452 soak-b 33275 191256 50 -
+482 soak-a 33274 184060 50 -
+482 soak-b 33275 191376 50 -
+512 soak-a 33274 184068 50 -
+512 soak-b 33275 191388 50 -
+542 soak-a 33274 184108 50 -
+542 soak-b 33275 191412 50 -
+572 soak-a 33274 184192 50 -
+572 soak-b 33275 191500 50 -
+602 soak-a 33274 184204 50 -
+602 soak-b 33275 191508 50 -
+632 soak-a 33274 184220 50 -
+632 soak-b 33275 191524 50 -
+662 soak-a 33274 TERMINADO -
+662 soak-b 33275 191324 34 -
+692 soak-a 33274 TERMINADO -
+692 soak-b 33275 191324 34 -
+... (soak-b siguió igual, 191324 KiB y 34 hilos, en cada muestra hasta t=2615 s = 11:07:53, cuando se tomó el
+volcado de hilos y se mató el proceso con SIGTERM)
+
+Lectura de memoria: RSS de soak-a 183640 -> 184220 KiB y de soak-b 190920 -> 191524 KiB en 10 min (+0,3 %). Hilos
+52 -> 50 estables. Sin fuga evidente. (Sin heap: esta corrida no usó jcmd a propósito.)
+
+## Servidor: cierre de participantes y estadísticas de las pistas (UTC)
+  2026-10-04T16:34:51.544Z soak-a CLIENT_REQUEST_LEAVE
+  2026-10-04T16:34:51.605Z soak-b CLIENT_REQUEST_LEAVE
+  2026-10-04T16:34:51.541Z participante=soak-a pista=TR_AMrWSpchz46cwA esperados=3402 perdidos=0
+  2026-10-04T16:34:51.603Z participante=soak-b pista=TR_AMR7HiRnjoRQ32 esperados=3371 perdidos=0
+  2026-10-04T16:34:51.743Z participante=soak-b pista=TR_AMrWSpchz46cwA esperados=3409 perdidos=0
+  2026-10-04T16:34:51.746Z participante=soak-a pista=TR_AMR7HiRnjoRQ32 esperados=3382 perdidos=0
+
+## Salida de soak-a (pid 33274): aborto nativo
+[10:24:22.288] evento: pista publicada TR_AMR7HiRnjoRQ32 (AUDIO) por soak-b
+[10:24:22.292] participantes: [soak-a (yo), soak-b]
+[10:24:22.293] evento: entra soak-b
+[10:24:22.293] participantes: [soak-a (yo), soak-b]
+[10:24:22.303] evento: suscrito a TR_AMR7HiRnjoRQ32 (AUDIO) de soak-b
+libc++abi: Pure virtual function called!
+
+## Salida de soak-b (pid 33275): colgado en disconnect() (no terminó en 33 min)
+[10:24:22.511] evento: suscrito a TR_AMrWSpchz46cwA (AUDIO) de soak-a
+[10:34:51.546] evento: sale soak-a
+[10:34:51.547] participantes: [soak-b (yo)]
+[10:34:51.611] evento: onDisconnected motivo=CLIENT_INITIATED
+[10:34:51.612] estado: DESCONECTADO
+exit=143
+
+Volcado de hilos (jstack 33275 a las 11:07:56, 33 min después de llamar a disconnect). Hilo principal:
+"sonimbus.poc.level2.HeadlessCheck.main()" #41 [33420] prio=5 os_prio=0 cpu=399.99ms elapsed=2624.06s tid=0x000079ad7c9b10b0 nid=33420 runnable  [0x000079ad50f2d000]
+   java.lang.Thread.State: RUNNABLE
+	at dev.onvoid.webrtc.media.audio.AudioDeviceModuleBase.disposeInternal(Native Method)
+	at dev.onvoid.webrtc.media.audio.AudioDeviceModuleBase.dispose(AudioDeviceModuleBase.java:79)
+	at io.livekit.sdk.rtc.MediaDevicesHelper.dispose(MediaDevicesHelper.java:173)
+	at io.livekit.sdk.rtc.PeerConnectionEngine.close(PeerConnectionEngine.java:228)
+	at io.livekit.sdk.rtc.RtcClient.disconnect(RtcClient.java:74)
+	at io.livekit.sdk.rtc.RtcClient.shutdown(RtcClient.java:213)
+	at sonimbus.poc.level2.VoiceClient$$Lambda/0x000079ad042f5ac0.run(Unknown Source)
+	at sonimbus.poc.level2.VoiceClient.step(VoiceClient.java:108)
+	at sonimbus.poc.level2.VoiceClient.disconnect(VoiceClient.java:100)
+	- locked <0x00000007170d7fe0> (a sonimbus.poc.level2.VoiceClient)
+	at sonimbus.poc.level2.HeadlessCheck.main(HeadlessCheck.java:21)
+
+Lectura: el hilo principal está dentro de la llamada nativa AudioDeviceModuleBase.disposeInternal (webrtc-java),
+invocada por el SDK (MediaDevicesHelper.dispose <- PeerConnectionEngine.close <- RtcClient.disconnect/shutdown),
+desde el paso "shutdown" de VoiceClient.disconnect(). Es decir: el cierre del módulo de audio nativo no retorna.
+El servidor ya había recibido la salida (onDisconnected CLIENT_INITIATED en el log), así que para los demás
+participantes el cliente salió bien; lo que falla es liberar el audio local.
+
+## Tercera ocurrencia del día (todas en sesiones largas, todas al salir)
+1) evidence/nivel3f-10min-memoria-20261004.txt: 10 min 29 s, dos clientes; pa_close assertion / XIO fatal. Con jcmd.
+2) evidence/nivel3f-caida-al-salir-ventana-20261004.txt: ventana javafx-1, 7 min 36 s; la desconexión no terminó
+   (sin "Desconectado."), el usuario cerró la ventana a mano y hubo SIGSEGV en libX11. Sin jcmd.
+3) esta corrida: 10 min 29 s; "Pure virtual function called!" y cuelgue en disposeInternal. Sin jcmd.
+Las salidas tras sesiones cortas (8 s a ~5 min, incluida javafx-2 con 2 min 26 s) fueron limpias.
+No determinado: el umbral de duración ni la causa dentro del código nativo.
+
+## Volcado de hilos completo de soak-b
+2026-10-04 11:08:05
+Full thread dump OpenJDK 64-Bit Server VM (21.0.12.1+1-1-24.04.4-Ubuntu mixed mode, sharing):
+
+Threads class SMR info:
+_java_thread_list=0x000079ace8002030, length=13, elements={
+0x000079ad7c01a590, 0x000079ad7c1705a0, 0x000079ad7c171b20, 0x000079ad7c1732d0,
+0x000079ad7c174920, 0x000079ad7c175ed0, 0x000079ad7c177aa0, 0x000079ad7c179170,
+0x000079ad7c185020, 0x000079ad7c188750, 0x000079ad7c9b10b0, 0x000079ac9401d400,
+0x000079ace8000fe0
+}
+
+"main" #1 [33332] prio=5 os_prio=0 cpu=2764.11ms elapsed=2626.99s tid=0x000079ad7c01a590 nid=33332 in Object.wait()  [0x000079ad82dfd000]
+   java.lang.Thread.State: WAITING (on object monitor)
+	at java.lang.Object.wait0(java.base@21.0.12.1/Native Method)
+	- waiting on <0x0000000717000000> (a java.lang.Thread)
+	at java.lang.Object.wait(java.base@21.0.12.1/Object.java:366)
+	at java.lang.Thread.join(java.base@21.0.12.1/Thread.java:2079)
+	- locked <0x0000000717000000> (a java.lang.Thread)
+	at org.codehaus.mojo.exec.ExecJavaMojo.joinThread(ExecJavaMojo.java:580)
+	at org.codehaus.mojo.exec.ExecJavaMojo.joinNonDaemonThreads(ExecJavaMojo.java:572)
+	at org.codehaus.mojo.exec.ExecJavaMojo.execute(ExecJavaMojo.java:316)
+	at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo(DefaultBuildPluginManager.java:137)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2(MojoExecutor.java:370)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute(MojoExecutor.java:351)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:215)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:171)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:163)
+	at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:117)
+	at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:81)
+	at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build(SingleThreadedBuilder.java:56)
+	at org.apache.maven.lifecycle.internal.LifecycleStarter.execute(LifecycleStarter.java:128)
+	at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:298)
+	at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:192)
+	at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:105)
+	at org.apache.maven.cli.MavenCli.execute(MavenCli.java:960)
+	at org.apache.maven.cli.MavenCli.doMain(MavenCli.java:293)
+	at org.apache.maven.cli.MavenCli.main(MavenCli.java:196)
+	at java.lang.invoke.DirectMethodHandle$Holder.invokeStatic(java.base@21.0.12.1/DirectMethodHandle$Holder)
+	at java.lang.invoke.LambdaForm$MH/0x000079ad04008400.invoke(java.base@21.0.12.1/LambdaForm$MH)
+	at java.lang.invoke.LambdaForm$MH/0x000079ad04008800.invokeExact_MT(java.base@21.0.12.1/LambdaForm$MH)
+	at jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl(java.base@21.0.12.1/DirectMethodHandleAccessor.java:155)
+	at jdk.internal.reflect.DirectMethodHandleAccessor.invoke(java.base@21.0.12.1/DirectMethodHandleAccessor.java:103)
+	at java.lang.reflect.Method.invoke(java.base@21.0.12.1/Method.java:580)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced(Launcher.java:283)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.launch(Launcher.java:226)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode(Launcher.java:407)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.main(Launcher.java:348)
+
+"Reference Handler" #9 [33349] daemon prio=10 os_prio=0 cpu=2.34ms elapsed=2626.96s tid=0x000079ad7c1705a0 nid=33349 waiting on condition  [0x000079ad60601000]
+   java.lang.Thread.State: RUNNABLE
+	at java.lang.ref.Reference.waitForReferencePendingList(java.base@21.0.12.1/Native Method)
+	at java.lang.ref.Reference.processPendingReferences(java.base@21.0.12.1/Reference.java:246)
+	at java.lang.ref.Reference$ReferenceHandler.run(java.base@21.0.12.1/Reference.java:208)
+
+"Finalizer" #10 [33351] daemon prio=8 os_prio=0 cpu=0.41ms elapsed=2626.96s tid=0x000079ad7c171b20 nid=33351 in Object.wait()  [0x000079ad60501000]
+   java.lang.Thread.State: WAITING (on object monitor)
+	at java.lang.Object.wait0(java.base@21.0.12.1/Native Method)
+	- waiting on <0x00000007170274a8> (a java.lang.ref.NativeReferenceQueue$Lock)
+	at java.lang.Object.wait(java.base@21.0.12.1/Object.java:366)
+	at java.lang.Object.wait(java.base@21.0.12.1/Object.java:339)
+	at java.lang.ref.NativeReferenceQueue.await(java.base@21.0.12.1/NativeReferenceQueue.java:48)
+	at java.lang.ref.ReferenceQueue.remove0(java.base@21.0.12.1/ReferenceQueue.java:158)
+	at java.lang.ref.NativeReferenceQueue.remove(java.base@21.0.12.1/NativeReferenceQueue.java:89)
+	- locked <0x00000007170274a8> (a java.lang.ref.NativeReferenceQueue$Lock)
+	at java.lang.ref.Finalizer$FinalizerThread.run(java.base@21.0.12.1/Finalizer.java:173)
+
+"Signal Dispatcher" #11 [33353] daemon prio=9 os_prio=0 cpu=0.52ms elapsed=2626.96s tid=0x000079ad7c1732d0 nid=33353 waiting on condition  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Service Thread" #12 [33354] daemon prio=9 os_prio=0 cpu=1.09ms elapsed=2626.96s tid=0x000079ad7c174920 nid=33354 runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Monitor Deflation Thread" #13 [33356] daemon prio=9 os_prio=0 cpu=1011.98ms elapsed=2626.96s tid=0x000079ad7c175ed0 nid=33356 runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"C2 CompilerThread0" #14 [33358] daemon prio=9 os_prio=0 cpu=1661.61ms elapsed=2626.96s tid=0x000079ad7c177aa0 nid=33358 waiting on condition  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+   No compile task
+
+"C1 CompilerThread0" #22 [33360] daemon prio=9 os_prio=0 cpu=791.59ms elapsed=2626.96s tid=0x000079ad7c179170 nid=33360 waiting on condition  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+   No compile task
+
+"Notification Thread" #26 [33363] daemon prio=9 os_prio=0 cpu=0.22ms elapsed=2626.95s tid=0x000079ad7c185020 nid=33363 runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Common-Cleaner" #27 [33365] daemon prio=8 os_prio=0 cpu=11.08ms elapsed=2626.95s tid=0x000079ad7c188750 nid=33365 waiting on condition  [0x000079ad5172d000]
+   java.lang.Thread.State: TIMED_WAITING (parking)
+	at jdk.internal.misc.Unsafe.park(java.base@21.0.12.1/Native Method)
+	- parking to wait for  <0x00000007170622f0> (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)
+	at java.util.concurrent.locks.LockSupport.parkNanos(java.base@21.0.12.1/LockSupport.java:269)
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(java.base@21.0.12.1/AbstractQueuedSynchronizer.java:1886)
+	at java.lang.ref.ReferenceQueue.await(java.base@21.0.12.1/ReferenceQueue.java:71)
+	at java.lang.ref.ReferenceQueue.remove0(java.base@21.0.12.1/ReferenceQueue.java:143)
+	at java.lang.ref.ReferenceQueue.remove(java.base@21.0.12.1/ReferenceQueue.java:218)
+	at jdk.internal.ref.CleanerImpl.run(java.base@21.0.12.1/CleanerImpl.java:140)
+	at java.lang.Thread.runWith(java.base@21.0.12.1/Thread.java:1596)
+	at java.lang.Thread.run(java.base@21.0.12.1/Thread.java:1583)
+	at jdk.internal.misc.InnocuousThread.run(java.base@21.0.12.1/InnocuousThread.java:186)
+
+"sonimbus.poc.level2.HeadlessCheck.main()" #41 [33420] prio=5 os_prio=0 cpu=399.99ms elapsed=2624.06s tid=0x000079ad7c9b10b0 nid=33420 runnable  [0x000079ad50f2d000]
+   java.lang.Thread.State: RUNNABLE
+	at dev.onvoid.webrtc.media.audio.AudioDeviceModuleBase.disposeInternal(Native Method)
+	at dev.onvoid.webrtc.media.audio.AudioDeviceModuleBase.dispose(AudioDeviceModuleBase.java:79)
+	at io.livekit.sdk.rtc.MediaDevicesHelper.dispose(MediaDevicesHelper.java:173)
+	at io.livekit.sdk.rtc.PeerConnectionEngine.close(PeerConnectionEngine.java:228)
+	at io.livekit.sdk.rtc.RtcClient.disconnect(RtcClient.java:74)
+	at io.livekit.sdk.rtc.RtcClient.shutdown(RtcClient.java:213)
+	at sonimbus.poc.level2.VoiceClient$$Lambda/0x000079ad042f5ac0.run(Unknown Source)
+	at sonimbus.poc.level2.VoiceClient.step(VoiceClient.java:108)
+	at sonimbus.poc.level2.VoiceClient.disconnect(VoiceClient.java:100)
+	- locked <0x00000007170d7fe0> (a sonimbus.poc.level2.VoiceClient)
+	at sonimbus.poc.level2.HeadlessCheck.main(HeadlessCheck.java:21)
+	at java.lang.invoke.LambdaForm$DMH/0x000079ad041a8000.invokeStaticInit(java.base@21.0.12.1/LambdaForm$DMH)
+	at java.lang.invoke.LambdaForm$MH/0x000079ad041a8400.invoke_MT(java.base@21.0.12.1/LambdaForm$MH)
+	at org.codehaus.mojo.exec.ExecJavaMojo.doMain(ExecJavaMojo.java:375)
+	at org.codehaus.mojo.exec.ExecJavaMojo.doExec(ExecJavaMojo.java:364)
+	at org.codehaus.mojo.exec.ExecJavaMojo.lambda$execute$0(ExecJavaMojo.java:286)
+	at org.codehaus.mojo.exec.ExecJavaMojo$$Lambda/0x000079ad0419e588.run(Unknown Source)
+	at java.lang.Thread.runWith(java.base@21.0.12.1/Thread.java:1596)
+	at java.lang.Thread.run(java.base@21.0.12.1/Thread.java:1583)
+
+"pool-1-thread-1" #45 [33433] prio=5 os_prio=0 cpu=46.50ms elapsed=2623.63s tid=0x000079ac9401d400 nid=33433 waiting on condition  [0x000079ad50325000]
+   java.lang.Thread.State: WAITING (parking)
+	at jdk.internal.misc.Unsafe.park(java.base@21.0.12.1/Native Method)
+	- parking to wait for  <0x000000071703aec0> (a java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject)
+	at java.util.concurrent.locks.LockSupport.park(java.base@21.0.12.1/LockSupport.java:371)
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionNode.block(java.base@21.0.12.1/AbstractQueuedSynchronizer.java:519)
+	at java.util.concurrent.ForkJoinPool.unmanagedBlock(java.base@21.0.12.1/ForkJoinPool.java:3780)
+	at java.util.concurrent.ForkJoinPool.managedBlock(java.base@21.0.12.1/ForkJoinPool.java:3725)
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(java.base@21.0.12.1/AbstractQueuedSynchronizer.java:1746)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(java.base@21.0.12.1/ScheduledThreadPoolExecutor.java:1170)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(java.base@21.0.12.1/ScheduledThreadPoolExecutor.java:899)
+	at java.util.concurrent.ThreadPoolExecutor.getTask(java.base@21.0.12.1/ThreadPoolExecutor.java:1070)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(java.base@21.0.12.1/ThreadPoolExecutor.java:1130)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(java.base@21.0.12.1/ThreadPoolExecutor.java:642)
+	at java.lang.Thread.runWith(java.base@21.0.12.1/Thread.java:1596)
+	at java.lang.Thread.run(java.base@21.0.12.1/Thread.java:1583)
+
+"Attach Listener" #52 [35790] daemon prio=9 os_prio=0 cpu=0.82ms elapsed=0.10s tid=0x000079ace8000fe0 nid=35790 waiting on condition  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"G1 Conc#2" os_prio=0 cpu=7.21ms elapsed=2623.59s tid=0x000079ad540018c0 nid=33438 runnable  
+
+"G1 Conc#1" os_prio=0 cpu=9.47ms elapsed=2623.59s tid=0x000079ad54000d80 nid=33437 runnable  
+
+"GC Thread#11" os_prio=0 cpu=7.42ms elapsed=2623.60s tid=0x000079acf800d290 nid=33436 runnable  
+
+"GC Thread#10" os_prio=0 cpu=6.96ms elapsed=2623.60s tid=0x000079acf800c790 nid=33435 runnable  
+
+"GC Thread#9" os_prio=0 cpu=7.12ms elapsed=2623.60s tid=0x000079acf8013d20 nid=33434 runnable  
+
+"GC Thread#8" os_prio=0 cpu=7.99ms elapsed=2624.63s tid=0x000079acf8015cb0 nid=33414 runnable  
+
+"GC Thread#7" os_prio=0 cpu=7.02ms elapsed=2624.63s tid=0x000079acf80154a0 nid=33413 runnable  
+
+"GC Thread#6" os_prio=0 cpu=7.20ms elapsed=2624.63s tid=0x000079acf8014dd0 nid=33412 runnable  
+
+"GC Thread#5" os_prio=0 cpu=7.12ms elapsed=2624.63s tid=0x000079acf80148d0 nid=33411 runnable  
+
+"GC Thread#4" os_prio=0 cpu=23.48ms elapsed=2626.18s tid=0x000079acf800af00 nid=33406 runnable  
+
+"GC Thread#3" os_prio=0 cpu=20.87ms elapsed=2626.18s tid=0x000079acf800a010 nid=33405 runnable  
+
+"GC Thread#2" os_prio=0 cpu=17.38ms elapsed=2626.19s tid=0x000079acf8009510 nid=33404 runnable  
+
+"GC Thread#1" os_prio=0 cpu=19.72ms elapsed=2626.19s tid=0x000079acf8008a10 nid=33403 runnable  
+
+"VM Thread" os_prio=0 cpu=255.29ms elapsed=2626.97s tid=0x000079ad7c167470 nid=33346 runnable  
+
+"VM Periodic Task Thread" os_prio=0 cpu=5387.76ms elapsed=2626.97s tid=0x000079ad7c1553f0 nid=33344 waiting on condition  
+
+"G1 Service" os_prio=0 cpu=280.69ms elapsed=2626.99s tid=0x000079ad7c13bb20 nid=33342 runnable  
+
+"G1 Refine#0" os_prio=0 cpu=0.19ms elapsed=2626.99s tid=0x000079ad7c13ab50 nid=33340 runnable  
+
+"G1 Conc#0" os_prio=0 cpu=7.97ms elapsed=2626.99s tid=0x000079ad7c093da0 nid=33338 runnable  
+
+"G1 Main Marker" os_prio=0 cpu=0.84ms elapsed=2626.99s tid=0x000079ad7c092ec0 nid=33336 runnable  
+
+"GC Thread#0" os_prio=0 cpu=19.17ms elapsed=2626.99s tid=0x000079ad7c082570 nid=33334 runnable  
+
+JNI global refs: 256, weak refs: 0
+
