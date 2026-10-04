@@ -1,0 +1,66 @@
+Nivel 1 repetido durante 630 s (webrtc-java 0.18.0 solo, sin el SDK de Trirrin) - 2026-10-04, 11:18:28-11:29:01.
+Comando: bash run-nivel1.sh 630
+Objetivo: saber si el fallo de cierre tras sesiones largas (REPORT 4.4.2) aparece sin el SDK.
+RESULTADO: cierre LIMPIO. Tras 10 min 30 s: removeTrack, close de los dos PeerConnection, y dispose de pista,
+factory y AudioDeviceModule, todos "ok"; exit=0. 63054 bloques de audio recibidos, packetsLost=0.
+Lectura: con la misma biblioteca nativa, la misma duración y el mismo dispositivo de audio, el cierre no falla
+cuando el orden de liberación es el del Nivel 1. Apunta a que el fallo está en cómo el SDK cierra (o en lo que
+crea de más: su propio AudioDeviceModule en MediaDevicesHelper), no en webrtc-java por sí solo.
+Límites: es UNA corrida; el micrófono estaba silenciado en el sistema (nivelMicLocal=0 toda la corrida), y un
+loopback en una JVM no es idéntico a una sesión contra el SFU. No demuestra la causa dentro del SDK.
+Nota: la salida se escribió fuera de la partición NTFS y se copió aquí al terminar (ver REPORT 5.3).
+
+## Salida (sin las líneas periódicas de nivel y estadísticas, salvo las últimas)
+# inicio 2026-10-04T11:18:28-06:00
+[11:18:30.610] java.version=21.0.12.1 os=Linux
+[11:18:30.890] Micrófonos (1):
+[11:18:30.892]   - Built-in Audio Analog Stereo [alsa_input.pci-0000_00_1f.3.analog-stereo]
+[11:18:30.893] Salidas (1):
+[11:18:30.894]   - Built-in Audio Analog Stereo [alsa_output.pci-0000_00_1f.3.analog-stereo]
+[11:18:30.895] Micrófono por defecto: Device [name=Built-in Audio Analog Stereo, descriptor=alsa_input.pci-0000_00_1f.3.analog-stereo, transport=UNKNOWN, formFactor=UNKNOWN]
+[11:18:30.895] Salida por defecto:    Device [name=Built-in Audio Analog Stereo, descriptor=alsa_output.pci-0000_00_1f.3.analog-stereo, transport=UNKNOWN, formFactor=UNKNOWN]
+[11:18:30.921] ADM: micMuted=false speakerMuted=false micVol=17990/65536 speakerVol=65536/65536
+[11:18:30.928] AudioOptions: echoCancellation=true autoGainControl=true noiseSuppression=true highpassFilter=true
+[11:18:30.948] callee onTrack kind=audio id=mic
+[11:18:30.969] callee audio recibido: 16 bits, 48000 Hz, 1 canal(es), 480 muestras/bloque
+[11:18:30.971] caller iceConnectionState=CHECKING
+[11:18:30.972] SDP intercambiado. Códecs de audio en la respuesta:
+[11:18:30.974]   a=rtpmap:111 opus/48000/2
+[11:18:30.975]   a=fmtp:111 minptime=10;useinbandfec=1
+[11:18:30.975]   a=rtpmap:63 red/48000/2
+[11:18:30.975]   a=fmtp:63 111/111
+[11:18:30.976]   a=rtpmap:9 G722/8000
+[11:18:30.976]   a=rtpmap:0 PCMU/8000
+[11:18:30.977]   a=rtpmap:8 PCMA/8000
+[11:18:30.977]   a=rtpmap:13 CN/8000
+[11:18:30.977]   a=rtpmap:110 telephone-event/48000
+[11:18:30.978]   a=rtpmap:126 telephone-event/8000
+[11:18:31.070] callee connectionState=CONNECTING
+[11:18:31.071] caller connectionState=CONNECTING
+[11:18:31.074] callee connectionState=CONNECTED
+[11:18:31.078] caller connectionState=CONNECTED
+[11:18:31.079] caller iceConnectionState=CONNECTED
+[11:18:31.079] CONECTADO. Habla al micrófono durante 630 s (usa auriculares para evitar acople).
+[11:18:31.898] caller iceConnectionState=COMPLETED
+[11:29:01.735] FIN: bloques de audio recibidos por callee=63054 (el audio fluye de extremo a extremo)
+[11:29:01.736] caller iceConnectionState=CLOSED
+[11:29:01.736] caller connectionState=CLOSED
+[11:29:01.739] callee connectionState=CLOSED
+[11:29:01.745] dispose micTrack: ok
+[11:29:01.747] dispose factory: ok
+[11:29:01.748] dispose adm: ok
+exit=0 fin 2026-10-04T11:29:01-06:00
+
+## Últimas líneas periódicas
+[11:28:57.725] t=626s nivelMicLocal=0 bloquesRecibidos=62654
+[11:28:59.726] t=628s nivelMicLocal=0 bloquesRecibidos=62854
+[11:29:01.727] t=630s nivelMicLocal=0 bloquesRecibidos=63054
+[11:29:01.729]   stats caller OUTBOUND_RTP: bytesSent=1934282 packetsSent=31899
+[11:29:01.729]   stats caller MEDIA_SOURCE: totalAudioEnergy=0.1135407019871468 audioLevel=0.004028443250831629 echoReturnLoss=-28.169779777526855 echoReturnLossEnhancement=1.4982212781906128
+[11:29:01.729]   stats caller CODEC: mimeType=audio/opus clockRate=48000
+[11:29:01.730]   stats caller CANDIDATE_PAIR: bytesSent=3175379 bytesReceived=509318 packetsReceived=12589 packetsSent=32022 currentRoundTripTime=0.0
+[11:29:01.730]   stats caller REMOTE_INBOUND_RTP: jitter=0.00227 packetsLost=0
+[11:29:01.732]   stats callee REMOTE_OUTBOUND_RTP: packetsSent=31766 bytesSent=1925634
+[11:29:01.732]   stats callee CANDIDATE_PAIR: bytesSent=509318 bytesReceived=3175379 packetsReceived=32022 packetsSent=12589 currentRoundTripTime=0.0
+[11:29:01.732]   stats callee CODEC: mimeType=audio/opus clockRate=48000
+[11:29:01.732]   stats callee INBOUND_RTP: totalAudioEnergy=0.10387384779998105 audioLevel=0.0038453321939756462 packetsLost=0 totalSamplesReceived=30262080 jitterBufferDelay=1020681.6 concealedSamples=0 jitterBufferEmittedCount=30261120 bytesReceived=1934282 jitter=0.002 packetsReceived=31899
