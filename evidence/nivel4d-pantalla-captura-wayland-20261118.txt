@@ -1,0 +1,22 @@
+# Nivel 4d: captura de pantalla con webrtc-java 0.18.0 (sonda ScreenProbe). 2026-11-18. RESULTADO: FALLA en esta sesión (sin imagen).
+# Entorno: Ubuntu 24.04, GNOME (XDG_CURRENT_DESKTOP=ubuntu:GNOME), sesión Wayland, DISPLAY=:0 (Xwayland, 1920x1080), PipeWire presente.
+# Código: src/main/java/sonimbus/poc/level4/ScreenProbe.java (ScreenCapturer + WindowCapturer, captureFrame() en bucle).
+
+## Intento 1 (sin cargar la biblioteca nativa antes)
+java.lang.UnsatisfiedLinkError: 'void dev.onvoid.webrtc.media.video.desktop.ScreenCapturer.initialize()' at ScreenCapturer.<init>(ScreenCapturer.java:30)
+Causa (HECHO): ScreenCapturer no carga la biblioteca nativa por sí solo; basta crear antes un PeerConnectionFactory (la carga en su static init). Corregido en la sonda.
+
+## Intento 2 (10 capturas) y 3 (40 capturas, pausa de 250 ms)
+Pantallas vistas: 1
+  pantalla: DesktopSource@32 [title=null, id=1]
+Ventanas vistas: 1
+  ventana: DesktopSource@33 [title=null, id=2]
+No llegó ningún fotograma válido en 5 s.
+onCaptureResult: ERROR_TEMPORARY frame=null   (10 de 10 en el intento 2; 40 de 40 en el intento 3)
+No llegó ningún fotograma válido.
+
+## Lectura
+- HECHO: enumera 1 pantalla (id=1) y 1 ventana (id=2), ambas con title=null; ninguna captura devuelve un fotograma (50 de 50 ERROR_TEMPORARY).
+- HECHO: el nativo de webrtc-java 0.18.0 contiene cadenas de 'org.freedesktop.portal.ScreenCast' y 'libpipewire-0.3.so.0' (strings sobre el .so).
+- HIPÓTESIS: en Wayland el backend X11 solo ve Xwayland y no la pantalla real, y la captura nativa vía portal/PipeWire necesita un diálogo de GNOME o un API del wrapper Java que no usé. No verificado.
+- NO PROBADO: captura bajo sesión X11 (Ubuntu on Xorg); mirar si aparece un diálogo del portal (el usuario no estaba mirando); publicar una pista SCREEN_SHARE por el SDK (que no la expone: README.md:182; haría falta tocar su código, e incluso reflexión sobre el campo privado 'factory' de PeerConnectionEngine).
