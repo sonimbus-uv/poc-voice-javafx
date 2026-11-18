@@ -1,0 +1,8 @@
+# Nivel 4b/4c: observación del usuario (2026-11-18, ~12:42-12:47 hora local)
+Tipo: observación del usuario. Contexto: ventana JavaFX (run-nivel4.sh) y https://meet.livekit.io en modo Custom,
+con una sola webcam (JavaFX y navegador no pueden abrirla a la vez). Prueba A: JavaFX publica, el navegador mira
+(log 20261118-124200). Prueba B: el navegador publica, JavaFX pinta el remoto (log 20261118-124554).
+Respuesta literal del usuario tras hacer ambas pruebas:
+  "si la ventana de javafx transmite de manera correcta la imagen ya hice ambas pruebas y se ve de manera correcta"
+Notas del redactor: la respuesta no detalla colores ni fluidez; solo confirma que la imagen se ve correcta en ambos
+sentidos. El orden de bytes del color (BGRA) quedó, por tanto, bien. Las cifras de fps están en el archivo de servidor.

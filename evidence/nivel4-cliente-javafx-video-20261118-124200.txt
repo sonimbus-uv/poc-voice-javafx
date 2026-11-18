@@ -1,0 +1,24 @@
+Nov 18, 2026 12:42:02 PM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @7dd0d8dc'
+[12:42:07.470] Token generado para identidad=javafx-video sala=poc
+[12:42:07.489] Conectando a ws://localhost:7880 ...
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+[12:42:07.887] evento: onConnected
+[12:42:07.887] Unido a la sala: poc (sid=RM_mLoHnktmJe75)
+[12:42:07.890] Cámaras vistas por el SDK: [MediaDeviceInfo{deviceId='0', label='USB2.0 HD UVC WebCam: USB2.0 HD', kind=VIDEO_INPUT}]
+[12:42:08.208] Cámara publicada (cid=video-653ed79b-d423-473d-80a5-3c43c5a51df1) 640x480@15, oferta del publisher forzada
+[12:42:10.220] evento: pista publicada TR_VCtUat44cvuAkn (VIDEO) por javafx-video
+[12:43:28.543] evento: entra navegador
+[12:44:22.540] evento: sale navegador
+[12:44:27.775] evento: onDisconnected motivo=CLIENT_INITIATED
+[12:44:27.776] Desconectado.
+[12:45:06.117] Token generado para identidad=javafx-video sala=poc
+[12:45:06.118] Conectando a ws://localhost:7880 ...
+[12:45:06.149] evento: entra navegador
+[12:45:06.149] evento: onConnected
+[12:45:06.149] Unido a la sala: poc (sid=RM_NQBkHM6uSPhU)
+[12:45:06.150] Cámaras vistas por el SDK: [MediaDeviceInfo{deviceId='0', label='USB2.0 HD UVC WebCam: USB2.0 HD', kind=VIDEO_INPUT}]
+[12:45:17.231] evento: onDisconnected motivo=CLIENT_INITIATED
+[12:45:17.232] Desconectado.

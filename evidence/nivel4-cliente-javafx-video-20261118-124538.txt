@@ -1,0 +1,14 @@
+Nov 18, 2026 12:45:41 PM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @37887161'
+[12:45:44.360] Token generado para identidad=javafx-video sala=poc
+[12:45:44.380] Conectando a ws://localhost:7880 ...
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+[12:45:44.764] evento: onConnected
+[12:45:44.765] Unido a la sala: poc (sid=RM_985R8GBZ8EUo)
+[12:45:44.768] Cámaras vistas por el SDK: [MediaDeviceInfo{deviceId='0', label='USB2.0 HD UVC WebCam: USB2.0 HD', kind=VIDEO_INPUT}]
+[12:45:45.151] Cámara publicada (cid=video-55a3380c-3631-4a6c-a48a-0745607360aa) 640x480@15, oferta del publisher forzada
+[12:45:45.211] evento: pista publicada TR_VCN39LPUgakzkc (VIDEO) por javafx-video
+[12:45:47.683] evento: onDisconnected motivo=CLIENT_INITIATED
+[12:45:47.684] Desconectado.

@@ -1,0 +1,21 @@
+Nov 18, 2026 12:45:56 PM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @37887161'
+[12:46:01.481] Token generado para identidad=javafx-video sala=poc
+[12:46:01.503] Conectando a ws://localhost:7880 ...
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+[12:46:01.910] evento: onConnected
+[12:46:01.911] Unido a la sala: poc (sid=RM_985R8GBZ8EUo)
+[12:46:31.698] evento: pista publicada TR_AMaMDzFUwpZAkP (AUDIO) por navegador
+[12:46:31.699] evento: entra navegador
+[12:46:31.709] evento: suscrito a TR_AMaMDzFUwpZAkP (AUDIO) de navegador
+[12:46:31.883] evento: pista publicada TR_VC48RQK4wVL24W (VIDEO) por navegador
+[12:46:31.896] evento: suscrito a TR_VC48RQK4wVL24W (VIDEO) de navegador
+[12:46:31.900] Sink de video añadido a TR_VC48RQK4wVL24W
+[stats] remoto: recibidos 5 fps, pintados 5 fps, descartados 0, 384x216
+[stats] remoto: recibidos 7 fps, pintados 7 fps, descartados 0, 384x216
+[stats] remoto: recibidos 7 fps, pintados 7 fps, descartados 0, 1280x720
+[stats] remoto: recibidos 8 fps, pintados 8 fps, descartados 0, 1280x720
+[12:46:51.764] evento: onDisconnected motivo=CLIENT_INITIATED
+[12:46:51.765] Desconectado.

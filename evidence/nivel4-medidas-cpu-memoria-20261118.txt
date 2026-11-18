@@ -1,0 +1,41 @@
+# Nivel 4: medidas de CPU, memoria y ancho de banda. 2026-11-18. Máquina de 16 hilos (nproc=16), Java 21.0.13, Wayland.
+# Cliente: VideoHeadless (sin ventana ni pintado), publicando cámara, 45 s cada corrida. CPU = % de UN núcleo (utime+stime de /proc/PID/stat cada 5 s).
+# Script: muestreo propio (no incluido en el repo; descrito aquí). Servidor: líneas 'rtp stats' upstream.
+
+## 640x480 @15 pedidos (m640)
+t_s cpu_pct rss_MiB threads
+10 16 147 38
+15 16 147 37
+20 14 147 37
+25 15 147 37
+30 16 147 37
+35 12 147 37
+40 12 147 37
+exit=0
+
+## 1280x720 @30 pedidos (m720, valor por defecto del SDK)
+t_s cpu_pct rss_MiB threads
+10 11 166 39
+15 16 167 37
+20 22 167 37
+25 19 187 40
+30 34 188 40
+35 34 188 40
+40 34 188 40
+exit=0
+
+## Servidor (upstream, cierre de cada sesión)
+m640: VP8, 43,99 s, 8154853 bytes, 1,48 Mbit/s, 0 perdidos, 327 fotogramas, 7,43 fps
+m720: VP8, 43,55 s, 9722531 bytes, 1,79 Mbit/s, 0 perdidos, 360 fotogramas, 8,27 fps
+
+## La webcam entrega pocos fps (ffmpeg directo, sin webrtc-java, -framerate 30, 6 s)
+640x480:  frame=45 fps=7.3
+1280x720: frame=48 fps=7.8
+Modos que anuncia la cámara (ffmpeg -list_formats): MJPEG y YUYV 422 en 1280x720, 640x480, 352x288, 320x240, 176x144, 160x120.
+
+## Lectura
+- HECHO: aunque se pidan 15 o 30 fps, llegan ~7-8 fps al servidor y ffmpeg obtiene lo mismo: el límite está en la cámara/driver/entorno, no en webrtc-java ni en el SDK.
+- HIPÓTESIS (no verificada): exposición automática con poca luz; no se probó con más luz ni con otra cámara.
+- HECHO: el bitrate subió poco con la resolución (1,48 -> 1,79 Mbit/s) porque los fps reales son casi iguales.
+- HECHO: CPU de un cliente publicando: ~12-16 % de un núcleo a 640x480; ~34 % (11->34) a 1280x720; RSS 147 MiB y 188 MiB (audio-only del Nivel 3f: ~188 MiB). Sin ventana: no incluye el coste del pintado JavaFX.
+- NO MEDIDO: CPU/memoria de la ventana JavaFX recibiendo video (solo se midió el cliente headless publicando); decodificación y pintado.

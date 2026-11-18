@@ -102,6 +102,19 @@
   ni prueba en Windows, y el servidor solo escucha en esta máquina/red local en modo --dev. Sería trabajo nuevo
   (fuera del PoC): jpackage en Windows + servidor accesible desde internet.
 
+- Nivel 4 (VIDEO), iniciado 2026-11-18. Alcance aprobado por el usuario: cámara (4a publicar, 4b recibir, 4c ventana JavaFX)
+  y pantalla como nivel opcional (4d). Entorno: Java 21.0.13, Maven 3.9.12 (no 3.8.7), sesión Wayland, webcam USB2.0 HD
+  (/dev/video0 y /dev/video1 accesibles sin sudo). Una sola webcam: no puede abrirla JavaFX y el navegador a la vez.
+  - 4a: PASA (commit e996fe6). VP8 640x480@15, ~1,22 Mbit/s, 0 perdidos. SIN el workaround de negociación el servidor
+    nunca publica la pista: el defecto 4.3.1 también afecta al video. evidence/nivel4a-camara-publicar-20261118.txt
+  - Código: src/main/java/sonimbus/poc/level4/ (VideoClient, VideoHeadless, FramePainter, VideoApp, VideoLauncher);
+    `bash run-nivel4.sh [identidad]` abre la ventana. Commit 4b/4c hecho.
+  - Hallazgos de código (SDK, no reproducidos aún): LocalVideoTrack no guarda el VideoDeviceSource, nadie puede
+    detenerlo (MediaDevicesHelper.java:155-164); setCameraEnabled solo silencia la pista y envía mute al servidor.
+  - 4b y 4c: PASAN (usuario: "se ve de manera correcta" en ambos sentidos). Fps limitados por la webcam (~7-8). Evidencia: nivel4-*20261118.txt, nivel4bc-*
+  - 4d (pantalla): el SDK no la expone (README.md:182); webrtc-java tiene VideoDesktopSource. Sesión Wayland: la captura
+    puede no funcionar; si falla, documentar el error exacto.
+
 ## Decisiones (versiones a fijar, tras OK)
 - Java 21 (source /media/.../env.sh o export JAVA_HOME), Maven 3.8.7
 - livekit/livekit-server:v1.13.7

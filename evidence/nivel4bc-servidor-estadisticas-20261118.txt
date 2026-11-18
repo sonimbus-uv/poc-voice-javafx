@@ -1,0 +1,22 @@
+# Nivel 4b/4c: estadísticas del servidor LiveKit (v1.13.7 --dev) para las pruebas del usuario. 2026-11-18, UTC (local = UTC-6).
+# Fuente: docker compose logs, líneas 'rtp stats' (buffer_base.go), campos extraídos tal cual. Logs de cliente: nivel4-cliente-javafx-video-20261118-12*.txt
+18:44:20.478 navegador video/VP8 layer ? downstream elapsed 52.689261194s pkts 9161 bytes 10602272 bitrate_bps 1609781.0839993083 lost 0 frames 536 fps 10.17285093496504
+18:44:27.765 javafx-video video/VP8 layer 0 upstream elapsed 2m17.538259141s pkts 24855 bytes 28611311 bitrate_bps 1664195.035109093 lost 0 frames 1749 fps 12.716461666182491
+18:45:47.670 javafx-video video/VP8 layer 0 upstream elapsed 2.33288693s pkts 145 bytes 163236 bitrate_bps 559773.3791581575 lost 0 frames 16 fps 6.858454987357661
+18:46:51.753 javafx-video audio/red layer ? downstream elapsed 19.98787187s pkts 102 bytes 4816 bitrate_bps 1927.5688903042783 lost 0 frames 0 fps 0
+18:46:51.950 javafx-video video/VP8 layer ? downstream elapsed 20.024303423s pkts 3298 bytes 3804808 bitrate_bps 1520076.0474413433 lost 0 frames 155 fps 7.7405938536651595
+18:46:56.094 navegador audio/red layer 0 upstream elapsed 24.395374982s pkts 125 bytes 6952 bitrate_bps 2279.7763937236455 lost 0 frames 1 fps 0.04099137646942688
+18:46:56.094 navegador video/VP8 layer 0 upstream elapsed 24.214610679s pkts 562 bytes 550487 bitrate_bps 181869.37045489057 lost 0 frames 182 fps 7.516123319622008
+18:46:56.094 navegador video/VP8 layer 1 upstream elapsed 23.729456455s pkts 2064 bytes 2350806 bitrate_bps 792535.9788861627 lost 0 frames 179 fps 7.543367052652534
+18:46:56.094 navegador video/VP8 layer 2 upstream elapsed 23.70343087s pkts 4089 bytes 4766052 bitrate_bps 1608561.0648143275 lost 0 frames 173 fps 7.298521507236982
+18:48:49.254 m640 video/VP8 layer 0 upstream elapsed 43.993629654s pkts 6996 bytes 8154853 bitrate_bps 1482915.242799666 lost 0 frames 327 fps 7.43289432065009
+18:49:34.985 m720 video/VP8 layer 0 upstream elapsed 43.553335145s pkts 8332 bytes 9722531 bitrate_bps 1785862.0411284235 lost 0 frames 360 fps 8.265727499431893
+
+## Lectura (hechos)
+- Prueba A (JavaFX publica): subida VP8 de 2 min 17,5 s, 24855 paquetes, 28 611 311 bytes, ~1,66 Mbit/s, 12,7 fps medios, 0 perdidos.
+  El navegador recibió esa pista (downstream ~1,6 Mbit/s, ~10,2 fps).
+- Prueba B (el navegador publica): el navegador emite simulcast VP8 de 3 capas (~0,18 / ~0,79 / ~1,61 Mbit/s), ~7,5 fps cada una.
+  JavaFX recibió una capa (~1,52 Mbit/s, ~7,7 fps), 0 perdidos. El cliente registró resoluciones 384x216 y luego 1280x720
+  y "recibidos 5-8 fps, pintados = recibidos, descartados 0": el pintado en JavaFX no descarta fotogramas.
+- El fps bajo viene del origen (ver nivel4-medidas-cpu-memoria-20261118.txt: la webcam entrega ~7-8 fps), no del pintado.
+- Limitación: las estadísticas de la prueba B solo se imprimieron cada ~5 s (filtro de VideoApp) y hay 4 muestras.

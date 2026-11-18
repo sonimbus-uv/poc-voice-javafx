@@ -30,6 +30,10 @@ public class VideoClient {
     /** Receptor opcional de fotogramas remotos (la ventana JavaFX lo usa para pintar). Debe liberar nada: el cliente hace release. */
     private volatile Consumer<VideoFrame> frameConsumer;
 
+    /** Receptor opcional de la vista previa local (mismos fotogramas que salen hacia el servidor). */
+    private volatile Consumer<VideoFrame> localFrameConsumer;
+    private VideoTrackSink localSink;
+
     private RtcClient client;
     private LocalVideoTrack camTrack;
     private RemoteVideoTrack remoteTrack;
@@ -46,6 +50,10 @@ public class VideoClient {
 
     public void setFrameConsumer(Consumer<VideoFrame> consumer) {
         this.frameConsumer = consumer;
+    }
+
+    public void setLocalFrameConsumer(Consumer<VideoFrame> consumer) {
+        this.localFrameConsumer = consumer;
     }
 
     public synchronized void connect(String url, String room, String identity, boolean publishCamera,
@@ -79,6 +87,13 @@ public class VideoClient {
             return;
         }
         client.publishVideoTrack(camTrack);
+        if (localFrameConsumer != null) {
+            localSink = f -> {
+                Consumer<VideoFrame> lc = localFrameConsumer;
+                if (lc != null) lc.accept(f);
+            };
+            camTrack.getNativeTrack().addSink(localSink);
+        }
         // Mismo workaround que el audio (evidence/nivel2-problemas-sdk-20261004.txt): el SDK no envía la
         // oferta del publisher al añadir pistas. Se prueba si también hace falta con video (Nivel 4a).
         boolean forzar = !Boolean.getBoolean("poc.sinforzar");
@@ -104,6 +119,9 @@ public class VideoClient {
         remoteTrack = null;
         sink = null;
         // Mismo orden que el audio: quitar el sink y la pista del sender, disponer, y solo entonces shutdown.
+        VideoTrackSink ls = localSink;
+        localSink = null;
+        step("removeSink local", () -> { if (track != null && ls != null) track.getNativeTrack().removeSink(ls); });
         step("removeSink", () -> { if (remote != null && s != null) remote.removeSink(s); });
         step("unpublishTrack", () -> { if (track != null) c.unpublishTrack(track.getId()); });
         step("dispose camTrack", () -> { if (track != null) track.dispose(); });
