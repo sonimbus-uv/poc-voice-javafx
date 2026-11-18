@@ -1,0 +1,47 @@
+# Nivel 3f segunda ronda - modo=1audio segundos=630 gdb=1 sala=soak2-1audio
+# Inicio: 2026-11-18T15:52:34-06:00  | SO: "Ubuntu 26.04.1 LTS" | kernel 7.0.0-38-generic | wayland | ptrace_scope=0
+# Pids: soak-a=20350 
+# Muestreo cada 30 s SOLO con ps (sin jcmd, para no perturbar la JVM): t_s id pid rss_kib hilos
+0 soak-a 20350 41440 18
+30 soak-a 20350 130608 40
+60 soak-a 20350 130632 40
+90 soak-a 20350 130640 40
+120 soak-a 20350 130648 40
+150 soak-a 20350 130648 40
+180 soak-a 20350 130652 40
+211 soak-a 20350 130652 40
+241 soak-a 20350 130660 40
+271 soak-a 20350 130664 40
+301 soak-a 20350 130668 40
+331 soak-a 20350 130672 40
+361 soak-a 20350 130676 40
+391 soak-a 20350 130708 40
+421 soak-a 20350 130720 40
+451 soak-a 20350 130720 40
+481 soak-a 20350 130732 40
+511 soak-a 20350 130740 40
+541 soak-a 20350 130744 40
+571 soak-a 20350 130832 40
+# t=601 s: gdb enganchado a los clientes
+601 soak-a 20350 130848 40
+# t=661 s: cierre previsto; esperando hasta 90s a que terminen
+# soak-a: terminó, exit=0
+# Fin: 2026-11-18T16:03:35-06:00
+
+=== log del cliente soak-a (exit=0)
+[15:52:35.090] Token generado para identidad=soak-a sala=soak2-1audio
+[15:52:35.110] Conectando a ws://localhost:7880 ...
+[15:52:35.504] evento: onConnected
+[15:52:35.505] Unido a la sala: soak2-1audio (sid=RM_GWvWS6yFdW9s)
+[15:52:35.505] estado: CONECTADO
+[15:52:35.506] participantes: [soak-a (yo)]
+[15:52:35.517] Dispositivos de entrada vistos por el SDK: 1
+[15:52:35.541] MicrM-CM-3fono publicado (cid=audio-dc173744-bfd3-43b6-ae3a-19652267a92b), oferta del publisher forzada
+[15:52:35.606] evento: pista publicada TR_AMbwXeFknKcA56 (AUDIO) por soak-a
+[15:52:35.607] participantes: [soak-a (yo)]
+[16:03:05.140] evento: pista retirada TR_AMbwXeFknKcA56 por soak-a
+[16:03:05.146] evento: onDisconnected motivo=CLIENT_INITIATED
+[16:03:05.146] estado: DESCONECTADO
+[16:03:05.147] participantes: []
+[16:03:05.148] estado: DESCONECTADO
+[16:03:05.148] Desconectado.
