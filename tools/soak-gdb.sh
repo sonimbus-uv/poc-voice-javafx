@@ -2,7 +2,9 @@
 # Nivel 3f, segunda ronda: repite la sesión larga y CAPTURA LA PILA NATIVA del cierre fallido.
 #
 # Uso:  bash tools/soak-gdb.sh [segundos=630] [modo=2audio]        (modos: 2audio | 1audio | video)
-#   GDB=0 bash tools/soak-gdb.sh 40 1audio      -> sin gdb (prueba del propio script)
+#   GDB=0 bash tools/soak-gdb.sh 40 1audio      -> sin gdb (solo registra exit, cuelgue y muestreo)
+#   GDB=late bash tools/soak-gdb.sh 630 2audio  -> SIN gdb durante la sesión; si un cliente se CUELGA, engancha gdb
+#                                                  entonces (no perturba los tiempos; no captura un SIGABRT instantáneo)
 #
 # Modos (cada uno usa SU sala, para no mezclarse con otras pruebas):
 #   2audio : dos clientes de audio (soak-a, soak-b) en la sala soak2-2audio, como en el soak original.
@@ -27,7 +29,7 @@ W="$(mktemp -d /tmp/soak-gdb.XXXXXX)"
 OUT="$W/resumen.txt"
 EVID="evidence/nivel3f-soak2-${MODE}-${STAMP}"
 
-if [ "$GDB" = 1 ] && [ "$(cat /proc/sys/kernel/yama/ptrace_scope)" != 0 ]; then
+if { [ "$GDB" = 1 ] || [ "$GDB" = late ]; } && [ "$(cat /proc/sys/kernel/yama/ptrace_scope)" != 0 ]; then
   echo "ptrace_scope=$(cat /proc/sys/kernel/yama/ptrace_scope): gdb no podrá engancharse." >&2
   echo "Ejecuta tú:  sudo sysctl kernel.yama.ptrace_scope=0   (o lanza con GDB=0 para correr sin gdb)" >&2
   exit 2
@@ -126,6 +128,13 @@ for id in "${!PIDS[@]}"; do
     if [ "$GDB" = 1 ] && [ -n "${GDBPIDS[$id]}" ]; then
       kill -INT "${GDBPIDS[$id]}" 2>/dev/null          # interrumpe y vuelca la pila nativa
       wait "${GDBPIDS[$id]}" 2>/dev/null
+    elif [ "$GDB" = late ]; then
+      MAPPED="$(grep -oE '/tmp/libwebrtc-java[^ ]*\.so' /proc/$pid/maps 2>/dev/null | head -1)"
+      [ -n "$MAPPED" ] && [ -n "$NATSO" ] && cp "$NATSO" "$W/natlib/$(basename "$MAPPED")"
+      gdb -p "$pid" -batch -ex 'set pagination off' -ex 'set confirm off' -ex 'set debuginfod enabled off' \
+        -ex "set solib-search-path $W/natlib" -ex 'sharedlibrary' \
+        -ex 'echo \n===== PARADO (enganche tardío en un cliente colgado) =====\n' \
+        -ex 'info threads' -ex 'thread apply all bt 40' -ex 'detach' > "$W/gdb-$id.txt" 2>&1
     fi
     jcmd "$pid" Thread.print > "$W/jstack-$id.txt" 2>&1   # pila Java, DESPUÉS de la nativa
     echo "# $(date +%T) $id: esperando 120 s más a ver si termina solo" >> "$OUT"
