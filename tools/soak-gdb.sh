@@ -39,6 +39,13 @@ fi
 echo "[prep] compilando y resolviendo classpath..." >&2
 mvn -q -B compile dependency:build-classpath -Dmdep.outputFile="$W/cp.txt" > "$W/mvn.log" 2>&1 || { cat "$W/mvn.log"; exit 4; }
 CP="target/classes:$(cat "$W/cp.txt")"
+# webrtc-java borra su .so justo tras cargarlo (en /proc/PID/maps sale "(deleted)") y gdb no puede leerlo: se extrae
+# del JAR y, al enganchar gdb, se copia con el MISMO nombre que el mapeado para que gdb resuelva sus símbolos
+# exportados (el binario está stripped, pero exporta ~3000 símbolos dinámicos, p. ej. los Java_..._disposeInternal).
+mkdir -p "$W/natlib" "$W/jar"
+NATJAR="$(find ~/.m2 -name 'webrtc-java-0.18.0-linux-x86_64.jar' | head -1)"
+[ -n "$NATJAR" ] && unzip -o -q "$NATJAR" -d "$W/jar"
+NATSO="$(find "$W/jar" -name 'libwebrtc-java-linux-x86_64.so' | head -1)"
 
 ROOM="soak2-$MODE"
 declare -A PIDS GDBPIDS
@@ -73,8 +80,11 @@ while :; do
   # engancha gdb a cada cliente poco antes del cierre previsto
   if [ "$GDB" = 1 ] && [ "$GDB_DONE" = 0 ] && [ "$T" -ge "$GDB_AT" ]; then
     for id in "${!PIDS[@]}"; do
+      MAPPED="$(grep -oE '/tmp/libwebrtc-java[^ ]*\.so' /proc/${PIDS[$id]}/maps 2>/dev/null | head -1)"
+      [ -n "$MAPPED" ] && [ -n "$NATSO" ] && cp "$NATSO" "$W/natlib/$(basename "$MAPPED")"
       gdb -p "${PIDS[$id]}" -batch \
         -ex 'set pagination off' -ex 'set confirm off' -ex 'set debuginfod enabled off' \
+        -ex "set solib-search-path $W/natlib" -ex 'sharedlibrary' \
         -ex 'handle SIGSEGV nostop noprint pass' -ex 'handle SIGUSR1 nostop noprint pass' \
         -ex 'handle SIGUSR2 nostop noprint pass' -ex 'handle SIGPIPE nostop noprint pass' \
         -ex 'handle SIGCHLD nostop noprint pass' -ex 'handle SIGALRM nostop noprint pass' \
