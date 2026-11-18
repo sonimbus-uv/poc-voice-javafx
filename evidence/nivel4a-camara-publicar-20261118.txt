@@ -1,0 +1,50 @@
+# Nivel 4a: publicar la cámara con webrtc-java 0.18.0 + SDK Trirrin v0.1.4 (sin ventana). Fecha 2026-11-18.
+# Cliente: sonimbus.poc.level4.VideoHeadless ws://localhost:7880 poc java-video 20 true 640 480 15 (java -cp, Java 21.0.13)
+# Cámara: USB2.0 HD UVC WebCam (/dev/video0 y /dev/video1 accesibles sin sudo). Sesión Wayland. Servidor livekit v1.13.7 --dev.
+
+## A. Con workaround (onPublisherNegotiationNeeded tras publicar) — log del cliente
+[12:38:57.720] Token generado para identidad=java-video sala=poc
+[12:38:57.736] Conectando a ws://localhost:7880 ...
+[12:38:58.346] evento: onConnected
+[12:38:58.346] Unido a la sala: poc (sid=RM_SvQtme9VLsC6)
+[12:38:58.354] Cámaras vistas por el SDK: [MediaDeviceInfo{deviceId='0', label='USB2.0 HD UVC WebCam: USB2.0 HD', kind=VIDEO_INPUT}]
+[12:38:58.614] Cámara publicada (cid=video-01876243-11f4-41d2-884e-47a8edec5b1f) 640x480@15, oferta del publisher forzada
+[12:38:58.667] evento: pista publicada TR_VCzvHamVj83Rck (VIDEO) por java-video
+[12:39:02.766] recibidos: 0 fotogramas (+0 en el último segundo), 0x0
+[12:39:07.768] recibidos: 0 fotogramas (+0 en el último segundo), 0x0
+[12:39:12.771] recibidos: 0 fotogramas (+0 en el último segundo), 0x0
+[12:39:17.773] recibidos: 0 fotogramas (+0 en el último segundo), 0x0
+[12:39:17.798] evento: onDisconnected motivo=CLIENT_INITIATED
+[12:39:17.798] Desconectado.
+
+## A. Servidor (líneas relevantes, recortadas a 600 caracteres)
+2026-11-18T18:38:58.597Z	DEBUG	livekit	service/rtcservice.go:679	received signal request	{"connID": "CO_bmYwHbnBhfYs", "request": {"addTrack": {"cid": "video-01876243-11f4-41d2-884e-47a8edec5b1f", "name": "camera", "type": "VIDEO", "width": 640, "height": 480, "source": "CAMERA", "encryption": "NONE", "backupCodecPolicy": "PREFER_REGRESSION"}}, "room": "poc", "roomID": "RM_SvQtme9VLsC6", "participant": "java-video", "participantID": "PA_5hPfD8XHJiMh", "joinDuration": "0s"}
+2026-11-18T18:38:58.597Z	DEBUG	livekit.pub	rtc/participant.go:3205	pending track added	{"room": "poc", "roomID": "RM_SvQtme9VLsC6", "participant": "java-video", "participantID": "PA_5hPfD8XHJiMh", "remote": false, "trackID": "TR_VCzvHamVj83Rck", "request": {"cid": "video-01876243-11f4-41d2-884e-47a8edec5b1f", "name": "camera", "type": "VIDEO", "width": 640, "height": 480, "source": "CAMERA", "encryption": "NONE", "backupCodecPolicy": "PREFER_REGRESSION"}, "pendingTrack": {"trackInfos": [{"sid": "TR_VCzvHamVj83Rck", "type": "VIDEO", "name": "<redacted>", "width": 640, "height": 480, "source": "
+2026-11-18T18:38:58.658Z	INFO	livekit.pub	rtc/participant.go:2423	mediaTrack published	{"room": "poc", "roomID": "RM_SvQtme9VLsC6", "participant": "java-video", "participantID": "PA_5hPfD8XHJiMh", "remote": false, "kind": "video", "trackID": "TR_VCzvHamVj83Rck", "webrtcTrackID": "video-01876243-11f4-41d2-884e-47a8edec5b1f", "rid": "", "ssrc": 3601982092, "rtxSsrc": 335226082, "mime": "video/VP8", "trackInfo": {"sid": "TR_VCzvHamVj83Rck", "type": "VIDEO", "name": "<redacted>", "width": 640, "height": 480, "source": "CAMERA", "mimeType": "video/VP8", "mid": "0", "codecs": [{"mimeType": "video/VP
+2026-11-18T18:38:58.856Z	DEBUG	livekit.pub.pub.sfu	rtpstats/rtpstats_receiver.go:295	rtp receiver stream start	{"room": "poc", "roomID": "RM_SvQtme9VLsC6", "participant": "java-video", "participantID": "PA_5hPfD8XHJiMh", "remote": false, "trackID": "TR_VCzvHamVj83Rck", "relayed": false, "mime": "video/VP8", "layer": 0, "ssrc": 3601982092, "rtpStats": {"startTime": "2026-11-18T18:38:58.856Z", "endTime": "1970-01-01T00:00:00.000Z", "elapsed": "70.16µs", "packetsExpected": 1, "packetsExpectedRate": 14253.135689851766, "packetsSeenPrimary": 1, "packetsSeenPrimaryRate": 14253.135689851766, "bytes":
+2026-11-18T18:39:17.788Z	DEBUG	livekit.pub.pub.sfu	buffer/buffer_base.go:479	rtp stats	{"room": "poc", "roomID": "RM_SvQtme9VLsC6", "participant": "java-video", "participantID": "PA_5hPfD8XHJiMh", "remote": false, "trackID": "TR_VCzvHamVj83Rck", "relayed": false, "mime": "video/VP8", "layer": 0, "ssrc": 3601982092, "direction": "upstream", "stats": {"startTime": "2026-11-18T18:38:58.856Z", "endTime": "2026-11-18T18:39:17.788Z", "elapsed": "18.931616424s", "packetsExpected": 2519, "packetsExpectedRate": 133.05784057649782, "packetsSeenPrimary": 2519, "packetsSeenPrimaryRate": 133.05784057649782
+2026-11-18T18:39:17.789Z	DEBUG	livekit	routing/signal.go:139	signal stream closed	{"room": "poc", "reqNodeID": "ND_4q7vm9X32CN9", "participant": "java-video", "connID": "CO_bmYwHbnBhfYs", "participantInit": {"Identity": "java-video", "Reconnect": false, "ReconnectReason": "RR_UNKNOWN", "AutoSubscribe": true, "AutoSubscribeDataTrack": "not-set", "Client": {"sdk": "UNKNOWN", "protocol": 13, "os": "Other", "deviceModel": "Other", "browser": "Other"}, "Grants": {"Identity": "java-video", "Kind": "", "KindDetails": [], "Video": {"RoomCreate": false, "RoomList": false, "RoomRecord": false, "RoomAdmi
+2026-11-18T18:39:18.290Z	DEBUG	livekit	service/signal.go:183	signal stream closed	{"room": "poc", "participant": "java-video", "connID": "CO_bmYwHbnBhfYs", "error": null}
+
+## B. SIN workaround (-Dpoc.sinforzar=true) — log del cliente
+[12:39:44.013] Token generado para identidad=java-video-sf sala=poc
+[12:39:44.027] Conectando a ws://localhost:7880 ...
+[12:39:44.435] evento: onConnected
+[12:39:44.435] Unido a la sala: poc (sid=RM_U8WcquwRASzV)
+[12:39:44.444] Cámaras vistas por el SDK: [MediaDeviceInfo{deviceId='0', label='USB2.0 HD UVC WebCam: USB2.0 HD', kind=VIDEO_INPUT}]
+[12:39:44.827] Cámara publicada (cid=video-aa183e25-49fc-44b8-9c64-f514e7d82eb7) 640x480@15, SIN forzar la oferta (-Dpoc.sinforzar=true)
+[12:39:49.056] recibidos: 0 fotogramas (+0 en el último segundo), 0x0
+[12:39:54.057] recibidos: 0 fotogramas (+0 en el último segundo), 0x0
+[12:39:56.058] recibidos: 0 fotogramas (+0 en el último segundo), 0x0
+[12:39:56.076] evento: onDisconnected motivo=CLIENT_INITIATED
+[12:39:56.077] Desconectado.
+
+## B. Servidor: recuento de eventos (identidad java-video-sf)
+pending track added: 1
+mediaTrack published: 0
+rtp receiver stream start: 0
+
+## Conclusión (hechos)
+- Con workaround: mediaTrack published, mime video/VP8, 640x480, source CAMERA; 2519 paquetes, 2878231 bytes en 18,93 s (~1,22 Mbit/s), 0 perdidos, 15 fuera de orden.
+- Sin workaround: solo pending track added; sin mediaTrack published ni RTP. El defecto 4.3.1 del audio también afecta al video.
+- Códec: VP8, elegido por el servidor/SDP (el SDK no fija códec; el servidor ofrece VP8, H264, VP9, AV1, H265).
