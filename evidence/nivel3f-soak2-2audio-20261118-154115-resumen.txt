@@ -1,0 +1,96 @@
+# Nivel 3f segunda ronda - modo=2audio segundos=630 gdb=1 sala=soak2-2audio
+# Inicio: 2026-11-18T15:41:18-06:00  | SO: "Ubuntu 26.04.1 LTS" | kernel 7.0.0-38-generic | wayland | ptrace_scope=0
+# Pids: soak-a=16183 soak-b=16184 
+# Muestreo cada 30 s SOLO con ps (sin jcmd, para no perturbar la JVM): t_s id pid rss_kib hilos
+0 soak-a 16183 42516 18
+0 soak-b 16184 42380 18
+30 soak-a 16183 124888 40
+30 soak-b 16184 131464 40
+60 soak-a 16183 124900 40
+60 soak-b 16184 131476 40
+90 soak-a 16183 124908 40
+90 soak-b 16184 131492 40
+120 soak-a 16183 124916 40
+120 soak-b 16184 131492 40
+150 soak-a 16183 124916 40
+150 soak-b 16184 131496 40
+180 soak-a 16183 124920 40
+180 soak-b 16184 131504 40
+210 soak-a 16183 124928 40
+210 soak-b 16184 131504 40
+241 soak-a 16183 124928 40
+241 soak-b 16184 131504 40
+271 soak-a 16183 124932 40
+271 soak-b 16184 131512 40
+301 soak-a 16183 124936 40
+301 soak-b 16184 131520 40
+331 soak-a 16183 124936 40
+331 soak-b 16184 131520 40
+361 soak-a 16183 124944 40
+361 soak-b 16184 131532 40
+391 soak-a 16183 124968 40
+391 soak-b 16184 131556 40
+421 soak-a 16183 124972 40
+421 soak-b 16184 131556 40
+451 soak-a 16183 124976 40
+451 soak-b 16184 131560 40
+481 soak-a 16183 124988 40
+481 soak-b 16184 131576 40
+511 soak-a 16183 124988 40
+511 soak-b 16184 131580 40
+541 soak-a 16183 125000 40
+541 soak-b 16184 131596 40
+571 soak-a 16183 125088 40
+571 soak-b 16184 131684 40
+# t=601 s: gdb enganchado a los clientes
+601 soak-a 16183 125092 40
+601 soak-b 16184 131688 40
+# t=661 s: cierre previsto; esperando hasta 90s a que terminen
+# soak-a: terminó, exit=0
+# soak-b: terminó, exit=0
+# Fin: 2026-11-18T15:52:19-06:00
+
+=== log del cliente soak-a (exit=0)
+[15:41:19.073] Token generado para identidad=soak-a sala=soak2-2audio
+[15:41:19.097] Conectando a ws://localhost:7880 ...
+[15:41:19.547] evento: entra soak-b
+[15:41:19.557] participantes: [soak-a (yo), soak-b [sin pistas]]
+[15:41:19.558] evento: onConnected
+[15:41:19.558] Unido a la sala: soak2-2audio (sid=RM_K6ab9dHqfNmJ)
+[15:41:19.559] estado: CONECTADO
+[15:41:19.559] participantes: [soak-a (yo), soak-b [sin pistas]]
+[15:41:19.569] Dispositivos de entrada vistos por el SDK: 1
+[15:41:19.607] MicrM-CM-3fono publicado (cid=audio-64a7be26-d35d-4524-ad22-6bb18be95067), oferta del publisher forzada
+[15:41:19.651] evento: pista publicada TR_AMGDEBzhoBU8xW (AUDIO) por soak-b
+[15:41:19.652] participantes: [soak-a (yo), soak-b]
+[15:41:19.664] evento: pista publicada TR_AM3m3m9sFkvZxb (AUDIO) por soak-a
+[15:41:19.665] participantes: [soak-a (yo), soak-b]
+[15:41:19.723] evento: suscrito a TR_AMGDEBzhoBU8xW (AUDIO) de soak-b
+[15:51:49.135] evento: sale soak-b
+[15:51:49.151] evento: onDisconnected motivo=CLIENT_INITIATED
+[15:51:49.152] estado: DESCONECTADO
+[15:51:49.153] participantes: []
+[15:51:49.154] estado: DESCONECTADO
+[15:51:49.155] Desconectado.
+
+=== log del cliente soak-b (exit=0)
+[15:41:19.071] Token generado para identidad=soak-b sala=soak2-2audio
+[15:41:19.093] Conectando a ws://localhost:7880 ...
+[15:41:19.523] evento: onConnected
+[15:41:19.524] Unido a la sala: soak2-2audio (sid=RM_K6ab9dHqfNmJ)
+[15:41:19.525] estado: CONECTADO
+[15:41:19.525] participantes: [soak-b (yo)]
+[15:41:19.539] Dispositivos de entrada vistos por el SDK: 1
+[15:41:19.567] MicrM-CM-3fono publicado (cid=audio-d386fe5b-2c15-4317-a0e9-c47186b38944), oferta del publisher forzada
+[15:41:19.626] evento: pista publicada TR_AMGDEBzhoBU8xW (AUDIO) por soak-b
+[15:41:19.627] participantes: [soak-b (yo)]
+[15:41:19.668] evento: pista publicada TR_AM3m3m9sFkvZxb (AUDIO) por soak-a
+[15:41:19.674] participantes: [soak-b (yo), soak-a]
+[15:41:19.675] evento: entra soak-a
+[15:41:19.676] participantes: [soak-b (yo), soak-a]
+[15:41:19.710] evento: suscrito a TR_AM3m3m9sFkvZxb (AUDIO) de soak-a
+[15:51:49.132] evento: onDisconnected motivo=CLIENT_INITIATED
+[15:51:49.132] estado: DESCONECTADO
+[15:51:49.133] participantes: []
+[15:51:49.133] estado: DESCONECTADO
+[15:51:49.134] Desconectado.
