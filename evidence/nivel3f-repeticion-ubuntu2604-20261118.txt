@@ -122,3 +122,15 @@ gdb -p 21816 -batch ... -> 'Could not attach to process' (kernel.yama.ptrace_sco
 - HECHO: en esta sesión fallaron 1 de 2 procesos (en las sesiones de octubre fallaban todos o ninguno de una misma sesión; esto lo desmiente para esa regla).
 - HECHO: la memoria fue plana (ver tabla): soak-b 208820 -> 208852 KiB en el tramo final, 52 hilos.
 - SIN DETERMINAR: la causa. HIPÓTESIS (no probada): condición de carrera entre dos disposeInternal simultáneos (los dos clientes cierran en el mismo milisegundo: 14:29:42.04) sobre el servidor de audio compartido.
+
+## 8. RESULTADO FINAL (añadido a las 14:45; corrige las secciones 4 y 6 de arriba, escritas antes de que terminara el proceso)
+soak.sh terminó a las 14:44:59 (# Fin) y registró:
+  === log del cliente soak-a ... Desconectado. exit=0
+  === log del cliente soak-b ... estado: DESCONECTADO / "The futex facility returned an unexpected error code." / exit=134
+- HECHO: soak-b NO se quedó colgado para siempre: estuvo bloqueado en disposeInternal ~15 min (14:29:42 -> 14:44:59) y luego ABORTÓ (exit=134, SIGABRT)
+  con el mensaje de glibc "The futex facility returned an unexpected error code." (mensaje nuevo; en octubre: pa_close assertion, "Pure virtual function called!", XIO, SIGSEGV en libX11).
+- HECHO: el resultado es el mismo tipo de fallo del 7.4 (cierre tras 10 min con el SDK): 1 de 2 procesos falla en esta sesión.
+- La pila nativa NO se obtuvo: gdb no pudo engancharse (ptrace_scope=1, requería sudo) y el proceso murió antes de que se pudiera ejecutar.
+- A tener en cuenta (no se puede descartar): a las 14:43 se hizo un `jcmd Thread.print` y un intento fallido de `gdb -p` sobre el proceso colgado, unos 75 s antes del aborto.
+  La causa del aborto a las 14:44:59 no se determinó; soak.sh ya usa jcmd (GC.run) cada 30 s durante toda la sesión, y en octubre se refutó que jcmd provoque el fallo.
+- Para obtener la pila nativa haría falta repetir la prueba con permiso de ptrace ya concedido (p. ej. `sudo sysctl kernel.yama.ptrace_scope=0` antes, lo ejecuta el usuario) o lanzar el cliente bajo gdb.
