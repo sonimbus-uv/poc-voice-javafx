@@ -1,0 +1,56 @@
+# Nivel 3f segunda ronda - modo=video segundos=630 gdb=1 sala=soak2-video
+# Inicio: 2026-11-18T16:03:47-06:00  | SO: "Ubuntu 26.04.1 LTS" | kernel 7.0.0-38-generic | wayland | ptrace_scope=0
+# Pids: soak-v=21316 
+# Muestreo cada 30 s SOLO con ps (sin jcmd, para no perturbar la JVM): t_s id pid rss_kib hilos
+0 soak-v 21316 42488 18
+30 soak-v 21316 150652 37
+60 soak-v 21316 150700 37
+90 soak-v 21316 150748 37
+120 soak-v 21316 150780 37
+150 soak-v 21316 150824 37
+180 soak-v 21316 150888 37
+210 soak-v 21316 150912 37
+240 soak-v 21316 151024 37
+270 soak-v 21316 151136 37
+300 soak-v 21316 151200 37
+330 soak-v 21316 151200 37
+360 soak-v 21316 151228 37
+390 soak-v 21316 151260 37
+421 soak-v 21316 151368 37
+451 soak-v 21316 151396 37
+481 soak-v 21316 151408 37
+511 soak-v 21316 151432 37
+541 soak-v 21316 151452 37
+571 soak-v 21316 151580 37
+# t=601 s: gdb enganchado a los clientes
+601 soak-v 21316 151624 37
+# t=661 s: cierre previsto; esperando hasta 90s a que terminen
+# soak-v: terminó, exit=0
+# Fin: 2026-11-18T16:14:48-06:00
+
+=== log del cliente soak-v (exit=0)
+[16:12:28.068] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:12:33.071] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:12:38.073] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:12:43.076] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:12:48.077] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:12:53.079] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:12:58.081] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:13:03.083] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:13:08.084] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:13:13.086] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:13:18.088] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:13:23.090] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:13:28.091] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:13:33.093] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:13:38.095] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:13:43.097] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:13:48.100] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:13:53.102] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:13:58.104] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:14:03.107] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:14:08.110] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:14:13.112] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:14:18.114] recibidos: 0 fotogramas (+0 en el M-CM-:ltimo segundo), 0x0
+[16:14:18.136] evento: onDisconnected motivo=CLIENT_INITIATED
+[16:14:18.137] Desconectado.
