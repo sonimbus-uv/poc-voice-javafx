@@ -1,0 +1,124 @@
+# Nivel 3f repetido en el entorno NUEVO: Ubuntu 26.04.1, kernel 7.0.0-38, PipeWire 1.6.2, sesión Wayland, Maven 3.9.12, Java 21.0.13.
+# Prueba: bash tools/soak.sh 630 (dos clientes sin ventana, soak-a y soak-b, sala poc, con jcmd). Inicio 2026-11-18T14:19:06-06:00. Servidor sin otros participantes (la prueba anterior, contaminada, se descartó).
+# Proyecto en NTFS (ntfs3) igual que antes; la salida se escribió en /tmp y se copió aquí.
+
+## 1. Muestreo de memoria (salida de soak.sh)
+# Nivel 3f - 630 s, clientes soak-a y soak-b. Inicio: 2026-11-18T14:19:10-06:00
+# t_s cliente pid rss_kib hilos heap_usado_tras_gc_kib
+15 soak-a 21817 205012 55 12844
+15 soak-b 21816 207316 54 12828
+46 soak-a 21817 206004 54 12844
+46 soak-b 21816 208376 54 12828
+76 soak-a 21817 206132 53 12844
+76 soak-b 21816 208348 53 12828
+106 soak-a 21817 206176 53 12844
+106 soak-b 21816 208496 53 12828
+137 soak-a 21817 206140 52 12844
+137 soak-b 21816 208504 52 12828
+167 soak-a 21817 206192 52 12844
+167 soak-b 21816 208528 52 12828
+198 soak-a 21817 206264 52 12844
+198 soak-b 21816 208544 52 12828
+228 soak-a 21817 206264 52 12844
+228 soak-b 21816 208564 52 12828
+258 soak-a 21817 206276 52 12844
+258 soak-b 21816 208588 52 12828
+289 soak-a 21817 206280 52 12844
+289 soak-b 21816 208592 52 12828
+319 soak-a 21817 206320 52 12845
+319 soak-b 21816 208652 52 12828
+350 soak-a 21817 206324 52 12845
+350 soak-b 21816 208660 52 12828
+380 soak-a 21817 206344 52 12845
+380 soak-b 21816 208724 52 12828
+410 soak-a 21817 206376 52 12845
+410 soak-b 21816 208752 52 12828
+441 soak-a 21817 206388 52 12845
+441 soak-b 21816 208772 52 12828
+471 soak-a 21817 206388 52 12845
+471 soak-b 21816 208804 52 12903
+502 soak-a 21817 206424 52 12845
+502 soak-b 21816 208812 52 12828
+532 soak-a 21817 206476 52 12845
+532 soak-b 21816 208820 52 12828
+562 soak-a 21817 206492 52 12845
+562 soak-b 21816 208836 52 12828
+593 soak-a 21817 206516 52 12845
+593 soak-b 21816 208852 52 12829
+
+## 2. Hora de fin esperada y observada
+Los clientes pedían 630 s: ambos llamaron a disconnect() a las 14:29:42 (evento onDisconnected motivo=CLIENT_INITIATED).
+A las 14:43:09 soak.sh seguía en 'wait' (1438 s) porque soak-b no había terminado: el proceso Java 21816 seguía vivo.
+
+## 3. Log de soak-a (cerró LIMPIO, exit=0)
+[14:19:12.113] Token generado para identidad=soak-a sala=poc
+[14:19:12.126] Conectando a ws://localhost:7880 ...
+[14:19:12.378] evento: entra soak-b
+[14:19:12.381] participantes: [soak-a (yo), soak-b [sin pistas]]
+[14:19:12.381] evento: onConnected
+[14:19:12.382] Unido a la sala: poc (sid=RM_2Pj2w7PBEuyW)
+[14:19:12.382] estado: CONECTADO
+[14:19:12.382] participantes: [soak-a (yo), soak-b [sin pistas]]
+[14:19:12.392] Dispositivos de entrada vistos por el SDK: 1
+[14:19:12.408] MicrM-CM-3fono publicado (cid=audio-5fcbd296-c1cc-4a63-8f9a-a4896e26e5ee), oferta del publisher forzada
+[14:19:12.422] evento: pista publicada TR_AMeTLX2tnRv7Vn (AUDIO) por soak-b
+[14:19:12.422] participantes: [soak-a (yo), soak-b]
+[14:19:12.426] evento: pista publicada TR_AMRSFPyZ6oyRSK (AUDIO) por soak-a
+[14:19:12.427] participantes: [soak-a (yo), soak-b]
+[14:19:12.442] evento: suscrito a TR_AMeTLX2tnRv7Vn (AUDIO) de soak-b
+[14:29:42.038] evento: sale soak-b
+[14:29:42.039] participantes: [soak-a (yo)]
+[14:29:42.147] evento: onDisconnected motivo=CLIENT_INITIATED
+[14:29:42.148] estado: DESCONECTADO
+[14:29:42.148] participantes: []
+[14:29:42.148] estado: DESCONECTADO
+[14:29:42.148] Desconectado.
+exit=0
+
+## 4. Log de soak-b (SIN exit=: nunca terminó; colgado al cerrar)
+[14:19:12.003] Token generado para identidad=soak-b sala=poc
+[14:19:12.016] Conectando a ws://localhost:7880 ...
+[14:19:12.264] evento: onConnected
+[14:19:12.264] Unido a la sala: poc (sid=RM_2Pj2w7PBEuyW)
+[14:19:12.264] estado: CONECTADO
+[14:19:12.265] participantes: [soak-b (yo)]
+[14:19:12.271] Dispositivos de entrada vistos por el SDK: 1
+[14:19:12.291] MicrM-CM-3fono publicado (cid=audio-5787f308-fc75-4e58-aa09-3d4dd9a03651), oferta del publisher forzada
+[14:19:12.318] evento: pista publicada TR_AMeTLX2tnRv7Vn (AUDIO) por soak-b
+[14:19:12.319] participantes: [soak-b (yo)]
+[14:19:12.427] evento: pista publicada TR_AMRSFPyZ6oyRSK (AUDIO) por soak-a
+[14:19:12.428] participantes: [soak-b (yo), soak-a]
+[14:19:12.429] evento: entra soak-a
+[14:19:12.429] participantes: [soak-b (yo), soak-a]
+[14:19:12.439] evento: suscrito a TR_AMRSFPyZ6oyRSK (AUDIO) de soak-a
+[14:29:42.042] evento: onDisconnected motivo=CLIENT_INITIATED
+[14:29:42.042] estado: DESCONECTADO
+
+## 5. Pila Java del hilo principal de soak-b (jcmd Thread.print, 14:43, 1445 s de vida del proceso, estado Sl, wchan=futex_do_wait)
+	at jdk.internal.misc.InnocuousThread.run(java.base@21.0.13.0.3/InnocuousThread.java:186)
+
+"sonimbus.poc.level2.HeadlessCheck.main()" #42 [21983] prio=5 os_prio=0 cpu=143.70ms elapsed=1444.57s tid=0x0000738d80aae550 nid=21983 runnable  [0x0000738d02054000]
+   java.lang.Thread.State: RUNNABLE
+	at dev.onvoid.webrtc.media.audio.AudioDeviceModuleBase.disposeInternal(Native Method)
+	at dev.onvoid.webrtc.media.audio.AudioDeviceModuleBase.dispose(AudioDeviceModuleBase.java:79)
+	at io.livekit.sdk.rtc.MediaDevicesHelper.dispose(MediaDevicesHelper.java:173)
+	at io.livekit.sdk.rtc.PeerConnectionEngine.close(PeerConnectionEngine.java:228)
+	at io.livekit.sdk.rtc.RtcClient.disconnect(RtcClient.java:74)
+	at io.livekit.sdk.rtc.RtcClient.shutdown(RtcClient.java:213)
+	at sonimbus.poc.level2.VoiceClient$$Lambda/0x0000738d0833baa8.run(Unknown Source)
+	at sonimbus.poc.level2.VoiceClient.step(VoiceClient.java:108)
+	at sonimbus.poc.level2.VoiceClient.disconnect(VoiceClient.java:100)
+	- locked <0x00000007225fca50> (a sonimbus.poc.level2.VoiceClient)
+	at sonimbus.poc.level2.HeadlessCheck.main(HeadlessCheck.java:21)
+	at java.lang.invoke.LambdaForm$DMH/0x0000738d08230800.invokeStaticInit(java.base@21.0.13.0.3/LambdaForm$DMH)
+	at java.lang.invoke.LambdaForm$MH/0x0000738d08230c00.invoke_MT(java.base@21.0.13.0.3/LambdaForm$MH)
+
+## 6. Intento de pila nativa con gdb
+gdb -p 21816 -batch ... -> 'Could not attach to process' (kernel.yama.ptrace_scope=1). Necesita sudo; NO lo ejecuta el asistente (CLAUDE.md). Sin pila nativa todavía.
+
+## 7. Lectura
+- HECHO: en Ubuntu 26.04 / PipeWire 1.6.2 / Wayland, una sesión de 10 min 30 s con dos clientes: soak-a cerró limpio y soak-b se colgó en AudioDeviceModuleBase.disposeInternal <- MediaDevicesHelper.dispose (MediaDevicesHelper.java:173) <- PeerConnectionEngine.close (:228) <- RtcClient.disconnect (:74) <- RtcClient.shutdown (:213) <- HeadlessCheck.main (:21). Es la misma pila del cuelgue de 33 min del 2026-10-04.
+- HECHO: el fallo NO depende del entorno anterior (24.04 / PipeWire 1.0.5 / X11) y se reproduce con proyecto, jcmd y Maven iguales.
+- HECHO: en esta sesión fallaron 1 de 2 procesos (en las sesiones de octubre fallaban todos o ninguno de una misma sesión; esto lo desmiente para esa regla).
+- HECHO: la memoria fue plana (ver tabla): soak-b 208820 -> 208852 KiB en el tramo final, 52 hilos.
+- SIN DETERMINAR: la causa. HIPÓTESIS (no probada): condición de carrera entre dos disposeInternal simultáneos (los dos clientes cierran en el mismo milisegundo: 14:29:42.04) sobre el servidor de audio compartido.
