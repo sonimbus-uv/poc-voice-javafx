@@ -14,17 +14,19 @@
   solo (sección 5).
 - **Video de cámara: sí se puede.** La ventana JavaFX publica la cámara (VP8, 640x480) y pinta el video remoto;
   el usuario confirmó que la imagen se ve correcta en ambos sentidos con el navegador (sección 6).
-- **Pantalla compartida: NO se logró.** El SDK no la expone y la captura de webrtc-java devolvió
-  `ERROR_TEMPORARY` en las 50 pruebas en una sesión Wayland (6.4). La causa no está determinada.
+- **Pantalla compartida: se recibe, no se publica.** JavaFX recibe y pinta una pantalla compartida desde el navegador
+  (1852x910, VP8, ~1 fps; 6.5). Capturarla y publicarla desde Java **no se logró**: el SDK no la expone y la captura de
+  webrtc-java devolvió `ERROR_TEMPORARY` en las 50 pruebas en una sesión Wayland (6.4). La causa no está determinada.
 - **Con qué:** `webrtc-java` 0.18.0 (medios) + el SDK comunitario `Trirrin/livekit-java-sdk` v0.1.4 (señalización).
   `webrtc-java` se comportó bien; el SDK comunitario es el punto débil: hacen falta workarounds para publicar
   (audio y video) y para cerrar sin que la JVM muera (sección 7).
 - **Defecto más grave abierto:** tras sesiones de más de ~7 minutos, el cierre a veces **aborta en código nativo o
-  se queda colgado**: 4 de 7 sesiones largas con audio. Causa sin localizar tras refutar cuatro hipótesis (7.4).
-  **No se probó con video.**
+  se queda colgado**: 4 de 7 sesiones largas con audio en el entorno anterior y **1 de 2 procesos en la repetición
+  en Ubuntu 26.04** (colgado ~15 min en `disposeInternal` y luego `exit=134`). Causa sin localizar tras refutar
+  cuatro hipótesis y sin pila nativa (7.4). **No se probó con video.**
 - **El entorno cambió entre niveles:** los niveles 0 a 3 corrieron en Ubuntu 24.04 / PipeWire 1.0.5 / Maven 3.8.7
-  y el Nivel 4 en Ubuntu 26.04.1 / PipeWire 1.6.2 / Maven 3.9.12 (3.1). No se repitieron los niveles 0 a 3 en el
-  entorno nuevo.
+  y el Nivel 4 en Ubuntu 26.04.1 / PipeWire 1.6.2 / Maven 3.9.12 (3.1). De los niveles 0 a 3 solo se repitió el 3f
+  en el entorno nuevo (el fallo de cierre se reproduce); el resto no.
 - **No se probó:** red real (todo en localhost), cortes de más de ~13 s, Windows y macOS (solo disponibilidad de
   natives), calidad de la cancelación de eco y supresión de ruido, CPU/RAM de la ventana recibiendo video.
 - **Recomendación:** A (webrtc-java + SDK comunitario en JavaFX) para voz y cámara, **condicionada** a adoptar el
@@ -41,7 +43,7 @@ es desechable; este informe es el entregable, no un producto.
 
 - **Audio** (niveles 0 a 3): micrófono, reproducción, silencio, latencia, robustez, interoperabilidad con navegador.
 - **Video de cámara** (nivel 4a a 4c): publicar la cámara desde JavaFX, recibir y pintar video remoto.
-- **Pantalla** (nivel 4d): solo un intento de captura local; no se llegó a publicar (6.4).
+- **Pantalla** (4d y 4e): recibir una pantalla compartida en JavaFX (6.5) y un intento de captura local desde Java, que falló; no se llegó a publicarla (6.4).
 
 **Qué no se probó:** red real, NAT/TURN, TLS (`wss`), Windows y macOS, más de dos participantes con video,
 video durante más de unos minutos, cierre tras sesiones largas con video, grabación, cifrado E2E, móvil.
@@ -60,7 +62,7 @@ Valores: pasa / falla / parcial / no probado.
 | 3c | Silenciar/reactivar se refleja en ambos lados | pasa | `nivel3-observacion-usuario-20261004.txt` (1), `nivel2-cliente-javafx-1-20261004-092228.txt` |
 | 3d | Entradas/salidas de participantes | parcial: las normales bien; si el servidor expulsa al cliente (identidad duplicada) este queda colgado (7.3) | `nivel3d-entradas-salidas-identidad-duplicada-20261004.txt` |
 | 3e | Cortar la red 10 s | pasa para un corte de ~13 s (IPv4 + IPv6): vuelve solo; la ventana no avisa. Cortes más largos sin probar | `nivel3e-corte-red-total-20261004.txt`, `nivel3e-corte-red-20261004.txt` (primer intento no concluyente) |
-| 3f | 10 min sin caídas ni fugas | parcial: dos corridas de 10 min 29 s sin caídas y memoria plana (RSS +0,3 %); **pero 4 de 7 sesiones largas fallaron al cerrar** (7.4) | `nivel3f-investigacion-cierre-20261004.txt`, `nivel3f-10min-memoria-20261004.txt`, `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel3f-caida-al-salir-ventana-20261004.txt` |
+| 3f | 10 min sin caídas ni fugas | parcial: dos corridas de 10 min 29 s sin caídas y memoria plana (RSS +0,3 %); **pero 4 de 7 sesiones largas fallaron al cerrar** (7.4). **Repetido en Ubuntu 26.04 (2026-11-18): 1 de 2 procesos colgado ~15 min en `disposeInternal` y luego `exit=134`**; memoria plana | `nivel3f-investigacion-cierre-20261004.txt`, `nivel3f-10min-memoria-20261004.txt`, `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel3f-caida-al-salir-ventana-20261004.txt`, `nivel3f-repeticion-ubuntu2604-20261118.txt`, `nivel3f-repeticion-ubuntu2604-hilos-soakb-20261118.txt` |
 | 3g | Latencia < 400 ms en red local | pasa en la misma máquina: ~92 ms y ~159 ms, RTT 1–2 ms (con una corrección de 75 ms medida aparte) | `nivel3g-retardo-javafx-navegador-20261004.txt`, `nivel3g-retardo-navegador-javafx-20261004.txt` |
 | 3h | Dos JavaFX + un navegador | pasa (2 corridas, 0 pérdidas; el usuario confirma que se oían los tres) | `nivel3h-dos-javafx-navegador-2-20261004.txt`, `nivel3-observacion-usuario-20261004.txt` (4), `nivel3h-dos-javafx-navegador-20261004.txt` |
 | Extra | Natives para Windows y macOS (solo disponibilidad) | disponibles en Maven Central; no ejecutados | `extra-natives-windows-macos-20261004.txt` |
@@ -68,6 +70,7 @@ Valores: pasa / falla / parcial / no probado.
 | 4b | Recibir y pintar video remoto en JavaFX | pasa (usuario: "se ve de manera correcta"); 5–8 fps, limitados por el origen | `nivel4-observacion-usuario-20261118.txt`, `nivel4-cliente-javafx-video-20261118-124554.txt`, `nivel4bc-servidor-estadisticas-20261118.txt` |
 | 4c | Ventana JavaFX con vista previa local y video remoto | pasa (misma observación) | `nivel4-cliente-javafx-video-20261118-124200.txt`, `nivel4-observacion-usuario-20261118.txt` |
 | 4d | Compartir pantalla (opcional) | **falla** en Wayland: 50 de 50 capturas `ERROR_TEMPORARY`; el SDK no la expone | `nivel4d-pantalla-captura-wayland-20261118.txt` |
+| 4e | Recibir una pantalla compartida desde el navegador en JavaFX (añadido) | pasa: pista `SCREEN_SHARE` VP8 1852x910, ~1 fps, 0 perdidos, 0 descartados; el usuario: "en efecto recibe la pantalla compartida" | `nivel4e-recibir-pantalla-navegador-20261118.txt`, `nivel4-cliente-javafx-video-1-20261118-140150.txt`, `nivel4-cliente-javafx-video-1-20261118-141352.txt` |
 | 4 medidas | CPU, memoria, ancho de banda | parcial: medido el cliente publicando sin ventana; sin medir la ventana recibiendo | `nivel4-medidas-cpu-memoria-20261118.txt` |
 
 ## 3. Entorno
@@ -90,8 +93,8 @@ Valores: pasa / falla / parcial / no probado.
 | Cámara (Nivel 4) | webcam USB "USB2.0 HD UVC WebCam"; `/dev/video0` y `/dev/video1` accesibles sin sudo | `nivel4-entorno-20261118.txt`, `nivel4a-camara-publicar-20261118.txt` |
 
 Nota: el sistema operativo, PipeWire y Maven cambiaron entre las sesiones de los niveles 0–3 y la del Nivel 4. Los
-resultados de audio no se repitieron en el entorno nuevo (salvo lo que el Nivel 4 reutiliza: `webrtc-java`, el SDK
-y la conexión al servidor).
+resultados de audio no se repitieron en el entorno nuevo, salvo el 3f (el fallo de cierre se reproduce, 7.4) y lo que el
+Nivel 4 reutiliza: `webrtc-java`, el SDK y la conexión al servidor.
 
 ### 3.2 Cómo se levantó el servidor
 
@@ -278,7 +281,7 @@ Todas en `nivel4-medidas-cpu-memoria-20261118.txt` y `nivel4bc-servidor-estadist
   participantes con video, sesiones largas con video. Los 12,7 fps medios de la ventana (frente a ~7,4 del cliente sin
   ventana) no se explican con estos datos: pueden deberse a la luz del momento (hipótesis).
 
-### 6.4 Pantalla compartida: no funciona (hecho) y causa por determinar
+### 6.4 Capturar y publicar pantalla desde Java: no funciona (hecho) y causa por determinar
 
 - **El SDK no la expone:** `setScreenShareEnabled` está vacío ("not yet implemented", `RtcClient.java:619-622`) y el
   README lo dice (`.refs/livekit-java-sdk/README.md:182`, `TODOS.md:48`). Publicarla exigiría enviar nuestro
@@ -297,6 +300,19 @@ Todas en `nivel4-medidas-cpu-memoria-20261118.txt` y `nivel4bc-servidor-estadist
 - **No probado:** captura bajo sesión X11 (Ubuntu on Xorg), si apareció algún diálogo del portal (no se estaba
   mirando la pantalla), ni la publicación de una pista de pantalla. `run-nivel4d.sh` permite repetir la sonda viendo
   la pantalla.
+
+### 6.5 Recibir una pantalla compartida: funciona (4e)
+
+- **Hecho:** con el navegador compartiendo pantalla, la ventana JavaFX recibió la pista como `RemoteVideoTrack` y la
+  pintó con el mismo `FramePainter` que la cámara: `[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0,
+  1852x910`. El servidor la registra con `"source": "SCREEN_SHARE"`, VP8, capas 926x455 y 1852x910, sin pérdidas
+  (`nivel4e-recibir-pantalla-navegador-20261118.txt`).
+- **Observación del usuario (literal):** *"en efecto recibe la pantalla compartida, pero el fallo es del 4d"*. No detalla
+  la nitidez de la imagen.
+- **Medidas (servidor):** ~10–27 kbit/s y 1–1,6 fps. **Hipótesis:** el fps bajo se debe a que el contenido compartido era
+  casi estático; no se probó con contenido en movimiento. CPU y memoria de esta recepción: no medidas.
+- **Alcance:** las pruebas se hicieron en la sala `poc` y la segunda coincidió con los clientes `soak-a` y `soak-b`, lo
+  que no afecta a esta conclusión pero obligó a repetir el soak (7.4).
 
 ## 7. Defectos encontrados
 
@@ -343,15 +359,26 @@ Convención: **parche** = hay corrección en el código de la PoC; **workaround*
 - **Síntoma:** al salir tras una sesión de más de ~7 min, el proceso a veces **aborta en código nativo o se queda
   colgado**. El servidor sí recibe la salida (`CLIENT_REQUEST_LEAVE`): lo que falla es liberar el audio local. Las
   salidas tras sesiones de 8 s a ~5 min fueron limpias.
-- **Errores vistos:** `Assertion 'pa_close(fds[0]) == 0' failed at ../src/pulsecore/core-util.c:2713` (exit=134);
+- **Errores vistos:** `The futex facility returned an unexpected error code.` (exit=134, 2026-11-18, Ubuntu 26.04);
+  `Assertion 'pa_close(fds[0]) == 0' failed at ../src/pulsecore/core-util.c:2713` (exit=134);
   `XIO: fatal IO error 0 (Success) on X server`; `SIGSEGV` en `libX11.so.6 _XReply` con
   `corrupted double-linked list`; `libc++abi: Pure virtual function called!` (exit=134); y un proceso colgado 33 min
   en la llamada nativa `AudioDeviceModuleBase.disposeInternal` (`MediaDevicesHelper.dispose` ←
   `PeerConnectionEngine.close` ← `RtcClient.disconnect`).
 - **Reproducir (no determinista):** `bash tools/soak.sh 630` o dejar la ventana conectada más de ~7 minutos y pulsar
-  Salir. Frecuencia: de 7 sesiones largas con el SDK, **4 fallaron (7 procesos) y 3 cerraron limpias (6 procesos)**;
-  dentro de una sesión, o fallan todos los procesos o ninguno (`nivel3f-investigacion-cierre-20261004.txt:15-16`).
-  Las 4 que fallaron fueron entre las 09:51 y las 11:42 del 2026-10-04; las 3 limpias, entre las 11:54 y las 12:05.
+  Salir. Frecuencia en octubre (Ubuntu 24.04): de 7 sesiones largas con el SDK, **4 fallaron (7 procesos) y 3 cerraron
+  limpias (6 procesos)**; entonces, dentro de una sesión fallaban todos los procesos o ninguno
+  (`nivel3f-investigacion-cierre-20261004.txt:15-16`). Las 4 que fallaron fueron entre las 09:51 y las 11:42 del
+  2026-10-04; las 3 limpias, entre las 11:54 y las 12:05.
+- **Repetición en el entorno nuevo (2026-11-18, Ubuntu 26.04, PipeWire 1.6.2, Wayland):** `bash tools/soak.sh 630` con dos
+  clientes. `soak-a` cerró limpio (`exit=0`); **`soak-b` quedó bloqueado ~15 min (14:29:42 → 14:44:59) en la misma pila**
+  (`AudioDeviceModuleBase.disposeInternal` ← `MediaDevicesHelper.dispose` (`MediaDevicesHelper.java:173`) ←
+  `PeerConnectionEngine.close` (`:228`) ← `RtcClient.disconnect` (`:74`)) y luego **abortó con `exit=134`**. Memoria plana
+  (~205–208 MiB). Esto **desmiente** la regla "todos o ninguno" y muestra que el fallo **no depende del entorno
+  anterior** (`nivel3f-repeticion-ubuntu2604-20261118.txt`, `nivel3f-repeticion-ubuntu2604-hilos-soakb-20261118.txt`).
+  Una primera repetición se descartó por contaminación de la sala `poc` con otros clientes. Salvedad: ~75 s antes del
+  aborto se hizo un `jcmd Thread.print` y un intento fallido de `gdb -p` sobre el proceso colgado; no se puede
+  descartar que influyeran, aunque `soak.sh` ya usa `jcmd` cada 30 s y en octubre se refutó que `jcmd` lo provoque.
 - **Contraste:** el loopback del Nivel 1 durante 10 min 30 s con webrtc-java solo cerró limpio
   (`nivel1-loopback-10min-cierre-20261004.txt`). Como el fallo es intermitente, una corrida limpia no exculpa a
   webrtc-java.
@@ -361,13 +388,17 @@ Convención: **parche** = hay corrección en el código de la PoC; **workaround*
   hubo recolección tras el arranque en 630 s; (4) lo provoca `jcmd`: falló también sin él.
 - **Causa:** **sin determinar.** No se obtuvo pila nativa (la corrida bajo `gdb` no falló). **Hipótesis sin probar:**
   el estado del servidor de audio (pipewire-pulse registró desbordamientos), el uso de X11 por el módulo de audio, o
-  el estado del kernel tras los fallos de ntfs3 (aunque la primera caída es anterior al primero de ellos).
-- **Pendiente importante:** el fallo se observó en el entorno anterior (Ubuntu 24.04, PipeWire 1.0.5, X11). **No se ha
-  repetido en Ubuntu 26.04 / PipeWire 1.6.2 / Wayland, ni con video.** Una sesión de video de más de 7 minutos no se probó.
+  el estado del kernel tras los fallos de ntfs3 (aunque la primera caída es anterior al primero de ellos). **Hipótesis
+  nueva (no probada):** carrera entre dos `disposeInternal` simultáneos sobre el servidor de audio compartido, pues los dos
+  clientes cerraron en el mismo milisegundo (14:29:42.04); no explica los fallos de octubre con un solo cliente por proceso
+  en sesiones distintas.
+- **Pendiente importante:** sigue sin pila nativa: `gdb -p` falló por `kernel.yama.ptrace_scope=1` (requiere `sudo`, que ejecuta
+  el usuario) y el proceso murió antes. **No se ha probado con video:** una sesión de video de más de 7 minutos no se probó.
 - **Parche:** sin parche.
 - **Evidencia:** `nivel3f-investigacion-cierre-20261004.txt`, `nivel3f-10min-memoria-20261004.txt`,
   `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel3f-caida-al-salir-ventana-20261004.txt`,
-  `nivel1-loopback-10min-cierre-20261004.txt`, `nivel3-observacion-usuario-20261004.txt` (4).
+  `nivel1-loopback-10min-cierre-20261004.txt`, `nivel3-observacion-usuario-20261004.txt` (4),
+  `nivel3f-repeticion-ubuntu2604-20261118.txt`, `nivel3f-repeticion-ubuntu2604-hilos-soakb-20261118.txt`.
 
 ### 7.5 Errores tragados y capacidades ausentes en el SDK (hechos leídos en el código, no todos reproducidos)
 
@@ -412,10 +443,10 @@ Ver 6.4: no expuesta por el SDK; captura local falla en Wayland (`ERROR_TEMPORAR
    previa, no revalidado), último cambio de código 2025-12-06 (commit `0fa2340`), fijado a webrtc-java 0.14.0. Quien
    lo use lo mantiene.
 2. **Fallos nativos que matan o congelan el proceso**, no excepciones: el orden de cierre (resuelto con workaround)
-   y el cierre tras sesiones largas (7.4), con causa sin localizar. En una app de escritorio esto cierra o congela
+   y el cierre tras sesiones largas (7.4), reproducido en dos entornos y con causa sin localizar. En una app de escritorio esto cierra o congela
    toda la aplicación, y una llamada normal dura más de 7 minutos.
-3. **El entorno cambió y la evidencia de audio es del entorno anterior** (3.1): Ubuntu 24.04/X11 frente a
-   26.04/Wayland. Los niveles 0–3 no se repitieron en el entorno nuevo.
+3. **El entorno cambió y casi toda la evidencia de audio es del entorno anterior** (3.1): Ubuntu 24.04/X11 frente a
+   26.04/Wayland. Solo el 3f se repitió en el entorno nuevo, y reprodujo el fallo; el resto de los niveles 0–3 no.
 4. **Nada probado fuera de localhost:** sin NAT, sin TURN, sin TLS (`wss`), sin pérdida ni latencia reales;
    servidor en `--dev` (clave fija, un solo puerto UDP).
 5. **Video limitado:** una sola capa (sin simulcast ni adaptación a la red), solo VP8 observado, sin elegir códec,
@@ -437,8 +468,8 @@ Ver 6.4: no expuesta por el SDK; captura local falla en Wayland (`ERROR_TEMPORAR
 Opciones: A) webrtc-java + SDK comunitario en JavaFX; B) voz en navegador embebido o del sistema;
 C) voz solo en el móvil (Flutter) durante el MVP; D) cambiar el cliente de escritorio a Flutter.
 
-**Opción elegida: A para voz y cámara, con dos condiciones**; **la pantalla compartida no entra en A** con la
-evidencia actual.
+**Opción elegida: A para voz y cámara, con dos condiciones**; **publicar pantalla compartida no entra en A** con la
+evidencia actual (recibirla sí funciona).
 
 **Justificación (ligada a 2.1):**
 
@@ -470,19 +501,22 @@ evidencia actual.
 
 **Qué se debe resolver antes de integrar**
 
-1. **Localizar y corregir el cierre tras sesiones largas (7.4)**, ahora también con video y en el entorno nuevo:
-   repetir sesiones de 10 minutos bajo `gdb` (proyecto en ext4) hasta capturar la pila nativa. Si no tiene arreglo
-   razonable, A deja de ser recomendable.
-2. Repetir los niveles 0 a 3 en el entorno actual (Ubuntu 26.04, PipeWire 1.6.2, Wayland).
+1. **Localizar y corregir el cierre tras sesiones largas (7.4)**: ya se reproduce en Ubuntu 26.04 y falta probarlo con
+   video. Repetir sesiones de 10 minutos con `ptrace` permitido (`sudo sysctl kernel.yama.ptrace_scope=0`, lo ejecuta
+   el usuario) o bajo `gdb`, con el proyecto en ext4, hasta capturar la pila nativa; probar también un solo cliente por
+   sesión, para descartar la carrera entre dos cierres simultáneos. Si no tiene arreglo razonable, A deja de ser
+   recomendable.
+2. Repetir en el entorno actual (Ubuntu 26.04, PipeWire 1.6.2, Wayland) el resto de los niveles 0 a 3, salvo el 3f.
 3. Medir CPU, memoria y latencia de la ventana recibiendo video, con más luz y/o otra cámara, y con 2+ participantes
    con video; probar publicar simulcast.
-4. Decidir cómo se comparte pantalla: probar la captura bajo X11, mirar el diálogo del portal, o resolverla con B.
+4. Decidir cómo se comparte pantalla: **recibirla ya funciona** (6.5); falta capturarla y publicarla (probar la captura
+   bajo X11, mirar el diálogo del portal, o resolverla con B).
 5. Probar cortes de red largos y definir cómo reconectar y avisar al usuario (7.3, 7.8).
 6. Una prueba entre dos máquinas por red real, con TLS y TURN, idealmente una en Windows y otra en macOS.
 7. Eco y ruido con altavoces, con y sin procesado.
 
-**Niveles que no se pudieron cerrar:** 3d (cliente expulsado queda colgado), 3f (cierre tras sesiones largas falla),
-4d (pantalla), medidas de la ventana en 4, y todo lo relativo a Windows/macOS, red real, cortes largos y calidad de
+**Niveles que no se pudieron cerrar:** 3d (cliente expulsado queda colgado), 3f (cierre tras sesiones largas falla,
+también en el entorno nuevo), 4d (capturar y publicar pantalla), medidas de la ventana en 4, y todo lo relativo a Windows/macOS, red real, cortes largos y calidad de
 eco/ruido. No se ha rellenado ninguno con suposiciones.
 
 ## 10. Cómo reproducir la PoC paso a paso

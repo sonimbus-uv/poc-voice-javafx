@@ -119,6 +119,14 @@
   - Tras reiniciar el portátil (2026-11-18 ~13:25) hubo que repetir `docker compose up -d` (restart: no). Se borró por orden
     del usuario el archivo nivel3f-10min-sin-jcmd-20261004.txt (bloqueado por ntfs3, no estaba en git).
 
+  - 4e (recibir pantalla compartida del navegador en JavaFX): PASA (SCREEN_SHARE VP8 1852x910, ~1 fps). evidence/nivel4e-*.txt
+  - 3f REPETIDO en Ubuntu 26.04 (2026-11-18, 14:19-14:45): soak-a limpio, soak-b colgado ~15 min en disposeInternal y luego
+    exit=134 ("The futex facility returned an unexpected error code"). El fallo de cierre NO depende del entorno viejo.
+    Sin pila nativa (gdb necesita sudo y ptrace_scope=1). evidence/nivel3f-repeticion-ubuntu2604-*.txt
+  - REPORT.md actualizado con 3f nuevo, 4e y 6.5 (commit posterior al 5cc2ca2).
+  - Siguiente si se sigue: repetir soak con `sudo sysctl kernel.yama.ptrace_scope=0` (lo ejecuta el usuario) y gdb; probar un solo
+    cliente por sesión; probar el cierre con video; `bash run-nivel4d.sh` mirando la pantalla (diálogo del portal).
+
 ## Decisiones (versiones a fijar, tras OK)
 - Java 21 (source /media/.../env.sh o export JAVA_HOME), Maven 3.8.7
 - livekit/livekit-server:v1.13.7
