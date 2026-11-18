@@ -1,0 +1,97 @@
+# Nivel 3f segunda ronda - modo=2audio segundos=630 gdb=late sala=soak2-2audio
+# Inicio: 2026-11-18T16:20:17-06:00  | SO: "Ubuntu 26.04.1 LTS" | kernel 7.0.0-38-generic | wayland | ptrace_scope=0
+# Pids: soak-a=22709 soak-b=22710 
+# Muestreo cada 30 s SOLO con ps (sin jcmd, para no perturbar la JVM): t_s id pid rss_kib hilos
+0 soak-a 22709 41880 18
+0 soak-b 22710 42588 18
+30 soak-a 22709 128612 40
+30 soak-b 22710 129652 40
+60 soak-a 22709 128620 40
+60 soak-b 22710 129660 40
+90 soak-a 22709 128632 40
+90 soak-b 22710 129676 40
+120 soak-a 22709 128640 40
+120 soak-b 22710 129676 40
+150 soak-a 22709 128640 40
+150 soak-b 22710 129692 40
+181 soak-a 22709 128648 40
+181 soak-b 22710 129696 40
+211 soak-a 22709 128648 40
+211 soak-b 22710 129700 40
+241 soak-a 22709 128656 40
+241 soak-b 22710 129700 40
+271 soak-a 22709 128664 40
+271 soak-b 22710 129708 40
+301 soak-a 22709 128672 40
+301 soak-b 22710 129712 40
+331 soak-a 22709 128672 40
+331 soak-b 22710 129712 40
+361 soak-a 22709 128680 40
+361 soak-b 22710 129720 40
+391 soak-a 22709 128704 40
+391 soak-b 22710 129744 40
+421 soak-a 22709 128704 40
+421 soak-b 22710 129744 40
+451 soak-a 22709 128708 40
+451 soak-b 22710 129748 40
+481 soak-a 22709 128720 40
+481 soak-b 22710 129760 40
+511 soak-a 22709 128724 40
+511 soak-b 22710 129764 40
+541 soak-a 22709 128740 40
+541 soak-b 22710 129780 40
+571 soak-a 22709 128824 40
+571 soak-b 22710 129868 40
+601 soak-a 22709 128832 40
+601 soak-b 22710 129876 40
+631 soak-a 22709 128476 25
+# t=661 s: cierre previsto; esperando hasta 90s a que terminen
+# 16:32:49 soak-a COLGADO: pid 22709, wchan=futex_do_wait, estado=S (sleeping)
+# 16:33:00 soak-a: esperando 120 s más a ver si termina solo
+# soak-a: COLGADO (sigue vivo tras 90s), exit=134
+# soak-b: terminó, exit=0
+# Fin: 2026-11-18T16:33:09-06:00
+
+=== log del cliente soak-a (exit=134)
+[16:20:18.036] Token generado para identidad=soak-a sala=soak2-2audio
+[16:20:18.051] Conectando a ws://localhost:7880 ...
+[16:20:18.485] evento: entra soak-b
+[16:20:18.495] participantes: [soak-a (yo), soak-b [sin pistas]]
+[16:20:18.495] evento: onConnected
+[16:20:18.495] Unido a la sala: soak2-2audio (sid=RM_bDEbHiz6wMRg)
+[16:20:18.496] estado: CONECTADO
+[16:20:18.496] participantes: [soak-a (yo), soak-b [sin pistas]]
+[16:20:18.510] Dispositivos de entrada vistos por el SDK: 1
+[16:20:18.554] MicrM-CM-3fono publicado (cid=audio-4fddef98-1e40-4ef0-94f7-1a589a716eb7), oferta del publisher forzada
+[16:20:18.590] evento: pista publicada TR_AMUNyP6XjMyAXw (AUDIO) por soak-b
+[16:20:18.591] participantes: [soak-a (yo), soak-b]
+[16:20:18.600] evento: pista publicada TR_AMbrSDem9Rc5C2 (AUDIO) por soak-a
+[16:20:18.601] participantes: [soak-a (yo), soak-b]
+[16:20:18.648] evento: suscrito a TR_AMUNyP6XjMyAXw (AUDIO) de soak-b
+[16:30:48.062] evento: sale soak-b
+[16:30:48.063] participantes: [soak-a (yo)]
+[16:30:48.085] evento: onDisconnected motivo=CLIENT_INITIATED
+[16:30:48.086] estado: DESCONECTADO
+The futex facility returned an unexpected error code.
+
+=== log del cliente soak-b (exit=0)
+[16:20:18.010] Token generado para identidad=soak-b sala=soak2-2audio
+[16:20:18.030] Conectando a ws://localhost:7880 ...
+[16:20:18.428] evento: onConnected
+[16:20:18.429] Unido a la sala: soak2-2audio (sid=RM_bDEbHiz6wMRg)
+[16:20:18.429] estado: CONECTADO
+[16:20:18.430] participantes: [soak-b (yo)]
+[16:20:18.439] Dispositivos de entrada vistos por el SDK: 1
+[16:20:18.465] MicrM-CM-3fono publicado (cid=audio-f302fa41-0095-49e4-a82c-de9a705605d3), oferta del publisher forzada
+[16:20:18.518] evento: pista publicada TR_AMUNyP6XjMyAXw (AUDIO) por soak-b
+[16:20:18.518] participantes: [soak-b (yo)]
+[16:20:18.601] evento: pista publicada TR_AMbrSDem9Rc5C2 (AUDIO) por soak-a
+[16:20:18.605] participantes: [soak-b (yo), soak-a]
+[16:20:18.606] evento: entra soak-a
+[16:20:18.607] participantes: [soak-b (yo), soak-a]
+[16:20:18.616] evento: suscrito a TR_AMbrSDem9Rc5C2 (AUDIO) de soak-a
+[16:30:48.067] evento: onDisconnected motivo=CLIENT_INITIATED
+[16:30:48.068] estado: DESCONECTADO
+[16:30:48.069] participantes: []
+[16:30:48.070] estado: DESCONECTADO
+[16:30:48.070] Desconectado.
