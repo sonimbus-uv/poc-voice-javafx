@@ -1,0 +1,46 @@
+Nov 18, 2026 2:13:53 PM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @62e72d9e'
+[14:13:58.797] Token generado para identidad=javafx-video-1 sala=poc
+[14:13:58.808] Conectando a ws://localhost:7880 ...
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+[14:13:59.025] evento: pista publicada TR_AMtWg6vJcWPxZN (AUDIO) por soak-b
+[14:13:59.025] evento: entra soak-b
+[14:13:59.026] evento: pista publicada TR_AMoweACZoCdQLZ (AUDIO) por soak-a
+[14:13:59.026] evento: entra soak-a
+[14:13:59.026] evento: onConnected
+[14:13:59.026] Unido a la sala: poc (sid=RM_2Pj2w7PBEuyW)
+[14:13:59.044] evento: suscrito a TR_AMtWg6vJcWPxZN (AUDIO) de soak-b
+[14:13:59.044] evento: suscrito a TR_AMoweACZoCdQLZ (AUDIO) de soak-a
+[14:15:35.714] evento: pista publicada TR_AMBWu2M8J9PZ6A (AUDIO) por navegador
+[14:15:35.714] evento: entra navegador
+[14:15:35.726] evento: suscrito a TR_AMBWu2M8J9PZ6A (AUDIO) de navegador
+[14:15:35.871] evento: pista publicada TR_VCvW4unBhDhQfw (VIDEO) por navegador
+[14:15:36.030] evento: suscrito a TR_VCvW4unBhDhQfw (VIDEO) de navegador
+[14:15:36.033] Sink de video añadido a TR_VCvW4unBhDhQfw
+[stats] remoto: recibidos 4 fps, pintados 4 fps, descartados 0, 384x216
+[stats] remoto: recibidos 7 fps, pintados 7 fps, descartados 0, 384x216
+[14:15:38.357] evento: navegador silenció TR_VCvW4unBhDhQfw
+[14:15:52.891] evento: pista publicada TR_As5qTdsXj9yeV6 (AUDIO) por navegador
+[14:15:52.911] evento: suscrito a TR_As5qTdsXj9yeV6 (AUDIO) de navegador
+[14:15:54.952] evento: pista publicada TR_VSf9C8tTePar7E (VIDEO) por navegador
+[14:15:54.965] evento: suscrito a TR_VSf9C8tTePar7E (VIDEO) de navegador
+[14:15:54.965] Sink de video añadido a TR_VSf9C8tTePar7E
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[14:17:31.691] evento: onDisconnected motivo=CLIENT_INITIATED
+[14:17:31.692] Desconectado.

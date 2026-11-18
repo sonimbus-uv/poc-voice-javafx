@@ -1,0 +1,29 @@
+# Nivel 4e (añadido): la ventana JavaFX RECIBE una pantalla compartida desde el navegador. 2026-11-18, ~14:05 y ~14:15 hora local.
+# Tipo: observación del usuario + log del cliente + estadísticas del servidor (LiveKit v1.13.7 --dev).
+
+## Observación del usuario (literal)
+  "en efecto recibe la pantalla compartida, pero el fallo es del 4d"
+  (mensaje anterior: "desde el cliente web puedo transmitir la pantalla y recibo la imagen sin problemas")
+Nota del redactor: el usuario separa dos cosas: RECIBIR pantalla en JavaFX funciona; CAPTURAR/PUBLICAR pantalla desde Java (4d) es lo que falla.
+Las dos pruebas se hicieron en la sala `poc`, no en `prueba-4d`; la segunda (14:13-14:17) coincidió con los clientes soak-a y soak-b
+(se ven en el log), así que contaminó la prueba de 10 minutos, que se repite.
+
+## Log del cliente (nivel4-cliente-javafx-video-1-20261118-140150.txt y -141352.txt)
+- 14:05:40.970 evento: pista publicada TR_VS2CNZesHk53UT (VIDEO) por navegador / suscrito / "Sink de video añadido"
+- 14:15:54.952 evento: pista publicada TR_VSf9C8tTePar7E (VIDEO) por navegador / suscrito / "Sink de video añadido"
+- [stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910   (se repite en ambos logs)
+- También: "Cámara apagada (mute)" / "Cámara reactivada" de JavaFX se reflejan en el servidor ("javafx-video-1 silenció/reactivó TR_VC52ecDcA3osru").
+
+## Servidor: la pista es SCREEN_SHARE (hecho)
+mediaTrack published, participante navegador: trackID TR_VS2CNZesHk53UT y TR_VSf9C8tTePar7E, "source": "SCREEN_SHARE", 1852x910 con capas 926x455 y 1852x910.
+rtp stats (VP8, 0 perdidos):
+  TR_VS2CNZesHk53UT downstream (hacia JavaFX) 2 min 48 s, 366899 bytes, ~17 kbit/s, 1,03 fps
+  TR_VS2CNZesHk53UT upstream (del navegador) capa 0: ~7,8 kbit/s, 1,0 fps; capa 1: ~23 kbit/s, 1,0 fps
+  TR_VSf9C8tTePar7E downstream 1 min 42 s, ~25,7 kbit/s, 1,6 fps; upstream capa 0 ~11,5 kbit/s, capa 1 ~26,9 kbit/s, 1,5 fps
+
+## Lectura
+- HECHO: JavaFX recibe y pinta una pantalla compartida (SCREEN_SHARE, VP8, 1852x910) sin descartes ni pérdidas. El SDK entrega la pista como RemoteVideoTrack igual que una cámara.
+- HECHO: la pantalla emite ~1-1,6 fps y ~10-27 kbit/s: es un valor bajo.
+- HIPÓTESIS: ese fps bajo se debe a que el contenido compartido es casi estático (el navegador solo codifica cuando cambia); no se probó con contenido en movimiento.
+- NO PROBADO: que el usuario viera correctamente la imagen en el panel (su frase dice que la recibe; no detalla nitidez); CPU/RAM de esta recepción.
+- Sigue sin funcionar el sentido contrario: capturar la pantalla desde Java (4d, ver nivel4d-pantalla-captura-wayland-20261118.txt).

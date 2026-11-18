@@ -1,0 +1,74 @@
+Nov 18, 2026 2:01:51 PM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @37887161'
+[14:01:54.212] Token generado para identidad=javafx-video-1 sala=poc
+[14:01:54.222] Conectando a ws://localhost:7880 ...
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+[14:01:54.503] evento: onConnected
+[14:01:54.504] Unido a la sala: poc (sid=RM_KQPwT4CTwuw7)
+[14:01:54.505] Cámaras vistas por el SDK: [MediaDeviceInfo{deviceId='0', label='USB2.0 HD UVC WebCam: USB2.0 HD', kind=VIDEO_INPUT}]
+[14:01:54.732] Cámara publicada (cid=video-86a558e5-3a9d-4c32-a648-bb6984f6ddf6) 640x480@15, oferta del publisher forzada
+[14:01:54.751] evento: pista publicada TR_VC52ecDcA3osru (VIDEO) por javafx-video-1
+[14:02:06.867] Cámara apagada (mute)
+[14:02:06.869] evento: javafx-video-1 silenció TR_VC52ecDcA3osru
+[14:05:30.304] evento: entra navegador
+[14:05:38.878] evento: pista publicada TR_AsLXj5E9VtFo27 (AUDIO) por navegador
+[14:05:38.895] evento: suscrito a TR_AsLXj5E9VtFo27 (AUDIO) de navegador
+[14:05:40.970] evento: pista publicada TR_VS2CNZesHk53UT (VIDEO) por navegador
+[14:05:40.981] evento: suscrito a TR_VS2CNZesHk53UT (VIDEO) de navegador
+[14:05:40.982] Sink de video añadido a TR_VS2CNZesHk53UT
+[14:05:42.129] Cámara reactivada
+[14:05:42.131] evento: javafx-video-1 reactivó TR_VC52ecDcA3osru
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[14:05:43.107] Cámara apagada (mute)
+[14:05:43.109] evento: javafx-video-1 silenció TR_VC52ecDcA3osru
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[14:06:25.719] Cámara reactivada
+[14:06:25.721] evento: javafx-video-1 reactivó TR_VC52ecDcA3osru
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[14:07:24.655] Cámara apagada (mute)
+[14:07:24.657] evento: javafx-video-1 silenció TR_VC52ecDcA3osru
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[stats] remoto: recibidos 1 fps, pintados 1 fps, descartados 0, 1852x910
+[14:08:29.740] evento: onDisconnected motivo=CLIENT_INITIATED
+[14:08:29.740] Desconectado.
