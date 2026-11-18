@@ -112,8 +112,12 @@
   - Hallazgos de código (SDK, no reproducidos aún): LocalVideoTrack no guarda el VideoDeviceSource, nadie puede
     detenerlo (MediaDevicesHelper.java:155-164); setCameraEnabled solo silencia la pista y envía mute al servidor.
   - 4b y 4c: PASAN (usuario: "se ve de manera correcta" en ambos sentidos). Fps limitados por la webcam (~7-8). Evidencia: nivel4-*20261118.txt, nivel4bc-*
-  - 4d (pantalla): el SDK no la expone (README.md:182); webrtc-java tiene VideoDesktopSource. Sesión Wayland: la captura
-    puede no funcionar; si falla, documentar el error exacto.
+  - 4d (pantalla): FALLA en Wayland (50/50 capturas ERROR_TEMPORARY); el SDK no la expone. evidence/nivel4d-pantalla-captura-wayland-20261118.txt.
+    PENDIENTE del usuario: `bash run-nivel4d.sh` mirando la pantalla (¿diálogo del portal de GNOME?) y, si se quiere, repetir bajo X11.
+  - REPORT.md REESCRITO (2026-11-18) con 10 secciones, nivel 4 incluido (commit del informe). Entorno del Nivel 4: Ubuntu 26.04.1,
+    PipeWire 1.6.2, Maven 3.9.12, Wayland; los niveles 0-3 NO se repitieron ahí.
+  - Tras reiniciar el portátil (2026-11-18 ~13:25) hubo que repetir `docker compose up -d` (restart: no). Se borró por orden
+    del usuario el archivo nivel3f-10min-sin-jcmd-20261004.txt (bloqueado por ntfs3, no estaba en git).
 
 ## Decisiones (versiones a fijar, tras OK)
 - Java 21 (source /media/.../env.sh o export JAVA_HOME), Maven 3.8.7
@@ -122,6 +126,5 @@
 - SDK Trirrin v0.1.4 (JitPack), io.livekit:livekit-server 0.16.0, JavaFX 21.0.8
 
 ## Necesita el usuario
-- Reiniciar cuando pueda (libera el archivo bloqueado por ntfs3) y después borrar
-  evidence/nivel3f-10min-sin-jcmd-20261004.txt.
+- Ejecutar `bash run-nivel4d.sh` mirando la pantalla y contar qué ocurre (diálogo del portal de GNOME o no).
 - Decidir si se sigue investigando el fallo de cierre (tras reiniciar y mover a ext4) o se da el PoC por terminado.

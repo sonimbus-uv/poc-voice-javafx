@@ -1,0 +1,9 @@
+Nov 18, 2026 1:44:04 PM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @37887161'
+[13:44:20.944] Token generado para identidad=javafx-video-1 sala=poc
+[13:44:20.957] Conectando a ws://localhost:7880 ...
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+[13:44:20.983] ERROR al conectar: java.net.ConnectException: Connection refused
+[13:44:32.555] Desconectado.

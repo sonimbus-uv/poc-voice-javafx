@@ -1,292 +1,541 @@
-# REPORT — PoC cliente de voz JavaFX contra LiveKit (Sonimbus)
+# REPORT — PoC de voz y video JavaFX contra LiveKit (Sonimbus)
 
-> Estado: niveles -1 a 3 y Extra ejecutados (2026-09-21 y 2026-10-04). Todo corrió en UNA sola máquina
-> Linux. Cada resultado apunta a un archivo de `evidence/`. Lo que no se pudo probar está dicho como tal
-> en las secciones 3, 7 y 8.
+> Estado: niveles -1 a 4 y Extra ejecutados (2026-09-21, 2026-10-04 y 2026-11-18). Todo corrió en UNA sola máquina
+> Linux y contra localhost. Cada resultado apunta a un archivo de `evidence/`; las citas `archivo:línea` de código
+> son de este repositorio, salvo las de `.refs/livekit-java-sdk/` (clon local del SDK en el commit `0fa2340`, ignorado
+> por git: se recrea con `git clone` + `git checkout 0fa2340`). **Hecho verificado** = visto en un log, una
+> medida o el código; **hipótesis** = explicación plausible sin comprobar. Lo que no se probó está dicho como tal.
 
 ## 1. Resumen ejecutivo
 
-- **Sí se puede**: un cliente de escritorio Java 21 + JavaFX entró en una sala de voz de un LiveKit
-  autoalojado, publicó el micrófono y reprodujo el audio remoto. Se oyó en ambos sentidos contra el
-  cliente web oficial, con 0 paquetes perdidos fuera del corte de red provocado y un retardo medido de
-  unos 92 ms (JavaFX → navegador) y 159 ms (navegador → JavaFX). Un corte total de red de ~13 s se recuperó solo.
-- **Con qué**: `webrtc-java` 0.18.0 (medios) + el SDK comunitario `Trirrin/livekit-java-sdk` v0.1.4
-  (señalización LiveKit). `webrtc-java` se comportó bien. El SDK comunitario es el punto débil.
-- **Lo que costó**: el SDK no funciona tal cual. Hicieron falta dos workarounds (no publicaba el
-  micrófono; un orden de cierre incorrecto tumba la JVM con SIGSEGV). Además, cuando el servidor expulsa
-  al cliente, el SDK se queda en "reconectando" para siempre, y **tras sesiones de más de ~7 minutos el
-  cliente a veces no cierra bien**: aborta en código nativo o se queda colgado al salir (4 de 7 sesiones largas;
-  causa sin localizar tras probar cuatro hipótesis).
-- **Lo que no se probó**: red real (todo fue en localhost), cortes de red de más de ~13 s,
-  Windows y macOS (solo se comprobó que existen los natives), calidad de la
-  cancelación de eco y supresión de ruido.
-- **Recomendación**: A (webrtc-java + SDK comunitario en JavaFX), condicionada a adoptar el SDK como
-  código propio y a resolver el fallo de cierre tras sesiones largas; si no, B con el navegador del sistema.
-  Detalle en la sección 8.
+- **Audio: sí se puede.** Un cliente Java 21 + JavaFX entró en una sala de un LiveKit autoalojado, publicó el
+  micrófono y reprodujo el audio remoto. Se oyó en ambos sentidos contra el cliente web oficial, con ~92 ms
+  (JavaFX → navegador) y ~159 ms (navegador → JavaFX) de retardo medido y un corte de red de ~13 s recuperado
+  solo (sección 5).
+- **Video de cámara: sí se puede.** La ventana JavaFX publica la cámara (VP8, 640x480) y pinta el video remoto;
+  el usuario confirmó que la imagen se ve correcta en ambos sentidos con el navegador (sección 6).
+- **Pantalla compartida: NO se logró.** El SDK no la expone y la captura de webrtc-java devolvió
+  `ERROR_TEMPORARY` en las 50 pruebas en una sesión Wayland (6.4). La causa no está determinada.
+- **Con qué:** `webrtc-java` 0.18.0 (medios) + el SDK comunitario `Trirrin/livekit-java-sdk` v0.1.4 (señalización).
+  `webrtc-java` se comportó bien; el SDK comunitario es el punto débil: hacen falta workarounds para publicar
+  (audio y video) y para cerrar sin que la JVM muera (sección 7).
+- **Defecto más grave abierto:** tras sesiones de más de ~7 minutos, el cierre a veces **aborta en código nativo o
+  se queda colgado**: 4 de 7 sesiones largas con audio. Causa sin localizar tras refutar cuatro hipótesis (7.4).
+  **No se probó con video.**
+- **El entorno cambió entre niveles:** los niveles 0 a 3 corrieron en Ubuntu 24.04 / PipeWire 1.0.5 / Maven 3.8.7
+  y el Nivel 4 en Ubuntu 26.04.1 / PipeWire 1.6.2 / Maven 3.9.12 (3.1). No se repitieron los niveles 0 a 3 en el
+  entorno nuevo.
+- **No se probó:** red real (todo en localhost), cortes de más de ~13 s, Windows y macOS (solo disponibilidad de
+  natives), calidad de la cancelación de eco y supresión de ruido, CPU/RAM de la ventana recibiendo video.
+- **Recomendación:** A (webrtc-java + SDK comunitario en JavaFX) para voz y cámara, **condicionada** a adoptar el
+  SDK como código propio y a resolver el cierre tras sesiones largas; la pantalla compartida necesita otra vía
+  (sección 9).
 
-## 2. Entorno y versiones usadas
+## 2. Objetivo y alcance
 
-| Componente | Versión | Evidencia |
-|---|---|---|
-| Sistema operativo | Ubuntu 24.04, kernel 7.0.0-31-generic, sesión X11 | `nivel-1-java-maven-20260921.txt`, `nivel-1-mic-permisos-20260921.txt` |
-| Java (JDK) | OpenJDK 21 (`/usr/lib/jvm/java-21-openjdk-amd64`, fijado con `env.sh`). El sistema trae JDK 24 por defecto | `nivel-1-java-maven-20260921.txt`, `nivel-1-java21-export-20260921.txt` |
-| Maven | 3.8.7 | `nivel-1-java-maven-20260921.txt` |
-| Docker / Compose | 29.1.3 / 2.40.3, sin sudo (grupo `docker`) | `nivel-1-docker-20260921.txt` |
-| Servidor de audio | PipeWire 1.0.5 con WirePlumber; las aplicaciones entran por la capa PulseAudio | `nivel-1-audio-20260921.txt` |
-| livekit/livekit-server (imagen) | v1.13.7, `--dev --bind 0.0.0.0`, `network_mode: host` | `nivel0-verificacion-versiones-20260921.txt`, `nivel0-servidor-arranque-20260921.txt` |
-| dev.onvoid.webrtc:webrtc-java | 0.18.0 (nativo linux-x86_64). El SDK comunitario fija 0.14.0; Maven resuelve 0.18.0 | `nivel1-dependencias-20261004.txt`, `nivel2-problemas-sdk-20261004.txt` (E) |
-| JavaFX | javafx-controls 21.0.8 | `nivel2-dependencias-tamano-20261004.txt` |
-| SDK comunitario Trirrin/livekit-java-sdk (rtc) | tag v0.1.4 vía JitPack (commit 0fa2340, 2025-12-06). Protocolo de señal 13, no 17 | `nivel2-problemas-sdk-20261004.txt` (A) |
-| io.livekit:livekit-server (tokens) | 0.16.0 | `nivel0-verificacion-versiones-20260921.txt`, `nivel2-dependencias-tamano-20261004.txt` |
-| Navegador usado en las pruebas | Brave (cliente PipeWire "Brave"), con https://meet.livekit.io en modo Custom. Versión no registrada | `nivel-1-audio-20260921.txt` |
+El objetivo es saber con evidencia si un cliente de escritorio Java 21 + JavaFX puede participar en una llamada
+WebRTC contra un SFU LiveKit autoalojado, dado que LiveKit no tiene SDK oficial para Java de escritorio. La PoC
+es desechable; este informe es el entregable, no un producto.
 
-## 3. Tabla de resultados por nivel
+**Qué se probó**
+
+- **Audio** (niveles 0 a 3): micrófono, reproducción, silencio, latencia, robustez, interoperabilidad con navegador.
+- **Video de cámara** (nivel 4a a 4c): publicar la cámara desde JavaFX, recibir y pintar video remoto.
+- **Pantalla** (nivel 4d): solo un intento de captura local; no se llegó a publicar (6.4).
+
+**Qué no se probó:** red real, NAT/TURN, TLS (`wss`), Windows y macOS, más de dos participantes con video,
+video durante más de unos minutos, cierre tras sesiones largas con video, grabación, cifrado E2E, móvil.
+
+### 2.1 Resultados por nivel
 
 Valores: pasa / falla / parcial / no probado.
 
 | Nivel | Criterio | Resultado | Evidencia (en `evidence/`) |
 |---|---|---|---|
-| -1 Preflight | Java 21, Maven, Docker sin sudo, audio, permisos de micrófono, acceso a Maven Central y JitPack | pasa (hay que exportar JAVA_HOME a Java 21; el sistema arranca con 24) | `nivel-1-java-maven-20260921.txt`, `nivel-1-java21-export-20260921.txt`, `nivel-1-docker-20260921.txt`, `nivel-1-audio-20260921.txt`, `nivel-1-mic-permisos-20260921.txt`, `nivel-1-red-20260921.txt` |
-| 0 Servidor | LiveKit en Docker en modo dev; dos pestañas del navegador se oyen entre sí | pasa | `nivel0-servidor-arranque-20260921.txt`, `nivel0-observacion-usuario-20260921.txt` |
-| 1 webrtc-java solo | Listar dispositivos, capturar micrófono, loopback con dos PeerConnection en la misma JVM; se oye. Anotar cancelación de eco y supresión de ruido | pasa (se oyó por altavoces, sin eco percibido; supresión de ruido sin evaluar) | `nivel1-loopback-tecnico-20261004.txt`, `nivel1-observacion-usuario-20261004.txt` |
-| 2 JavaFX + SDK comunitario | Ventana (URL, sala, identidad, Conectar/Salir, Silenciar, participantes, log); tokens con clave dev; publica micrófono y reproduce audio remoto | pasa, con dos workarounds explícitos sobre el SDK (ver 4.3) | `nivel2-observacion-usuario-20261004.txt` (3), `nivel2-cliente-javafx-1-20261004-092228.txt`, `nivel2-servidor-prueba-audible-20261004.txt` |
-| 3a | JavaFX habla y el navegador oye | pasa (probado con el micrófono del navegador silenciado) | `nivel2-observacion-usuario-20261004.txt` (3), `nivel2-servidor-prueba-audible-20261004.txt` |
-| 3b | El navegador habla y JavaFX oye | pasa (probado con el micrófono de JavaFX silenciado) | los mismos |
+| -1 Preflight | Java 21, Maven, Docker sin sudo, audio, permisos, Maven Central y JitPack | pasa (hay que exportar JAVA_HOME a Java 21 si el sistema trae otro) | `nivel-1-java-maven-20260921.txt`, `nivel-1-java21-export-20260921.txt`, `nivel-1-docker-20260921.txt`, `nivel-1-audio-20260921.txt`, `nivel-1-mic-permisos-20260921.txt`, `nivel-1-red-20260921.txt` |
+| 0 Servidor | LiveKit en Docker en modo dev; dos pestañas se oyen | pasa | `nivel0-servidor-arranque-20260921.txt`, `nivel0-observacion-usuario-20260921.txt` |
+| 1 webrtc-java solo | Listar dispositivos, capturar micrófono, loopback con dos PeerConnection; se oye | pasa (se oyó por altavoces, sin eco percibido; supresión de ruido sin evaluar) | `nivel1-loopback-tecnico-20261004.txt`, `nivel1-observacion-usuario-20261004.txt` |
+| 2 JavaFX + SDK | Ventana, tokens, publica micrófono y reproduce audio remoto | pasa, con dos workarounds sobre el SDK (7.1, 7.2) | `nivel2-observacion-usuario-20261004.txt` (3), `nivel2-cliente-javafx-1-20261004-092228.txt`, `nivel2-servidor-prueba-audible-20261004.txt` |
+| 3a / 3b | JavaFX habla y el navegador oye / al revés | pasa | `nivel2-observacion-usuario-20261004.txt` (3), `nivel2-servidor-prueba-audible-20261004.txt` |
 | 3c | Silenciar/reactivar se refleja en ambos lados | pasa | `nivel3-observacion-usuario-20261004.txt` (1), `nivel2-cliente-javafx-1-20261004-092228.txt` |
-| 3d | Entradas/salidas de participantes | parcial: entradas y salidas normales se notifican bien; si el servidor expulsa al cliente (identidad duplicada), este no se entera y queda colgado | `nivel3d-entradas-salidas-identidad-duplicada-20261004.txt` |
-| 3e | Cortar la red 10 s: reconecta o cómo falla | pasa para un corte de ~13 s (IPv4 + IPv6): audio y señalización vuelven solos, sin reconexión ni reingreso; se pierde solo el audio del corte. La ventana no avisa de nada durante el corte. Cortes más largos sin probar. (El primer intento, solo IPv4, no fue concluyente) | `nivel3e-corte-red-total-20261004.txt`, `nivel3-observacion-usuario-20261004.txt` (3), `nivel3e-corte-red-20261004.txt` (primer intento) |
-| 3f | 10 min sin caídas ni fugas de memoria evidentes | parcial: dos corridas de 10 min 29 s sin caídas, 0 pérdidas y memoria plana (RSS +0,3 %); pero **al salir tras una sesión larga el cliente a veces no cierra bien**: 4 de 7 sesiones de más de 7 min acabaron en aborto nativo o colgadas en `disconnect()`; causa sin localizar (ver 4.4.2) | `nivel3f-investigacion-cierre-20261004.txt`, `nivel3f-10min-memoria-20261004.txt`, `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel3f-caida-al-salir-ventana-20261004.txt` |
-| 3g | Latencia (aplauso; RTT y jitter si hay estadísticas); objetivo < 400 ms en red local | pasa en la misma máquina: ~92 ms JavaFX → navegador y ~159 ms navegador → JavaFX (ambos < 400 ms), RTT 1–2 ms. Sin red real de por medio y con una corrección de 75 ms medida aparte | `nivel3g-retardo-javafx-navegador-20261004.txt`, `nivel3g-retardo-navegador-javafx-20261004.txt` |
-| 3h | Dos instancias JavaFX + un navegador a la vez | pasa: dos corridas (64 s y 2 min 22 s) con los tres conectados, cada ventana suscrita a los otros dos, 0 pérdidas y silencios propagados; el usuario confirma que se oían los tres | `nivel3h-dos-javafx-navegador-2-20261004.txt`, `nivel3-observacion-usuario-20261004.txt` (4), `nivel3h-dos-javafx-navegador-20261004.txt`, `nivel2-cliente-javafx-2-20261004-101812.txt` |
-| Extra | Natives empaquetados para Windows y macOS (solo disponibilidad, sin probar) | disponibles en Maven Central (webrtc-java 0.18.0: windows-x86_64/aarch64, macos-x86_64/aarch64; JavaFX 21.0.8: win, mac, mac-aarch64). No ejecutados | `extra-natives-windows-macos-20261004.txt` |
+| 3d | Entradas/salidas de participantes | parcial: las normales bien; si el servidor expulsa al cliente (identidad duplicada) este queda colgado (7.3) | `nivel3d-entradas-salidas-identidad-duplicada-20261004.txt` |
+| 3e | Cortar la red 10 s | pasa para un corte de ~13 s (IPv4 + IPv6): vuelve solo; la ventana no avisa. Cortes más largos sin probar | `nivel3e-corte-red-total-20261004.txt`, `nivel3e-corte-red-20261004.txt` (primer intento no concluyente) |
+| 3f | 10 min sin caídas ni fugas | parcial: dos corridas de 10 min 29 s sin caídas y memoria plana (RSS +0,3 %); **pero 4 de 7 sesiones largas fallaron al cerrar** (7.4) | `nivel3f-investigacion-cierre-20261004.txt`, `nivel3f-10min-memoria-20261004.txt`, `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel3f-caida-al-salir-ventana-20261004.txt` |
+| 3g | Latencia < 400 ms en red local | pasa en la misma máquina: ~92 ms y ~159 ms, RTT 1–2 ms (con una corrección de 75 ms medida aparte) | `nivel3g-retardo-javafx-navegador-20261004.txt`, `nivel3g-retardo-navegador-javafx-20261004.txt` |
+| 3h | Dos JavaFX + un navegador | pasa (2 corridas, 0 pérdidas; el usuario confirma que se oían los tres) | `nivel3h-dos-javafx-navegador-2-20261004.txt`, `nivel3-observacion-usuario-20261004.txt` (4), `nivel3h-dos-javafx-navegador-20261004.txt` |
+| Extra | Natives para Windows y macOS (solo disponibilidad) | disponibles en Maven Central; no ejecutados | `extra-natives-windows-macos-20261004.txt` |
+| 4a | Publicar la cámara desde un cliente Java | pasa: VP8 640x480, ~1,22 Mbit/s, 0 perdidos; **necesita el mismo workaround que el audio** | `nivel4a-camara-publicar-20261118.txt` |
+| 4b | Recibir y pintar video remoto en JavaFX | pasa (usuario: "se ve de manera correcta"); 5–8 fps, limitados por el origen | `nivel4-observacion-usuario-20261118.txt`, `nivel4-cliente-javafx-video-20261118-124554.txt`, `nivel4bc-servidor-estadisticas-20261118.txt` |
+| 4c | Ventana JavaFX con vista previa local y video remoto | pasa (misma observación) | `nivel4-cliente-javafx-video-20261118-124200.txt`, `nivel4-observacion-usuario-20261118.txt` |
+| 4d | Compartir pantalla (opcional) | **falla** en Wayland: 50 de 50 capturas `ERROR_TEMPORARY`; el SDK no la expone | `nivel4d-pantalla-captura-wayland-20261118.txt` |
+| 4 medidas | CPU, memoria, ancho de banda | parcial: medido el cliente publicando sin ventana; sin medir la ventana recibiendo | `nivel4-medidas-cpu-memoria-20261118.txt` |
 
-## 4. Problemas encontrados y soluciones
+## 3. Entorno
 
-### 4.1 Nivel -1 y Nivel 0
+### 3.1 Versiones
 
-- **Java por defecto es 24.** `java -version` daba 24.0.1. Solución: `source ./env.sh` (JAVA_HOME a
-  Java 21); los scripts lo hacen solos. Evidencia: `nivel-1-java-maven-20260921.txt`,
-  `nivel-1-java21-export-20260921.txt`.
-- **Una pestaña salía "Disconnected".** Causa: token mal pegado; el servidor no registró ningún intento
-  hasta que se pegó bien. Evidencia: `nivel0-diagnostico-desconexion-20260921.txt`.
-- **Puertos en modo dev.** Con `--dev` el servidor usa un único puerto UDP (7882), no el rango
-  50000–60000. Evidencia: `nivel0-servidor-arranque-20260921.txt`, `nivel0-ice-estados-20260921.txt`.
+| Componente | Versión | Evidencia |
+|---|---|---|
+| Sistema operativo | **Niveles 0–3: Ubuntu 24.04**, kernel 7.0.0-31-generic. **Nivel 4: Ubuntu 26.04.1 LTS**, kernel 7.0.0-38-generic. Sesión X11 en los niveles 0–3 y **Wayland (GNOME)** en el Nivel 4 | `nivel-1-java-maven-20260921.txt`, `nivel-1-mic-permisos-20260921.txt`, `nivel4-entorno-20261118.txt` |
+| Java (JDK) | OpenJDK 21 (`/usr/lib/jvm/java-21-openjdk-amd64`, fijado con `env.sh`; 21.0.13 en el Nivel 4). El sistema puede traer otro JDK por defecto | `nivel-1-java21-export-20260921.txt`, `nivel4-entorno-20261118.txt` |
+| Maven | 3.8.7 (niveles 0–3); 3.9.12 (Nivel 4) | `nivel-1-java-maven-20260921.txt`, `nivel4-entorno-20261118.txt` |
+| Docker / Compose | 29.1.3 / 2.40.3, sin sudo (grupo `docker`) | `nivel-1-docker-20260921.txt`, `nivel4-entorno-20261118.txt` |
+| Servidor de audio | PipeWire 1.0.5 (niveles 0–3) y 1.6.2 (Nivel 4) con WirePlumber; las aplicaciones entran por la capa PulseAudio | `nivel-1-audio-20260921.txt`, `nivel4-entorno-20261118.txt` |
+| livekit/livekit-server (imagen) | v1.13.7, `--dev --bind 0.0.0.0`, `network_mode: host` | `nivel0-verificacion-versiones-20260921.txt`, `nivel0-servidor-arranque-20260921.txt`, `nivel4-entorno-20261118.txt` |
+| dev.onvoid.webrtc:webrtc-java | 0.18.0 (nativo linux-x86_64; `pom.xml:15`). El SDK comunitario fija 0.14.0; Maven resuelve 0.18.0 | `nivel1-dependencias-20261004.txt`, `nivel2-problemas-sdk-20261004.txt` (E) |
+| JavaFX | javafx-controls 21.0.8 (`pom.xml:16`) | `nivel2-dependencias-tamano-20261004.txt` |
+| SDK comunitario Trirrin/livekit-java-sdk (`rtc`) | tag v0.1.4 vía JitPack (`pom.xml:17`), commit `0fa2340` (2025-12-06). Envía protocolo de señal 13 | `nivel2-problemas-sdk-20261004.txt` (A), `nivel4-entorno-20261118.txt` |
+| io.livekit:livekit-server (tokens) | 0.16.0 (`pom.xml:18`) | `nivel0-verificacion-versiones-20260921.txt`, `nivel2-dependencias-tamano-20261004.txt` |
+| Navegador de las pruebas | Brave, con https://meet.livekit.io en modo Custom. Versión no registrada | `nivel-1-audio-20260921.txt` |
+| Cámara (Nivel 4) | webcam USB "USB2.0 HD UVC WebCam"; `/dev/video0` y `/dev/video1` accesibles sin sudo | `nivel4-entorno-20261118.txt`, `nivel4a-camara-publicar-20261118.txt` |
 
-### 4.2 Nivel 1
+Nota: el sistema operativo, PipeWire y Maven cambiaron entre las sesiones de los niveles 0–3 y la del Nivel 4. Los
+resultados de audio no se repitieron en el entorno nuevo (salvo lo que el Nivel 4 reutiliza: `webrtc-java`, el SDK
+y la conexión al servidor).
 
-- **`AudioTrack.dispose()` lanza `java.lang.Error`** si antes no se hace `removeTrack(sender)`.
-  Solución: quitar la pista del sender antes de disponerla. Evidencia: `nivel1-problema-dispose-20261004.txt`.
-- **El audio salió por altavoces, no por auriculares.** El sistema marcaba el conector de auriculares
-  como "not available"; no es un fallo de webrtc-java, que usa la salida por defecto. Evidencia:
-  `nivel1-observacion-usuario-20261004.txt`.
-- **`libglib2.0-0` "falta"**: en Ubuntu 24.04 se llama `libglib2.0-0t64` y estaba instalada. No hizo
-  falta ningún `apt-get`. Evidencia: `nivel1-libs-sistema-20260921.txt`.
+### 3.2 Cómo se levantó el servidor
 
-### 4.3 Nivel 2
+`docker-compose.yml:6-9`: imagen `livekit/livekit-server:v1.13.7`, `command: --dev --bind 0.0.0.0`,
+`network_mode: host`, `restart: "no"`. Se arranca con `docker compose up -d`.
 
-Detalle completo y citas del código del SDK: `evidence/nivel2-problemas-sdk-20261004.txt`.
+- **Puertos reales (hecho):** el arranque registra `portHttp: 7880`, `rtc.portTCP: 7881`, `rtc.portUDP: {Start: 7882,
+  End: 0}`: es decir **7880/TCP (señal), 7881/TCP (ICE/TCP) y un único puerto UDP 7882**, no el rango 50000–60000
+  (`nivel0-servidor-arranque-20260921.txt:4`). El comentario de `docker-compose.yml:2` menciona 50000–60000: es el
+  valor de la guía oficial para un despliegue sin `--dev`, no el que usó la PoC.
+- **Modo dev:** la clave y el secreto son los fijos de `--dev` (en el repo: `TokenGenerator.java:10-11` y
+  `tools/token.py:6,8`; en este informe: `change_this_dev_key` / `change_this_dev_secret`). No sirven fuera de pruebas.
+- **No sobrevive a un reinicio** (`restart: "no"`): tras reiniciar la máquina hay que repetir `docker compose up -d`;
+  si no, el cliente falla con `ConnectException: Connection refused`
+  (`nivel4-cliente-javafx-video-1-20261118-134402.txt`).
+- El servidor escucha en 0.0.0.0, pero la PoC solo usó `localhost`.
 
-#### 4.3.1 El micrófono no se publica: el SDK nunca envía la oferta del publisher
+### 3.3 Particularidades de Linux
 
-- **Síntoma:** el cliente dice "Micrófono publicado" pero el servidor se queda en `pending track added`; nunca
-  aparece `mediaTrack published`. Sin ningún error visible en el cliente.
-- **Causa (leída en el código):** el evento "negotiation needed" se consume al crear los data channels, antes de
-  haber pistas, y `RtcClient.onPublisherNegotiationNeeded()` lo ignora; al añadir la pista no se repite.
-- **Solución aplicada (workaround explícito):** llamar a `RtcClient.onPublisherNegotiationNeeded()` justo después
-  de `publishAudioTrack()` (`VoiceClient.publishMicrophone`).
-- **Evidencia:** `nivel2-headless-20261004.txt` (falla), `nivel2-headless-2-20261004.txt` (publica).
+- **Audio:** webrtc-java entra por la capa PulseAudio de PipeWire y ve 1 micrófono y 1 salida; usa las del sistema
+  por defecto, y el SDK no permite elegir dispositivo de forma efectiva (7.5). Varios programas pueden abrir el mismo
+  micrófono a la vez (`nivel2-servidor-audio-bidireccional-20261004.txt`). La caída del 7.4 ocurre dentro del cliente
+  nativo de PulseAudio (`nivel3f-investigacion-cierre-20261004.txt`).
+- **Permisos de micrófono:** no hizo falta ninguno ni apareció diálogo; el micrófono estaba silenciado y al 22 % y
+  hubo que activarlo a mano (`nivel-1-mic-permisos-20260921.txt`, `nivel0-observacion-usuario-20260921.txt`).
+- **Cámara:** accesible sin permisos extra ni diálogo. Una sola cámara física: JavaFX y el navegador se probaron por
+  turnos; **no se probó** abrirla desde dos procesos a la vez.
+- **Pantalla en Wayland:** ver 6.4.
+- **Partición NTFS (ntfs3):** permisos emulados (`bash script.sh`). El kernel registró dos `kernel BUG at
+  fs/iomap/buffered-io.c:1061` en `ntfs_file_write_iter` (2026-10-04 09:53:21 y 10:24:33) escribiendo en `evidence/`;
+  uno mató al proceso `tee` de un log y dejó un archivo bloqueado en estado `D`, que quedó legible tras reiniciar
+  (`nivel3f-investigacion-cierre-20261004.txt`). Es un problema del driver, no de la PoC; conviene mover el
+  proyecto a ext4. `run-nivel4.sh` escribe el log fuera de NTFS y lo copia al final por esa razón.
 
-#### 4.3.2 Caída nativa (SIGSEGV) al salir
-
-- **Error exacto:**
-
-  ```
-  SIGSEGV (0xb) at pc=0x00007275d5c598c6, pid=15620, tid=15683
-  C  [libwebrtc-java-linux-x86_6414489899291519249994.so+0x6598c6]
-  ```
-
-- **Causa:** disponer la pista local después de `RtcClient.shutdown()` (factory ya liberada). El SDK no libera la
-  pista local en `disconnect()`.
-- **Qué se probó:** unpublish → shutdown → dispose = SIGSEGV; unpublish → dispose → shutdown = salida limpia.
-- **Solución aplicada:** el segundo orden. Un orden incorrecto no lanza excepción: mata la JVM.
-- **Evidencia:** `nivel2-crash-sigsegv-hs_err-20261004.log`, `nivel2-headless-20261004.txt`.
-
-#### 4.3.3 Limitaciones del SDK vistas en el código (no son fallos reproducidos)
-
-Sin configuración de cancelación de eco / supresión de ruido; sin acceso a `getStats()` (RTT/jitter); la elección
-de micrófono por `deviceId` no afecta a la captura real y no hay API para elegir salida; `onError` vacío (errores
-tragados); 1236 clases duplicadas entre el módulo `protocol` del SDK y `io.livekit:livekit-server`.
-Evidencia: `nivel2-problemas-sdk-20261004.txt` (D, E).
-
-### 4.4 Nivel 3
-
-#### 4.4.1 El cliente expulsado por el servidor se queda colgado (sin resolver)
-
-- **Síntoma:** al entrar un segundo cliente con la misma identidad, el servidor expulsa al primero
-  (`DUPLICATE_IDENTITY`). El expulsado solo recibe `onReconnecting`; nunca `onDisconnected`. No reconecta ni
-  informa del motivo, y la aplicación sigue creyéndose conectada con la lista de participantes obsoleta.
-  En la primera prueba del Nivel 2 el usuario lo vivió como "se bloqueó".
-- **Efecto secundario:** al llamar después a `disconnect()` aparece
-  `java.lang.NullPointerException: Object handle is null` al disponer la pista (el SDK ya la había dispuesto en
-  `RtcClient.onLeave`). Queda capturada; no hubo SIGSEGV.
-- **Estado:** reproducido, no corregido. Corregirlo exige tocar el SDK o envolverlo (tratar el `LeaveRequest`
-  del servidor como desconexión).
-- **Evidencia:** `nivel3d-entradas-salidas-identidad-duplicada-20261004.txt`,
-  `nivel2-servidor-audio-bidireccional-20261004.txt`.
-
-#### 4.4.2 El cliente a veces no cierra bien tras una sesión larga (sin resolver, intermitente)
-
-- **Síntoma:** al salir después de una sesión de más de ~7 minutos, el proceso a veces aborta en código nativo o
-  se queda colgado. El servidor sí recibe la salida (`CLIENT_REQUEST_LEAVE`): los demás participantes no lo
-  notan; lo que falla es liberar el audio local. Las salidas tras sesiones cortas (8 s a ~5 min) fueron limpias.
-- **Frecuencia:** de 7 sesiones largas con el SDK, 4 fallaron (7 procesos) y 3 cerraron limpias (6 procesos).
-  Dentro de una sesión, o fallan todos los procesos o ninguno. Las 4 que fallaron fueron entre las 09:51 y las
-  11:42; las 3 limpias, entre las 11:54 y las 12:05.
-- **Errores vistos:** `Assertion 'pa_close(fds[0]) == 0' failed at ../src/pulsecore/core-util.c:2713` (exit=134);
-  `XIO: fatal IO error 0 (Success) on X server`; `SIGSEGV` en `libX11.so.6 _XReply` con
-  `corrupted double-linked list`; `libc++abi: Pure virtual function called!` (exit=134); y un proceso colgado
-  33 min en la llamada nativa `AudioDeviceModuleBase.disposeInternal`, invocada por el SDK
-  (`MediaDevicesHelper.dispose` ← `PeerConnectionEngine.close` ← `RtcClient.disconnect`).
-- **Contraste con webrtc-java solo:** el loopback del Nivel 1 durante 10 min 30 s cerró limpio. Como el fallo es
-  intermitente, una sola corrida limpia no exculpa a `webrtc-java`.
-- **Hipótesis probadas y refutadas** (cada una con una sesión de 10 min):
-  1. *El SDK libera demasiado pronto un `AudioDeviceModule` huérfano.* El defecto existe (el SDK crea un segundo
-     módulo de audio que no conecta a nada y lo libera antes de cerrar las conexiones), pero liberándolo al final
-     los dos clientes abortaron igual.
-  2. *Depende de lanzar con `mvn exec:java`.* En paralelo, dos clientes con `java -cp` y dos con Maven: los cuatro
-     cerraron limpios.
-  3. *Depende del recolector de basura.* No hubo ninguna recolección después del arranque en 630 s.
-  4. *Lo provoca `jcmd`.* Falló también sin `jcmd`.
-- **Sin determinar:** la causa, y qué distingue las sesiones que fallan de las que no. No se obtuvo pila nativa: la
-  corrida bajo `gdb` no falló. Candidatos sin probar: el estado del servidor de audio (pipewire-pulse registró
-  desbordamientos de los clientes), el uso de X11 por el módulo de audio, y el estado del kernel tras los fallos
-  de ntfs3 (5.3), aunque la primera caída es anterior al primero de ellos.
-- **Evidencia:** `nivel3f-investigacion-cierre-20261004.txt` (tabla de sesiones, hipótesis y diff del experimento),
-  `nivel3f-10min-memoria-20261004.txt`, `nivel3f-caida-al-salir-ventana-20261004.txt`,
-  `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel1-loopback-10min-cierre-20261004.txt`,
-  `nivel3-observacion-usuario-20261004.txt` (4).
-
-#### 4.4.3 El primer corte de red no fue un corte (resuelto repitiendo la prueba)
-
-- **Síntoma:** el comando de `iptables` solo filtra IPv4; la máquina tiene IPv6 y parte del tráfico iba por ahí.
-  El audio de subida de JavaFX no perdió ni un paquete durante el "corte".
-- **Solución:** `tools/cut-network.sh` bloquea IPv4 e IPv6 (7880/TCP, 7881/TCP, 7882/UDP). En la repetición el
-  servidor dejó de recibir pings de JavaFX y del navegador durante ~13 s, marcó a ambos como `LOST`, ICE pasó a
-  `disconnected` y 2 s después a `connected`, con el mismo participante y la misma pista. Pérdidas: un único
-  hueco de 171 paquetes en la subida de JavaFX (209 en la del navegador).
-- **Queda abierto:** el cliente JavaFX no registró ningún evento durante el corte (el SDK no avisa de la
-  degradación), y no se probaron cortes más largos, donde el servidor acaba cerrando al participante (ver 4.4.1).
-- **Evidencia:** `nivel3e-corte-red-20261004.txt` (primer intento), `nivel3e-corte-red-total-20261004.txt`.
-
-#### 4.4.4 Un log de cliente no quedó guardado
-
-`nivel2-cliente-javafx-1-20261004-095318.txt` solo tiene las dos líneas de arranque, aunque esa ventana estuvo
-conectada 9 minutos. Causa (encontrada después): un `kernel BUG` del driver ntfs3 mató al proceso `tee` que
-escribía el log a las 09:53:21 (ver 5.3). Por eso no hay registro de lo que mostró la ventana durante el primer corte.
-
-## 5. Particularidades de Linux
-
-### 5.1 Audio (PipeWire/PulseAudio)
-
-- El sistema usa PipeWire 1.0.5; webrtc-java entra por la capa PulseAudio (`libpulse0`) y ve 1 micrófono y 1
-  salida. Evidencia: `nivel-1-audio-20260921.txt`, `nivel1-loopback-tecnico-20261004.txt`.
-- Varios programas pueden abrir el mismo micrófono a la vez (dos ventanas JavaFX y el navegador lo compartieron).
-  Consecuencia para las pruebas: con un solo micrófono abierto en los dos clientes no se distingue quién suena;
-  hay que silenciar un lado cada vez. Evidencia: `nivel2-servidor-audio-bidireccional-20261004.txt`.
-- webrtc-java usa la entrada y la salida por defecto del sistema. El SDK comunitario no permite elegir
-  dispositivo de forma efectiva (4.3.3).
-- La caída del 4.4.2 ocurre dentro del cliente nativo de PulseAudio.
-
-### 5.2 Permisos de micrófono
-
-No hizo falta ningún permiso especial ni apareció ningún diálogo: la aplicación Java abrió el micrófono
-directamente a través de PipeWire. El micrófono estaba silenciado y al 22 % al empezar; hubo que activarlo a mano.
-Evidencia: `nivel-1-mic-permisos-20260921.txt`, `nivel0-observacion-usuario-20260921.txt`.
-
-### 5.3 Partición NTFS
-
-La carpeta está en NTFS (ntfs3) con permisos emulados: los scripts se lanzan con `bash script.sh`. Compilar y
-ejecutar desde ahí funcionó. webrtc-java carga su biblioteca nativa desde un archivo temporal
-(`libwebrtc-java-linux-x86_64…so`), no desde la carpeta del proyecto. Evidencia:
-`nivel2-crash-sigsegv-hs_err-20261004.log`, `nivel1-loopback-tecnico-20261004.txt`.
-
-Incidencia (2026-10-04): el kernel registró dos `kernel BUG at fs/iomap/buffered-io.c:1061` dentro de
-`ntfs_file_write_iter` [ntfs3], a las 09:53:21 (proceso `tee`) y a las 10:24:33 (proceso `bash`), ambos escribiendo
-en `evidence/` (extracto en `nivel3f-investigacion-cierre-20261004.txt`). Tras el segundo, un archivo de
-`evidence/` quedó bloqueado en el kernel
-(procesos en estado `D` en `ntfs_file_write_iter` / `do_truncate`, imposibles de matar); cualquier escritura
-posterior sobre ese archivo se colgaba. Es un problema del driver ntfs3, no del PoC; se esquivó escribiendo la
-evidencia con otro nombre (`nivel3f-salida-sin-jcmd-20261004.txt`). Conviene mover el proyecto a una partición ext4. Hace falta reiniciar para
-liberar el archivo bloqueado (`nivel3f-10min-sin-jcmd-20261004.txt`, incompleto, no forma parte de la evidencia).
-
-## 6. Tamaño y dependencias
+### 3.4 Tamaño y dependencias
 
 | Elemento | Valor | Evidencia |
 |---|---|---|
-| JARs (lista y tamaño) | 41 JARs en el classpath de ejecución, 38 552 KiB (~37,6 MiB) en total, solo linux-x86_64. Los mayores: webrtc-java nativo 9,4 MiB, `protocol` del SDK 4,6 MiB, javafx-graphics 4,5 MiB, livekit-server 4,0 MiB | `nivel2-dependencias-tamano-20261004.txt` |
-| Natives (por plataforma) | webrtc-java 0.18.0: linux-x86_64 9,4 MiB, windows-x86_64 8,3 MiB, windows-aarch64 7,1 MiB, macos-x86_64 7,4 MiB, macos-aarch64 6,3 MiB. JavaFX 21.0.8 no publica linux-aarch64 | `extra-natives-windows-macos-20261004.txt` |
-| Librerías del sistema requeridas | libx11-6, libxext6, libxfixes3, libxdamage1, libxtst6, libxrandr2, libxcomposite1, libglib2.0-0t64, libgbm1, libdrm2, libpulse0: todas ya instaladas en esta máquina | `nivel1-libs-sistema-20260921.txt` |
-| Memoria en ejecución (cliente sin ventana) | ~188 MiB de RSS, ~12,3 MiB de heap tras GC, 52 hilos | `nivel3f-10min-memoria-20261004.txt` |
-| Tamaño total del artefacto | No se construyó un artefacto distribuible (ni fat-jar ni instalador); el PoC se ejecuta con `mvn exec:java`. La cifra de referencia es la de los JARs | — |
+| JARs | 41 en el classpath, 38 552 KiB (~37,6 MiB), solo linux-x86_64. Mayores: webrtc-java nativo 9,4 MiB, `protocol` del SDK 4,6 MiB, javafx-graphics 4,5 MiB, livekit-server 4,0 MiB | `nivel2-dependencias-tamano-20261004.txt` |
+| Natives por plataforma | webrtc-java 0.18.0: linux-x86_64 9,4 MiB, windows-x86_64 8,3, windows-aarch64 7,1, macos-x86_64 7,4, macos-aarch64 6,3. JavaFX 21.0.8 no publica linux-aarch64 | `extra-natives-windows-macos-20261004.txt` |
+| Librerías del sistema | libx11-6, libxext6, libxfixes3, libxdamage1, libxtst6, libxrandr2, libxcomposite1, libglib2.0-0t64, libgbm1, libdrm2, libpulse0 (todas ya instaladas) | `nivel1-libs-sistema-20260921.txt` |
+| Artefacto distribuible | No se construyó (ni fat-jar ni instalador); se ejecuta con `mvn exec:java`. Los JARs de arriba son la cifra de referencia | — |
 
-## 7. Riesgos abiertos
+## 4. Arquitectura de la PoC
 
-1. **El SDK comunitario no es utilizable sin tocarlo.** Dos workarounds obligatorios, errores tragados, protocolo
-   de señal 13, sin pruebas de integración propias, ~3 estrellas, último cambio de código de 2025-12-06, fijado a
-   webrtc-java 0.14.0. Quien lo use lo mantiene. (4.3)
-2. **Sin manejo de desconexiones del lado servidor.** El cliente expulsado queda colgado. Un corte de ~13 s se
-   recupera solo, pero la aplicación no se entera de que hubo corte, y los cortes largos (en los que el servidor
-   cierra al participante) no se probaron. (4.4.1, 4.4.3)
-3. **Fallos nativos que matan el proceso**, no excepciones: SIGSEGV por orden de cierre (resuelto con workaround)
-   y el cierre tras sesiones largas, que aborta o se cuelga en 4 de las 7 sesiones largas probadas (intermitente, causa sin localizar). En
-   una aplicación de escritorio esto cierra o congela toda la app, y una llamada de voz normal dura más de 7 minutos. (4.3.2, 4.4.2)
-4. **Nada probado fuera de localhost.** Sin NAT, sin TURN, sin TLS (`wss`), sin pérdida ni latencia de red reales.
-   El servidor corrió en modo `--dev`.
-5. **Windows y macOS sin probar.** Los natives existen; el comportamiento del audio y de los permisos de
-   micrófono en esos sistemas es desconocido.
-6. **Calidad de audio sin evaluar.** El SDK no deja configurar cancelación de eco ni supresión de ruido; en el
-   Nivel 1 (webrtc-java directo, opciones activadas) el usuario no percibió eco por altavoces, pero no se comparó
-   con las opciones desactivadas ni se evaluó con el SDK.
-7. **Sin estadísticas en el cliente.** El SDK no expone `getStats()`; RTT y jitter salieron del servidor.
-8. **Conflicto de clases.** 1236 clases duplicadas entre el SDK y `io.livekit:livekit-server` (tokens). Solo
-   afecta si el cliente genera tokens, como hace este PoC.
-9. **Medidas de retardo con supuestos.** Los 92 ms y 159 ms excluyen el hardware, dependen de una corrección de
-   75 ms medida por separado y se tomaron con todo en la misma máquina.
+### 4.1 Flujo token → conexión → pistas
 
-## 8. Recomendación final (A/B/C/D)
+```mermaid
+flowchart LR
+    T["TokenGenerator.create(identity, room)<br/>JWT HS256 con grant roomJoin + room"] --> C["RtcClient.connect(ws://localhost:7880, token)<br/>WebSocket de señal (SDK Trirrin)"]
+    C --> J["Servidor LiveKit (--dev)<br/>join + oferta del subscriber"]
+    J --> P["Pistas locales (webrtc-java)"]
+    P --> A["Micrófono: createAudioTrack<br/>publishAudioTrack + workaround"]
+    P --> V["Cámara: createVideoTrack 640x480@15<br/>publishVideoTrack + workaround"]
+    A --> PUB["PeerConnection publisher (WebRTC)"]
+    V --> PUB
+    PUB --> SFU["SFU LiveKit<br/>(7881/TCP, 7882/UDP)"]
+    SFU --> SUB["PeerConnection subscriber"]
+    SUB --> RA["Audio remoto: reproducido por el módulo de audio<br/>de webrtc-java (salida por defecto)"]
+    SUB --> RV["Video remoto: VideoTrackSink →<br/>FramePainter → ImageView (JavaFX)"]
+```
+
+Piezas de código (todas en `src/main/java/sonimbus/poc/`):
+
+| Pieza | Archivo | Papel |
+|---|---|---|
+| Token | `level2/TokenGenerator.java` | genera el JWT con el SDK oficial `io.livekit:livekit-server` |
+| Cliente de voz | `level2/VoiceClient.java` | conecta, publica micrófono, silencia, sale (sin JavaFX) |
+| Ventana de voz | `level2/VoiceApp.java`, `Launcher.java` | URL, sala, identidad, Conectar/Salir, Silenciar, participantes, log |
+| Cliente de video | `level4/VideoClient.java` | conecta, publica cámara, sink de video remoto y local |
+| Pintado | `level4/FramePainter.java` | convierte I420 a BGRA y pinta en un `ImageView` |
+| Ventana de video | `level4/VideoApp.java`, `VideoLauncher.java` | vista previa local, video remoto, fps |
+| Sondas | `level1/Level1Loopback.java`, `level2/HeadlessCheck.java`, `level4/VideoHeadless.java`, `level4/ScreenProbe.java` | pruebas sin ventana |
+
+### 4.2 El token y sus grants
+
+`TokenGenerator.create` (`TokenGenerator.java:15-21`) crea un `AccessToken` con la clave de desarrollo, fija
+identidad y nombre, y añade **solo dos grants: `RoomJoin(true)` y `RoomName(room)`** (línea 19). El servidor registró
+el grant tal cual: `"Video": {"RoomJoin": true, "Room": "poc", "CanPublish": "not-set", "CanSubscribe": "not-set",
+"CanPublishData": "not-set", "CanPublishSources": [] …}` (`nivel2-headless-20261004.txt:68`).
+
+- **Sala:** la indicada en el token (`poc` por defecto).
+- **Publicar y suscribir:** el token **no los fija** (`not-set`); el permiso viene del valor por defecto del
+  servidor, que respondió `"permission": {"canSubscribe": true, "canPublish": true, "canPublishData": true}`
+  (`nivel2-headless-20261004.txt:49`).
+- **Fuentes permitidas:** el token no usa `canPublishSources` (lista vacía). Hecho: con ese token se publicó
+  **micrófono** (`nivel2-headless-2-20261004.txt`) y **cámara** (`nivel4a-camara-publicar-20261118.txt`). **No
+  verificado:** que una lista vacía permita también la **pantalla**, porque no se llegó a publicarla.
+- **Para un uso real**, el token debe generarlo un backend con la clave real, fijar `canPublish`, `canSubscribe` y
+  `canPublishSources` explícitos y caducar pronto (el actual dura 6 h: `nivel2-headless-20261004.txt:68`,
+  `TokenExpiresAt`).
+- `tools/token.py` genera el token del navegador con las mismas dos claves de grant (`tools/token.py:7`).
+
+## 5. Audio
+
+**Qué funciona (hechos)**
+
+- Publicar el micrófono desde JavaFX y que el navegador lo oiga; recibir y reproducir el audio del navegador;
+  silenciar y reactivar con reflejo en ambos lados; entradas y salidas de participantes; tres participantes a la
+  vez (2 JavaFX + 1 navegador). Ver la tabla 2.1 (niveles 2 y 3).
+- Retardo ~92 ms (JavaFX → navegador) y ~159 ms (navegador → JavaFX) en la misma máquina, RTT 1–2 ms.
+- Corte total de red de ~13 s recuperado solo, con el mismo participante y pista; se pierde solo el audio del corte.
+- Memoria plana en 10 min 29 s (RSS +0,3 %).
+
+**Cómo se publica el micrófono:** `VoiceClient.publishMicrophone` (`VoiceClient.java:65-80`) llama a
+`client.createAudioTrack()` (el SDK crea un `AudioDeviceModule` de webrtc-java y toma el micrófono por defecto:
+`MediaDevicesHelper.java:93-115`), luego a `client.publishAudioTrack(micTrack)` y **fuerza la oferta del publisher**
+con `client.onPublisherNegotiationNeeded()` (`VoiceClient.java:78`), workaround obligatorio (7.1).
+
+**Cómo se reproduce el audio remoto:** la aplicación no escribe ningún código de reproducción: el módulo de audio de
+webrtc-java reproduce por la salida por defecto del sistema las pistas remotas suscritas
+(`nivel1-loopback-tecnico-20261004.txt`; en el Nivel 2 el usuario confirma que se oye en
+`nivel2-observacion-usuario-20261004.txt` (3)). **Hipótesis:** el mecanismo interno exacto (qué `AudioDeviceModule`
+reproduce) no se auditó en el código nativo.
+
+**Qué no funciona o no se evaluó:** elegir dispositivo (7.5), configurar cancelación de eco y supresión de ruido en
+el SDK (en el Nivel 1, con webrtc-java directo y opciones activadas, el usuario no percibió eco por altavoces;
+supresión de ruido sin evaluar), estadísticas del cliente (RTT y jitter salieron del servidor).
+
+## 6. Video
+
+Código: `level4/VideoClient.java`, `FramePainter.java`, `VideoApp.java`. Resultados: `nivel4*-20261118.txt`.
+
+### 6.1 Captura y publicación de la cámara
+
+- **Librería de captura:** `webrtc-java` 0.18.0 (`dev.onvoid.webrtc.media.video.VideoDeviceSource`, sobre V4L2),
+  creada por el SDK en `MediaDevicesHelper.createVideoTrack`
+  (`.refs/livekit-java-sdk/rtc/src/main/java/io/livekit/sdk/rtc/MediaDevicesHelper.java:134-164`).
+  No se usó ninguna otra librería de captura.
+- **Resolución y fps pedidos:** 640x480 a 15 fps (`VideoApp.java:68`, `VideoHeadless` por defecto); también se
+  midió 1280x720 a 30 fps, que es el valor por defecto del SDK (`MediaDevicesHelper.java:122`).
+- **Códec (hecho):** **VP8**. El SDK no fija ningún códec (no hay referencias a códec en su `rtc`); el servidor
+  ofrece VP8, H264, VP9, AV1 y H265 y registró `"mime": "video/VP8"` al publicar
+  (`nivel4a-camara-publicar-20261118.txt`). Se publica **una sola capa** (sin simulcast): el servidor ve `layer 0` del
+  cliente JavaFX, mientras el navegador publica 3 capas (`nivel4bc-servidor-estadisticas-20261118.txt`).
+- **Cómo se publicó la pista:** `client.createVideoTrack(null, "camera", w, h, fps)` → `client.publishVideoTrack(track)`
+  (envía `AddTrackRequest` con fuente `CAMERA` y añade la pista al publisher PeerConnection:
+  `RtcClient.java:97-112`) → `client.onPublisherNegotiationNeeded()` (`VideoClient.java:99-100`). **Sin ese último
+  paso el servidor solo registra `pending track added` y nunca `mediaTrack published` ni RTP** (comprobado con
+  `-Dpoc.sinforzar=true`, `nivel4a-camara-publicar-20261118.txt`, sección B).
+- **Apagar la cámara:** `RtcClient.setCameraEnabled` silencia la pista y avisa al servidor (`RtcClient.java:603-612`,
+  `LocalVideoTrack.java:56-60`); **no se verificó** si la fuente de captura sigue abierta (7.6).
+
+### 6.2 Recibir y pintar frames en JavaFX
+
+1. El SDK entrega la pista remota en `onTrackSubscribed` como `RemoteVideoTrack`; `VideoClient` le añade un
+   `VideoTrackSink` (`VideoClient.java:167-179`), que cuenta fotogramas y resolución y llama al receptor.
+2. `FramePainter.accept` (`FramePainter.java:36-52`) corre en el hilo nativo: convierte el fotograma I420 a un
+   `byte[]` BGRA con `VideoBufferConverter.convertFromI420(..., FourCC.ARGB)` (línea 42), porque el fotograma solo es
+   válido durante la llamada. `FourCC.ARGB` de libyuv son bytes B,G,R,A en memoria, que es lo que espera
+   `PixelFormat.getByteBgraInstance()`.
+3. Pide **un único** repintado pendiente con `Platform.runLater` (`compareAndSet`, líneas 49-54); si la UI va
+   atrasada, descarta fotogramas intermedios y los cuenta.
+4. En la FX thread, `paint()` copia el búfer a un `WritableImage` con `PixelWriter.setPixels` (línea 64). La
+   resolución puede cambiar en vivo (se vio 384x216 → 1280x720).
+5. La vista previa local usa el mismo mecanismo con un sink sobre la pista nativa local
+   (`VideoClient.java:89-96`).
+
+**Hecho:** el usuario confirmó que la imagen se ve correcta en ambos sentidos
+(`nivel4-observacion-usuario-20261118.txt`: *"si la ventana de javafx transmite de manera correcta la imagen ya hice
+ambas pruebas y se ve de manera correcta"*). La respuesta no detalla colores ni fluidez. Las pruebas fueron por
+turnos (una sola cámara).
+
+### 6.3 Medidas
+
+Todas en `nivel4-medidas-cpu-memoria-20261118.txt` y `nivel4bc-servidor-estadisticas-20261118.txt`.
+
+| Medida | Valor | Condición |
+|---|---|---|
+| Ancho de banda subida (VP8) | ~1,66 Mbit/s medio (28,6 MB en 2 min 17 s, 0 perdidos) | ventana JavaFX, 640x480@15 pedidos |
+| Ancho de banda subida, 640x480@15 | ~1,48 Mbit/s | cliente sin ventana, 44 s |
+| Ancho de banda subida, 1280x720@30 | ~1,79 Mbit/s | cliente sin ventana, 44 s |
+| Ancho de banda bajada (video del navegador) | ~1,52 Mbit/s, 0 perdidos | una capa de 3 simulcast, 20 s |
+| CPU del cliente publicando, 640x480 | ~12–16 % de un núcleo (máquina de 16 hilos) | sin ventana, no incluye pintado |
+| CPU del cliente publicando, 1280x720 | ~34 % de un núcleo tras estabilizarse (11–22 % al inicio) | sin ventana |
+| RSS | 147 MiB (640x480), 188 MiB (1280x720) | sin ventana |
+| FPS reales | **7–8 fps** al servidor (y 12,7 fps medios en la ventana, 2 min) aunque se piden 15 o 30 | ver abajo |
+| FPS pintados en JavaFX | 5–8 fps, = recibidos, 0 descartados | prueba B, 4 muestras |
+
+- **Hecho:** la webcam entrega solo ~7,3 fps a 640x480 y ~7,8 fps a 1280x720 aunque se pidan 30, medido con
+  `ffmpeg` sin webrtc-java. El límite está en la cámara/driver/entorno, no en la librería ni en el pintado.
+- **Hipótesis:** exposición automática con poca luz. No se probó con más luz ni con otra cámara.
+- **No medido:** CPU y memoria de la **ventana JavaFX** recibiendo y pintando video, latencia del video, varios
+  participantes con video, sesiones largas con video. Los 12,7 fps medios de la ventana (frente a ~7,4 del cliente sin
+  ventana) no se explican con estos datos: pueden deberse a la luz del momento (hipótesis).
+
+### 6.4 Pantalla compartida: no funciona (hecho) y causa por determinar
+
+- **El SDK no la expone:** `setScreenShareEnabled` está vacío ("not yet implemented", `RtcClient.java:619-622`) y el
+  README lo dice (`.refs/livekit-java-sdk/README.md:182`, `TODOS.md:48`). Publicarla exigiría enviar nuestro
+  `AddTrackRequest` con fuente `SCREEN_SHARE` y crear la pista con el `PeerConnectionFactory` del SDK, que es un campo
+  privado (`PeerConnectionEngine.java:16`): haría falta tocar el SDK o usar reflexión. No se intentó.
+- **La captura local falla en esta sesión:** `ScreenCapturer` enumera 1 pantalla y `WindowCapturer` 1 ventana, ambas
+  con `title=null`, pero **50 de 50 capturas devolvieron `ERROR_TEMPORARY` sin fotograma**
+  (`nivel4d-pantalla-captura-wayland-20261118.txt`, sonda `ScreenProbe.java`). Sesión GNOME/Wayland, `DISPLAY=:0` de
+  Xwayland.
+- **Otro detalle (hecho):** `ScreenCapturer` lanza `UnsatisfiedLinkError` si antes no se creó un
+  `PeerConnectionFactory` (que es lo que carga la biblioteca nativa).
+- **Hipótesis (no verificada):** en Wayland el backend X11 solo ve Xwayland y no la pantalla real, y la captura
+  nativa vía portal/PipeWire necesita un diálogo de GNOME o una API del wrapper Java que no se usó. El nativo sí
+  contiene cadenas de `org.freedesktop.portal.ScreenCast` y `libpipewire-0.3.so.0`, y los portales
+  `xdg-desktop-portal-gnome` están instalados.
+- **No probado:** captura bajo sesión X11 (Ubuntu on Xorg), si apareció algún diálogo del portal (no se estaba
+  mirando la pantalla), ni la publicación de una pista de pantalla. `run-nivel4d.sh` permite repetir la sonda viendo
+  la pantalla.
+
+## 7. Defectos encontrados
+
+Convención: **parche** = hay corrección en el código de la PoC; **workaround** = se rodea sin arreglar la causa;
+**sin parche** = reproducido y no corregido.
+
+### 7.1 La pista no se publica: el SDK nunca envía la oferta del publisher (audio y video)
+
+- **Síntoma:** el cliente dice "publicado", el servidor se queda en `pending track added` y nunca aparece
+  `mediaTrack published`; sin error visible.
+- **Reproducir:** audio: quitar la línea `VoiceClient.java:78` (`nivel2-headless-20261004.txt`). Video:
+  `java -Dpoc.sinforzar=true … VideoHeadless` (`nivel4a-camara-publicar-20261118.txt`, B).
+- **Causa (leída en el código del SDK, hecho):** el evento "negotiation needed" se consume al crear los data
+  channels, antes de haber pistas, y `RtcClient.onPublisherNegotiationNeeded()` lo ignora; no se repite al añadir la
+  pista.
+- **Parche:** workaround en `VoiceClient.java:78` y `VideoClient.java:99-100`. Evidencia: `nivel2-problemas-sdk-20261004.txt`
+  (B), `nivel2-headless-2-20261004.txt`, `nivel4a-camara-publicar-20261118.txt`.
+
+### 7.2 Caída nativa (SIGSEGV) al salir por un orden de cierre incorrecto
+
+- **Síntoma:** `SIGSEGV (0xb) at pc=0x00007275d5c598c6 … C [libwebrtc-java-linux-x86_64….so+0x6598c6]`; la JVM muere
+  sin excepción.
+- **Reproducir:** `unpublish → shutdown → dispose` de la pista = SIGSEGV; `unpublish → dispose → shutdown` = limpio
+  (`nivel2-crash-sigsegv-hs_err-20261004.log`, `nivel2-headless-20261004.txt`).
+- **Causa (hecho):** disponer la pista local después de `RtcClient.shutdown()` (factory ya liberada); el SDK no libera
+  la pista local en `disconnect()`.
+- **Parche:** workaround, orden correcto en `VoiceClient.java:98-100` y `VideoClient.java:124-128`.
+- El Nivel 1 también encontró que `AudioTrack.dispose()` lanza `java.lang.Error` si antes no se hace
+  `removeTrack(sender)` (`nivel1-problema-dispose-20261004.txt`); mismo patrón.
+
+### 7.3 El cliente expulsado por el servidor se queda colgado
+
+- **Síntoma:** al entrar un segundo cliente con la misma identidad, el servidor expulsa al primero
+  (`DUPLICATE_IDENTITY`). El expulsado solo recibe `onReconnecting`; nunca `onDisconnected`; la aplicación se cree
+  conectada con la lista de participantes obsoleta. Al llamar después a `disconnect()` aparece
+  `NullPointerException: Object handle is null` (el SDK ya dispuso la pista en `RtcClient.onLeave`).
+- **Reproducir:** abrir dos clientes con la misma identidad (`nivel3d-entradas-salidas-identidad-duplicada-20261004.txt`).
+- **Causa:** el SDK no trata el `LeaveRequest` del servidor como desconexión (comportamiento observado; el detalle
+  interno es lectura del código).
+- **Parche:** sin parche. Exige tocar el SDK o envolverlo.
+
+### 7.4 Aborto o bloqueo al cerrar tras sesiones de más de ~7 minutos (intermitente, sin resolver)
+
+- **Síntoma:** al salir tras una sesión de más de ~7 min, el proceso a veces **aborta en código nativo o se queda
+  colgado**. El servidor sí recibe la salida (`CLIENT_REQUEST_LEAVE`): lo que falla es liberar el audio local. Las
+  salidas tras sesiones de 8 s a ~5 min fueron limpias.
+- **Errores vistos:** `Assertion 'pa_close(fds[0]) == 0' failed at ../src/pulsecore/core-util.c:2713` (exit=134);
+  `XIO: fatal IO error 0 (Success) on X server`; `SIGSEGV` en `libX11.so.6 _XReply` con
+  `corrupted double-linked list`; `libc++abi: Pure virtual function called!` (exit=134); y un proceso colgado 33 min
+  en la llamada nativa `AudioDeviceModuleBase.disposeInternal` (`MediaDevicesHelper.dispose` ←
+  `PeerConnectionEngine.close` ← `RtcClient.disconnect`).
+- **Reproducir (no determinista):** `bash tools/soak.sh 630` o dejar la ventana conectada más de ~7 minutos y pulsar
+  Salir. Frecuencia: de 7 sesiones largas con el SDK, **4 fallaron (7 procesos) y 3 cerraron limpias (6 procesos)**;
+  dentro de una sesión, o fallan todos los procesos o ninguno (`nivel3f-investigacion-cierre-20261004.txt:15-16`).
+  Las 4 que fallaron fueron entre las 09:51 y las 11:42 del 2026-10-04; las 3 limpias, entre las 11:54 y las 12:05.
+- **Contraste:** el loopback del Nivel 1 durante 10 min 30 s con webrtc-java solo cerró limpio
+  (`nivel1-loopback-10min-cierre-20261004.txt`). Como el fallo es intermitente, una corrida limpia no exculpa a
+  webrtc-java.
+- **Hipótesis refutadas (hecho, cada una con una sesión de 10 min):** (1) el SDK libera demasiado pronto un
+  `AudioDeviceModule` huérfano: el defecto existe, pero liberarlo al final no evitó el fallo; (2) depende de
+  `mvn exec:java`: cuatro clientes con `java -cp` y Maven cerraron limpios; (3) depende del recolector de basura: no
+  hubo recolección tras el arranque en 630 s; (4) lo provoca `jcmd`: falló también sin él.
+- **Causa:** **sin determinar.** No se obtuvo pila nativa (la corrida bajo `gdb` no falló). **Hipótesis sin probar:**
+  el estado del servidor de audio (pipewire-pulse registró desbordamientos), el uso de X11 por el módulo de audio, o
+  el estado del kernel tras los fallos de ntfs3 (aunque la primera caída es anterior al primero de ellos).
+- **Pendiente importante:** el fallo se observó en el entorno anterior (Ubuntu 24.04, PipeWire 1.0.5, X11). **No se ha
+  repetido en Ubuntu 26.04 / PipeWire 1.6.2 / Wayland, ni con video.** Una sesión de video de más de 7 minutos no se probó.
+- **Parche:** sin parche.
+- **Evidencia:** `nivel3f-investigacion-cierre-20261004.txt`, `nivel3f-10min-memoria-20261004.txt`,
+  `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel3f-caida-al-salir-ventana-20261004.txt`,
+  `nivel1-loopback-10min-cierre-20261004.txt`, `nivel3-observacion-usuario-20261004.txt` (4).
+
+### 7.5 Errores tragados y capacidades ausentes en el SDK (hechos leídos en el código, no todos reproducidos)
+
+- `createAudioTrack` y `createVideoTrack` devuelven `null` y tragan cualquier excepción
+  (`MediaDevicesHelper.java:115`, `:165`); la PoC lo detecta y lo registra (`VoiceClient.java:69-73`,
+  `VideoClient.java:84-87`). `onError` del cliente está vacío.
+- Sin configuración de cancelación de eco / supresión de ruido, sin `getStats()`, la elección de micrófono por
+  `deviceId` no afecta a la captura real y no hay API para elegir salida (`nivel2-problemas-sdk-20261004.txt`, D).
+- El SDK envía protocolo de señal **13**, no 17 como se esperaba (`nivel2-problemas-sdk-20261004.txt`, A; el servidor
+  lo registra en `nivel2-headless-20261004.txt:68`), y fija webrtc-java 0.14.0 (la PoC usa 0.18.0 y funciona).
+- 1236 clases duplicadas entre el módulo `protocol` del SDK y `io.livekit:livekit-server` (`nivel2-problemas-sdk-20261004.txt`, E).
+- **Sin parche.**
+
+### 7.6 Video: fuente de la cámara y apagado (lectura del código; efectos NO reproducidos)
+
+- `LocalVideoTrack` no guarda el `VideoDeviceSource` que crea el SDK, así que nadie puede llamar a `stop()`/`dispose()`
+  sobre él (`MediaDevicesHelper.java:155-164`, `LocalVideoTrack.java`). **Hipótesis:** la cámara queda abierta hasta que
+  muere el proceso. Los clientes headless terminaron con exit 0 y la cámara quedó libre al salir el proceso (`ffmpeg`
+  la abrió después); no se probó Salir → Conectar repetido, ni el LED de la cámara.
+- `setCameraEnabled(false)` solo marca la pista como muteada y desactiva la pista nativa; no detiene la captura
+  (`RtcClient.java:603-612`, `LocalVideoTrack.java:56-60`). **Hipótesis** igual que arriba (no se midió).
+- **Sin parche.**
+
+### 7.7 Pantalla compartida
+
+Ver 6.4: no expuesta por el SDK; captura local falla en Wayland (`ERROR_TEMPORARY`, 50 de 50). **Sin parche.**
+
+### 7.8 Otros
+
+- **El corte de red no avisa en la UI:** la ventana no registró ningún evento durante el corte de ~13 s
+  (`nivel3e-corte-red-total-20261004.txt`). El primer intento de corte (solo IPv4 con `iptables`) no cortó nada porque
+  parte del tráfico iba por IPv6 (`nivel3e-corte-red-20261004.txt`); `tools/cut-network.sh` bloquea ambos.
+- **Un log de cliente quedó vacío** por un `kernel BUG` de ntfs3 que mató al proceso `tee`
+  (`nivel2-cliente-javafx-1-20261004-095318.txt`; ver 3.3).
+- **El Java por defecto puede no ser 21**; `env.sh` lo fija (`nivel-1-java21-export-20260921.txt`).
+- **El servidor no sobrevive a un reinicio** (3.2): `nivel4-cliente-javafx-video-1-20261118-134402.txt`.
+
+## 8. Limitaciones y riesgos para integrar en una aplicación real
+
+1. **El SDK comunitario no es utilizable sin tocarlo.** Dos workarounds obligatorios (7.1, 7.2), errores tragados,
+   expulsión del servidor sin tratar (7.3), ~3 estrellas y sin releases en GitHub (dato de `CLAUDE.md`, investigación
+   previa, no revalidado), último cambio de código 2025-12-06 (commit `0fa2340`), fijado a webrtc-java 0.14.0. Quien
+   lo use lo mantiene.
+2. **Fallos nativos que matan o congelan el proceso**, no excepciones: el orden de cierre (resuelto con workaround)
+   y el cierre tras sesiones largas (7.4), con causa sin localizar. En una app de escritorio esto cierra o congela
+   toda la aplicación, y una llamada normal dura más de 7 minutos.
+3. **El entorno cambió y la evidencia de audio es del entorno anterior** (3.1): Ubuntu 24.04/X11 frente a
+   26.04/Wayland. Los niveles 0–3 no se repitieron en el entorno nuevo.
+4. **Nada probado fuera de localhost:** sin NAT, sin TURN, sin TLS (`wss`), sin pérdida ni latencia reales;
+   servidor en `--dev` (clave fija, un solo puerto UDP).
+5. **Video limitado:** una sola capa (sin simulcast ni adaptación a la red), solo VP8 observado, sin elegir códec,
+   sin control de bitrate, sin aceleración por hardware medida, un solo participante con video a la vez en las
+   pruebas, y fps real de la cámara de ~7–8 que impide evaluar la fluidez (6.3).
+6. **Pantalla compartida inviable hoy** con esta pila en Wayland (6.4); y el SDK no la expone.
+7. **Windows y macOS sin probar.** Los natives existen; el audio, la cámara y los permisos allí son desconocidos.
+8. **Calidad de audio sin evaluar** con el SDK (sin eco/ruido configurable; el Nivel 1 solo con webrtc-java directo).
+9. **Sin estadísticas en el cliente** (`getStats()` no expuesto); RTT y jitter salieron del servidor.
+10. **Conflicto de clases** (1236 duplicadas) si el cliente genera tokens, como hace la PoC; en producción el token
+    lo debe generar un backend (4.2).
+11. **Medidas de retardo con supuestos:** excluyen el hardware, dependen de una corrección de 75 ms medida aparte y
+    se tomaron en la misma máquina. No hay medida de latencia del video.
+12. **Cámara compartida:** una cámara física no la abren dos procesos a la vez (no probado); hay que prever el caso.
+13. **Entorno de desarrollo:** el driver ntfs3 provocó dos `kernel BUG` (3.3); mover el proyecto a ext4.
+
+## 9. Recomendación
 
 Opciones: A) webrtc-java + SDK comunitario en JavaFX; B) voz en navegador embebido o del sistema;
 C) voz solo en el móvil (Flutter) durante el MVP; D) cambiar el cliente de escritorio a Flutter.
 
-- **Opción elegida: A, con dos condiciones.** (1) Tratar el SDK comunitario como código propio: copiarlo al
-  repositorio (o hacer un fork), corregir en él los fallos de 4.3 y 4.4.1 en lugar de rodearlos, y fijar
-  webrtc-java 0.18.0. (2) Resolver antes el fallo de cierre tras sesiones largas (4.4.2): hoy una llamada de más
-  de ~7 minutos puede terminar con la aplicación abortada o colgada (pasó en 4 de 7), y eso no es aceptable en un
-  producto. Si el equipo
-  no puede asumir el mantenimiento, o si 4.4.2 resulta no tener arreglo razonable, la alternativa es **B con el
-  navegador del sistema**, que usa el SDK oficial de LiveKit.
-- **Justificación (ligada a la sección 3):**
-  - El riesgo que motivó el PoC —"no hay SDK oficial para Java de escritorio"— no bloquea: los niveles 1, 2, 3a,
-    3b y 3c pasan, con interoperabilidad real contra el cliente web oficial.
-  - La parte difícil y grande (WebRTC nativo, códecs, audio) la resuelve `webrtc-java`, que no dio problemas
-    propios más allá del orden de liberación (4.2) y tiene natives para las tres plataformas (Extra).
-  - Los fallos con causa identificada (4.3.1, 4.3.2, 4.4.1) están en la capa de señalización del SDK comunitario,
-    que es pequeña y legible: las causas se localizaron leyendo su código. Es un problema de mantenimiento, no de
-    viabilidad. El cierre tras sesiones largas (4.4.2) es la excepción y el mayor riesgo abierto: se reproduce
-    en más de la mitad de las sesiones largas y su causa no está localizada: no se sabe si está en el SDK, en
-    `webrtc-java` o en el entorno de audio de esta máquina.
-  - El retardo (3g, ~92 ms y ~159 ms según el sentido) y el consumo (3f, memoria plana) están dentro de lo
-    aceptable, y un corte de red de ~13 s se recupera solo (3e).
-  - C y D resolverían un problema que la evidencia no muestra: el escritorio JavaFX sí puede hacer voz. B queda
-    como salida si A se complica; no se evaluó en este PoC, así que su coste real es desconocido.
-- **Lo que debería probarse antes de comprometerse con A:**
-  1. **localizar y corregir el fallo de cierre tras sesiones largas (4.4.2)**; es intermitente y cuatro hipótesis ya
-     están descartadas, así que hace falta una pila nativa: repetir sesiones de 10 minutos bajo `gdb` en un
-     entorno limpio (tras reiniciar, con el proyecto en ext4) y, a ser posible, en otra máquina. Si no se puede
-     corregir, A deja de ser recomendable;
-  2. probar cortes de red largos y decidir cómo reconectar (4.4.1, 4.4.3);
-  3. una prueba entre dos máquinas por red real, idealmente con una en Windows;
-  4. eco y ruido con altavoces, con y sin las opciones de procesado.
-- **Niveles que no se pudieron cerrar:** 3d (cliente expulsado queda colgado), 3f (el cierre tras sesiones
-  largas falla), y todo lo relativo a Windows/macOS, red real, cortes largos y calidad de eco/ruido.
-  No se ha rellenado ninguno con suposiciones.
+**Opción elegida: A para voz y cámara, con dos condiciones**; **la pantalla compartida no entra en A** con la
+evidencia actual.
+
+**Justificación (ligada a 2.1):**
+
+- El riesgo que motivó la PoC —no hay SDK oficial para Java de escritorio— no bloquea: audio (niveles 1–3) y cámara
+  (nivel 4a–4c) funcionan con interoperabilidad real contra el cliente web oficial.
+- La parte grande (WebRTC nativo, códecs, captura de audio y cámara) la resuelve `webrtc-java`, que no dio problemas
+  propios más allá del orden de liberación (7.2) y tiene natives para las tres plataformas.
+- Los fallos con causa identificada (7.1, 7.2, 7.3, 7.5, 7.6) están en la capa de señalización del SDK, pequeña y
+  legible: es un problema de mantenimiento, no de viabilidad. El cierre tras sesiones largas (7.4) es la excepción y
+  el mayor riesgo abierto: no se sabe si la causa está en el SDK, en `webrtc-java` o en el entorno de audio.
+- C y D resolverían un problema que la evidencia no muestra: el escritorio JavaFX sí puede hacer voz y cámara. B queda
+  como salida si A se complica y es la vía más probable para **pantalla compartida**; no se evaluó en esta PoC, así que
+  su coste real es desconocido.
+
+**Qué se reutiliza**
+
+- `webrtc-java` 0.18.0 como motor de medios; el servidor LiveKit autoalojado.
+- El patrón de envolturas sin JavaFX (`VoiceClient`, `VideoClient`) con el orden de cierre correcto y la detección de
+  `null` del SDK.
+- `FramePainter` (I420 → BGRA → `PixelWriter`, un repintado pendiente) para el video en JavaFX.
+- Las herramientas de medición (`tools/`, `VideoHeadless`) y el procedimiento de evidencia.
+
+**Qué se reescribe**
+
+- La capa de señalización del SDK: copiarla o hacer un fork, corregir en él 7.1, 7.2, 7.3 y 7.6 en lugar de rodearlos,
+  fijar webrtc-java 0.18.0 y exponer eco/ruido, `getStats()` y selección de dispositivo.
+- La generación de tokens: a un backend, con grants explícitos (4.2).
+- La ventana: la de la PoC es mínima (sin selección de cámara/micrófono, sin gestión de errores visible).
+
+**Qué se debe resolver antes de integrar**
+
+1. **Localizar y corregir el cierre tras sesiones largas (7.4)**, ahora también con video y en el entorno nuevo:
+   repetir sesiones de 10 minutos bajo `gdb` (proyecto en ext4) hasta capturar la pila nativa. Si no tiene arreglo
+   razonable, A deja de ser recomendable.
+2. Repetir los niveles 0 a 3 en el entorno actual (Ubuntu 26.04, PipeWire 1.6.2, Wayland).
+3. Medir CPU, memoria y latencia de la ventana recibiendo video, con más luz y/o otra cámara, y con 2+ participantes
+   con video; probar publicar simulcast.
+4. Decidir cómo se comparte pantalla: probar la captura bajo X11, mirar el diálogo del portal, o resolverla con B.
+5. Probar cortes de red largos y definir cómo reconectar y avisar al usuario (7.3, 7.8).
+6. Una prueba entre dos máquinas por red real, con TLS y TURN, idealmente una en Windows y otra en macOS.
+7. Eco y ruido con altavoces, con y sin procesado.
+
+**Niveles que no se pudieron cerrar:** 3d (cliente expulsado queda colgado), 3f (cierre tras sesiones largas falla),
+4d (pantalla), medidas de la ventana en 4, y todo lo relativo a Windows/macOS, red real, cortes largos y calidad de
+eco/ruido. No se ha rellenado ninguno con suposiciones.
+
+## 10. Cómo reproducir la PoC paso a paso
+
+Requisitos: Ubuntu con Java 21, Maven, Docker con Compose v2, `git`, una webcam para video, `ffmpeg` solo para las
+medidas de latencia y de fps de la cámara.
+
+1. **Terminal y Java 21.** Entra en la carpeta del proyecto y fija Java 21 (el sistema puede traer otro):
+
+   ```
+   source ./env.sh
+   java -version     # debe decir 21
+   mvn -v            # debe usar Java 21
+   ```
+
+   Si el proyecto está en NTFS, lanza los scripts con `bash script.sh`, no con `./script.sh`, y entrecomilla las rutas.
+2. **Servidor LiveKit en modo dev** (repítelo tras cada reinicio de la máquina):
+
+   ```
+   docker compose up -d
+   docker compose logs livekit | grep "starting LiveKit server"   # 7880/TCP, 7881/TCP, UDP 7882
+   ```
+
+3. **Nivel 1, loopback local con webrtc-java** (usa auriculares):
+
+   ```
+   bash run-nivel1.sh --list     # lista dispositivos
+   bash run-nivel1.sh 20         # 20 s
+   ```
+
+4. **Nivel 2, ventana de voz:** `bash run-nivel2.sh javafx-1`; pulsa **Conectar** (URL `ws://localhost:7880`, sala
+   `poc`). El token se genera solo con la clave de desarrollo (`change_this_dev_key` / `change_this_dev_secret`,
+   ver 3.2).
+5. **Navegador como segundo participante:** genera un token con `python3 tools/token.py navegador poc`, abre
+   https://meet.livekit.io, pestaña **Custom**, URL `ws://localhost:7880`, pega el token. Como hay una sola cámara,
+   apaga la del navegador en la prueba A y desmarca "Publicar cámara" en JavaFX en la prueba B.
+6. **Nivel 4, video:**
+   - Sin ventana: `mvn -q -B compile`, construye el classpath
+     (`mvn -q dependency:build-classpath -Dmdep.outputFile=/tmp/cp.txt`) y ejecuta
+     `java -cp "target/classes:$(cat /tmp/cp.txt)" sonimbus.poc.level4.VideoHeadless ws://localhost:7880 poc java-video 20 true 640 480 15`.
+     Argumentos: URL, sala, identidad, segundos, publicar (true/false), ancho, alto, fps. Añade
+     `-Dpoc.sinforzar=true` antes de `-cp` para comprobar que sin el workaround no se publica (7.1).
+   - Con ventana: `bash run-nivel4.sh javafx-video-1`. **Prueba A:** Conectar con "Publicar cámara" marcado y mira desde
+     el navegador. **Prueba B:** sin marcar, enciende la cámara en el navegador y mira el panel "Remoto".
+   - Verifica en el servidor: `docker compose logs livekit | grep -E "mediaTrack published|rtp stats"`.
+7. **Pantalla (4d), sonda:** `bash run-nivel4d.sh` y mira si aparece un diálogo de GNOME; salida esperada hoy:
+   `ERROR_TEMPORARY` (6.4).
+8. **Pruebas del Nivel 3 (audio):**
+   - 10 minutos con muestreo de memoria: `bash tools/soak.sh 630 > <archivo fuera de NTFS>`; usa `NOJCMD=1` para evitar `jcmd`.
+   - Retardo (da palmadas, con un solo micrófono abierto): `bash tools/latency.sh 40` (necesita `ffmpeg`).
+   - Corte de red de 10 s (**pide sudo; ejecútalo tú**): `sudo bash tools/cut-network.sh 10`.
+   - Segunda ventana: `bash run-nivel2.sh javafx-2` (cada ventana necesita una identidad distinta).
+9. **Parar el servidor:** `docker compose down`.
+
+Los logs de las ventanas se guardan en `evidence/` (el de `run-nivel2.sh` directamente; el de `run-nivel4.sh` se
+escribe en `/tmp` y se copia al terminar, por el problema de NTFS de 3.3).
