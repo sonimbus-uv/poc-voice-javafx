@@ -28,7 +28,8 @@ GRACE="${GRACE:-90}"        # s de espera tras el cierre previsto antes de dar u
 STAMP="$(date +%Y%m%d-%H%M%S)"
 W="$(mktemp -d /tmp/soak-gdb.XXXXXX)"
 OUT="$W/resumen.txt"
-EVID="evidence/nivel3f-soak2-${MODE}-${STAMP}"
+ETIQ="${ETIQ:-}"           # etiqueta opcional en el nombre de la evidencia (p. ej. parche / original)
+EVID="evidence/nivel3f-soak2-${MODE}${ETIQ:+-$ETIQ}-${STAMP}"
 
 if { [ "$GDB" = 1 ] || [ "$GDB" = late ]; } && [ "$(cat /proc/sys/kernel/yama/ptrace_scope)" != 0 ]; then
   echo "ptrace_scope=$(cat /proc/sys/kernel/yama/ptrace_scope): gdb no podrá engancharse." >&2
@@ -69,7 +70,7 @@ case "$MODE" in
 esac
 
 {
-echo "# Nivel 3f segunda ronda - modo=$MODE segundos=$SECS gdb=$GDB sala=$ROOM"
+echo "# Nivel 3f segunda ronda - modo=$MODE segundos=$SECS gdb=$GDB sala=$ROOM etiqueta=[$ETIQ] opciones_jvm=[$JOPTS]"
 echo "# Inicio: $(date -Iseconds)  | SO: $(grep PRETTY /etc/os-release | cut -d= -f2) | kernel $(uname -r) | $XDG_SESSION_TYPE | ptrace_scope=$(cat /proc/sys/kernel/yama/ptrace_scope)"
 echo "# Pids: $(for k in "${!PIDS[@]}"; do echo -n "$k=${PIDS[$k]} "; done)"
 echo "# Muestreo cada 30 s SOLO con ps (sin jcmd, para no perturbar la JVM): t_s id pid rss_kib hilos"
