@@ -20,20 +20,21 @@
 - **Con qué:** `webrtc-java` 0.18.0 (medios) + el SDK comunitario `Trirrin/livekit-java-sdk` v0.1.4 (señalización).
   `webrtc-java` se comportó bien; el SDK comunitario es el punto débil: hacen falta workarounds para publicar
   (audio y video) y para cerrar sin que la JVM muera (sección 7).
-- **Defecto más grave abierto:** el cierre a veces **aborta en código nativo o se queda colgado**: 4 de 7 sesiones
-  largas con audio en el entorno anterior y **1 de 2 procesos en Ubuntu 26.04** (colgado ~15 min y luego `exit=134`).
-  **La pila nativa del cuelgue ya se capturó:** el hilo que cierra espera con `pthread_join` a un hilo que ya no existe,
-  dentro de `AudioDeviceModuleBase.disposeInternal`, es decir, **en el código nativo de `webrtc-java`**, no solo en el SDK
-  (7.4). Con **video** también hay abortos al cerrar (`Pure virtual function called!`), incluso en sesiones de 8 s.
-  Causa de fondo sin determinar.
+- **Defecto más grave, con causa identificada en una parte:** el cierre a veces **aborta en código nativo o se queda
+  colgado**: 4 de 7 sesiones largas con audio en el entorno anterior y **1 de 2 procesos en Ubuntu 26.04** (colgado
+  ~15 min y luego `exit=134`); con **video** aborta en ~10 % de las sesiones de 8 s (`Pure virtual function called!`).
+  **Causa del aborto con video: `PeerConnectionEngine.close()` del SDK se ejecuta dos veces a la vez** (desde el hilo que cierra y
+  desde el hilo del WebSocket al llegar el `leave` del servidor). **Un parche de esa sola clase lo elimina en las pruebas: 0 de 60 con parche
+  frente a 4 de 30 sin él (p = 0,011)** (7.4). **El cuelgue de las sesiones largas de audio (`pthread_join` sobre un hilo inexistente
+  en `disposeInternal`) encaja con la misma causa, pero no se ha comprobado que el parche lo elimine.**
 - **El entorno cambió entre niveles:** los niveles 0 a 3 corrieron en Ubuntu 24.04 / PipeWire 1.0.5 / Maven 3.8.7
   y el Nivel 4 en Ubuntu 26.04.1 / PipeWire 1.6.2 / Maven 3.9.12 (3.1). De los niveles 0 a 3 solo se repitió el 3f
   en el entorno nuevo (el fallo de cierre se reproduce); el resto no.
 - **No se probó:** red real (todo en localhost), cortes de más de ~13 s, Windows y macOS (solo disponibilidad de
   natives), calidad de la cancelación de eco y supresión de ruido, CPU/RAM de la ventana recibiendo video.
 - **Recomendación:** A (webrtc-java + SDK comunitario en JavaFX) para voz y cámara, **condicionada** a adoptar el
-  SDK como código propio y a resolver el fallo de cierre (que ya no se puede atribuir solo al SDK); la pantalla
-  compartida necesita otra vía
+  SDK como código propio (el parche del cierre es pequeño y ya está probado en sesiones cortas) y a confirmar que elimina el cuelgue
+  de las sesiones largas; la pantalla compartida necesita otra vía
   (sección 9).
 
 ## 2. Objetivo y alcance
@@ -74,6 +75,7 @@ Valores: pasa / falla / parcial / no probado.
 | 4c | Ventana JavaFX con vista previa local y video remoto | pasa (misma observación) | `nivel4-cliente-javafx-video-20261118-124200.txt`, `nivel4-observacion-usuario-20261118.txt` |
 | 4d | Compartir pantalla (opcional) | **falla** en Wayland: 50 de 50 capturas `ERROR_TEMPORARY`; el SDK no la expone | `nivel4d-pantalla-captura-wayland-20261118.txt` |
 | 4e | Recibir una pantalla compartida desde el navegador en JavaFX (añadido) | pasa: pista `SCREEN_SHARE` VP8 1852x910, ~1 fps, 0 perdidos, 0 descartados; el usuario: "en efecto recibe la pantalla compartida" | `nivel4e-recibir-pantalla-navegador-20261118.txt`, `nivel4-cliente-javafx-video-1-20261118-140150.txt`, `nivel4-cliente-javafx-video-1-20261118-141352.txt` |
+| 4f | Cierre limpio con video (añadido) | **parcial/falla sin parche:** 3 de 30 cierres de 8 s con video abortan (`Pure virtual function called!`); **con el parche de `close()`: 0 de 60** frente a 4 de 30 sin él en el mismo experimento (Fisher p = 0,011) | `nivel3f-cierre-corto-video-plain-20261118-205435-resumen.txt`, `nivel3f-cierre-corto-AB-parche-close-20261118.txt`, `nivel3f-cierre-corto-video-plain-parche1-*`, `-original-*`, `-parche2-*`, `nivel3f-cierre-corto-video-gdb-20261118-205846-gdb-run3.txt` |
 | 4 medidas | CPU, memoria, ancho de banda | parcial: medido el cliente publicando sin ventana; sin medir la ventana recibiendo | `nivel4-medidas-cpu-memoria-20261118.txt` |
 
 ## 3. Entorno
@@ -170,6 +172,8 @@ Piezas de código (todas en `src/main/java/sonimbus/poc/`):
 | Cliente de video | `level4/VideoClient.java` | conecta, publica cámara, sink de video remoto y local |
 | Pintado | `level4/FramePainter.java` | convierte I420 a BGRA y pinta en un `ImageView` |
 | Ventana de video | `level4/VideoApp.java`, `VideoLauncher.java` | vista previa local, video remoto, fps |
+| Parche del SDK (experimental) | `io/livekit/sdk/rtc/PeerConnectionEngine.java` | copia modificada de la clase del SDK (Apache-2.0): `close()` serializado e idempotente; sustituye a la del JAR (7.4) |
+| Mitigación (experimental, apagada) | `level4/CierreSeguro.java` | vigilante que termina el proceso si un paso del cierre se bloquea (`-Dpoc.cierreSeguroMs=N`; 7.4) |
 | Sondas | `level1/Level1Loopback.java`, `level2/HeadlessCheck.java`, `level4/VideoHeadless.java`, `level4/ScreenProbe.java` | pruebas sin ventana |
 
 ### 4.2 El token y sus grants
@@ -431,7 +435,7 @@ Convención: **parche** = hay corrección en el código de la PoC; **workaround*
   llamado `WebSocketConnec…` (el hilo del WebSocket de señalización del SDK), **dentro de `Java_dev_onvoid_webrtc_RTCPeerConnection_close`** (`abort()` llamado
   desde `libwebrtc-java`, justo tras `jni_GetObjectClass`), mientras el hilo principal estaba todavía en medio de la llamada de cierre (en `JVM_StartThread`).
   En esa corrida el log mostró `Pure virtual function called!` justo antes de `Desconectado.`.
-- **CAUSA PROBABLE (hipótesis fuertemente respaldada, NO probada):** **doble cierre concurrente del motor WebRTC del SDK.** Por lectura del código
+- **CAUSA (aborto con video: comprobada por el experimento A/B de abajo; cuelgue de audio: hipótesis coherente, no comprobada):** **doble cierre concurrente del motor WebRTC del SDK.** Por lectura del código
   (hecho): `RtcClient.disconnect()` (`RtcClient.java:71-76`) envía `sendLeave()` y llama a `rtcEngine.close()` **en el hilo del llamante**; la respuesta
   `LeaveRequest` del servidor llega por el hilo del WebSocket y ejecuta `RtcClient.onLeave()` (`RtcClient.java:330-345`), que **también** llama a
   `rtcEngine.close()`; y `PeerConnectionEngine.close()` (`PeerConnectionEngine.java:224-244`) **no está sincronizado ni protegido contra dobles llamadas**
@@ -441,7 +445,22 @@ Convención: **parche** = hay corrección en el código de la PoC; **workaround*
   **(b)** el cuelgue: el segundo `AudioDeviceModuleBase.dispose` hace `pthread_join` sobre el hilo de audio que **el primero ya terminó y liberó**, que es
   exactamente lo observado (hilo esperado inexistente). También explicaría por qué es intermitente y por qué depende del momento en que llega la respuesta del servidor
   (la «sesión» de octubre sería, en realidad, el estado de carga del servidor/máquina), y por qué ejecutar el cierre en otro hilo (versión 1 de `CierreSeguro`)
-  lo empeora. No se ha comprobado: falta fijar `close()` y medir la tasa.
+  lo empeora.
+- **EXPERIMENTO A/B del parche (hecho, `nivel3f-cierre-corto-AB-parche-close-20261118.txt`):** una copia de `PeerConnectionEngine`
+  (`src/main/java/io/livekit/sdk/rtc/PeerConnectionEngine.java`, tag v0.1.4 / commit `0fa2340`, Apache-2.0, cabecera que lo declara) con
+  `close()` **sincronizado e idempotente** sustituye a la del JAR (comprobado con `-verbose:class`); `-Dpoc.sdkCloseOriginal=true` restaura el
+  comportamiento original en el mismo binario. `tools/cierre-corto.sh`, `VideoHeadless` de 8 s con cámara, tres bloques entrelazados:
+
+  | Bloque | Opciones | Corridas | `exit=134` (`Pure virtual function called!`) |
+  |---|---|---|---|
+  | 1 | parche | 30 | **0** |
+  | 2 | original | 30 | **4** (13 %) |
+  | 3 | parche | 30 | **0** |
+
+  **0 de 60 con parche frente a 4 de 30 sin él** (Fisher exacta unilateral p = 0,011; si la tasa real fuese ~10 %, observar 0 de 60 tendría probabilidad
+  0,2 %). Con el parche la tasa es < 5 % (IC 95 % unilateral, regla de tres). **Límites:** no demuestra 0 %, el escenario es de 8 s con video, y
+  **no se ha probado el parche contra el cuelgue de las sesiones largas de audio**: hace falta repetir `bash tools/soak-gdb.sh 630 2audio` con el parche
+  (ahora en `target/classes`) varias veces; el cuelgue era 1 de 2 procesos en algunas sesiones y limpio en otras.
 - **Mitigación experimental `CierreSeguro` (apagada por defecto, `-Dpoc.cierreSeguroMs=N`):** un hilo vigilante termina
   el proceso (`Runtime.halt` y, si no basta, `kill -9`) si un paso del cierre pasa de N ms; **no arregla la causa**.
   Mecanismo probado con un bloqueo simulado (salida a los ~1,6 s). **No comprobada con un cuelgue real** (es intermitente) ni
@@ -497,8 +516,9 @@ Ver 6.4: no expuesta por el SDK; captura local falla en Wayland (`ERROR_TEMPORAR
    previa, no revalidado), último cambio de código 2025-12-06 (commit `0fa2340`), fijado a webrtc-java 0.14.0. Quien
    lo use lo mantiene.
 2. **Fallos nativos que matan o congelan el proceso**, no excepciones: el orden de cierre (resuelto con workaround)
-   y el cierre fallido (7.4), reproducido en dos entornos, con audio y con video, y con la pila del cuelgue
-   dentro del código nativo de `webrtc-java`; causa de fondo sin determinar. En una app de escritorio esto cierra o congela
+   y el cierre fallido (7.4), reproducido en dos entornos, con audio y con video. Su causa es **un doble `close()` concurrente en el SDK**
+   (comprobado para el aborto con video con un parche de una clase; pendiente de comprobar para el cuelgue de audio), aunque el síntoma aparece en el
+   código nativo de `webrtc-java`. En una app de escritorio esto cierra o congela
    toda la aplicación, y una llamada normal dura más de 7 minutos.
 3. **El entorno cambió y casi toda la evidencia de audio es del entorno anterior** (3.1): Ubuntu 24.04/X11 frente a
    26.04/Wayland. Solo el 3f se repitió en el entorno nuevo, y reprodujo el fallo; el resto de los niveles 0–3 no.
@@ -534,9 +554,10 @@ evidencia actual (recibirla sí funciona).
   propios más allá del orden de liberación (7.2) y tiene natives para las tres plataformas.
 - Los fallos con causa identificada (7.1, 7.2, 7.3, 7.5, 7.6) están en la capa de señalización del SDK, pequeña y
   legible: es un problema de mantenimiento, no de viabilidad. El cierre tras sesiones largas (7.4) es la excepción y
-  el mayor riesgo abierto: la pila del cuelgue lo sitúa **dentro del código nativo de `webrtc-java`** (`disposeInternal`),
-  aunque el SDK es quien lo invoca y crea un módulo de audio huérfano; arreglarlo podría exigir un cambio o un parche en
-  `webrtc-java` y no solo en el SDK, lo que aumenta el riesgo de la opción A. Con video también hay abortos al cerrar.
+  el mayor riesgo abierto, pero **mejor de lo que parecía**: el síntoma aparece en el código nativo de `webrtc-java`
+  (`disposeInternal`, `RTCPeerConnection.close`), pero la causa es de la capa del SDK: cierra el motor dos veces desde dos hilos. **Un parche de una clase
+  del SDK eliminó el aborto con video en las pruebas (0 de 60 frente a 4 de 30)**, lo que favorece a la opción A: el arreglo está en el código que
+  adoptaríamos como propio. Falta comprobar que elimina también el cuelgue de las sesiones largas de audio.
 - C y D resolverían un problema que la evidencia no muestra: el escritorio JavaFX sí puede hacer voz y cámara. B queda
   como salida si A se complica y es la vía más probable para **pantalla compartida**; no se evaluó en esta PoC, así que
   su coste real es desconocido.
@@ -551,18 +572,18 @@ evidencia actual (recibirla sí funciona).
 
 **Qué se reescribe**
 
-- La capa de señalización del SDK: copiarla o hacer un fork, corregir en él 7.1, 7.2, 7.3 y 7.6 en lugar de rodearlos,
+- La capa de señalización del SDK: copiarla o hacer un fork, corregir en él 7.1, 7.2, 7.3, **7.4 (`PeerConnectionEngine.close()` serializado e idempotente; la copia
+  parcheada de la PoC es el punto de partida)** y 7.6 en lugar de rodearlos,
   fijar webrtc-java 0.18.0 y exponer eco/ruido, `getStats()` y selección de dispositivo.
 - La generación de tokens: a un backend, con grants explícitos (4.2).
 - La ventana: la de la PoC es mínima (sin selección de cámara/micrófono, sin gestión de errores visible).
 
 **Qué se debe resolver antes de integrar**
 
-1. **Localizar y corregir el fallo de cierre (7.4)**: ya se reproduce en Ubuntu 26.04, con audio (cuelgue) y con video
-   (aborto en sesiones de 8 s), y se tiene la pila nativa del cuelgue. Falta identificar el hilo al que `disposeInternal`
-   hace `pthread_join` (necesita una compilación de `webrtc-java` con símbolos o ingeniería inversa del binario) y la pila
-   del aborto `Pure virtual function called!` (reproductor rápido: `tools/cierre-corto.sh`). Valorar si lo arregla una
-   versión nueva de `webrtc-java`. Si no tiene arreglo razonable, A deja de ser recomendable.
+1. **Confirmar el arreglo del fallo de cierre (7.4):** el parche de `PeerConnectionEngine.close()` elimina el aborto con video (0 de 60 frente a 4 de 30).
+   Falta repetir `bash tools/soak-gdb.sh 630 2audio` varias veces **con el parche** para ver si desaparece el cuelgue de las sesiones largas de audio
+   (sin parche ocurrió 1 de 2 procesos en algunas sesiones), y repetir las sesiones largas con video. Si el cuelgue persiste con el parche, la causa de ese síntoma es otra
+   (la pila del cuelgue está en `disposeInternal`; hay que identificar el hilo del `pthread_join`) y A sigue condicionada a resolverlo.
 2. Repetir en el entorno actual (Ubuntu 26.04, PipeWire 1.6.2, Wayland) el resto de los niveles 0 a 3, salvo el 3f.
 3. Medir CPU, memoria y latencia de la ventana recibiendo video, con más luz y/o otra cámara, y con 2+ participantes
    con video; probar publicar simulcast.
@@ -631,6 +652,8 @@ medidas de latencia y de fps de la cámara.
      hay cuelgue; `JOPTS=-Dpoc.cierreSeguroMs=15000` activa la mitigación experimental).
    - **Reproductor rápido del aborto con video:** `bash tools/cierre-corto.sh 30 plain 8 video` mide la tasa;
      `bash tools/cierre-corto.sh 40 gdb 8 video` lo ejecuta bajo `gdb` y vuelca la pila en el primer `SIGABRT`.
+     **A/B del parche:** el binario incluye la copia parcheada de `PeerConnectionEngine`; `JOPTS=-Dpoc.sdkCloseOriginal=true bash tools/cierre-corto.sh 30 plain 8 video`
+     restaura el comportamiento original del SDK para compararlo (`ETIQ=original` etiqueta la evidencia).
 9. **Parar el servidor:** `docker compose down`.
 
 Los logs de las ventanas se guardan en `evidence/` (el de `run-nivel2.sh` directamente; el de `run-nivel4.sh` se
