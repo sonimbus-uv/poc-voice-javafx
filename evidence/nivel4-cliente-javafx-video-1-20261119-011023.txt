@@ -1,0 +1,32 @@
+Nov 19, 2026 1:10:25 AM com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @5c8a11ac'
+[01:10:29.907] Token generado para identidad=javafx-video-1 sala=poc
+[01:10:29.914] Conectando a ws://localhost:7880 ...
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+[01:10:30.103] evento: onConnected
+[01:10:30.103] Unido a la sala: poc (sid=RM_pDJjBUs4qoEd)
+[01:10:30.105] Cámaras vistas por el SDK: [MediaDeviceInfo{deviceId='0', label='USB2.0 HD UVC WebCam: USB2.0 HD', kind=VIDEO_INPUT}]
+[01:10:30.401] Cámara publicada (cid=video-0c510b38-fb4a-4d2d-94cd-760157929ef4) 640x480@15, oferta del publisher forzada
+[01:10:30.424] evento: pista publicada TR_VCtopRyibzeG4P (VIDEO) por javafx-video-1
+[01:10:51.185] Cámara apagada (mute)
+[01:10:51.188] evento: javafx-video-1 silenció TR_VCtopRyibzeG4P
+[01:10:52.848] Cámara reactivada
+[01:10:52.851] evento: javafx-video-1 reactivó TR_VCtopRyibzeG4P
+[01:10:53.597] evento: onDisconnected motivo=CLIENT_INITIATED
+[01:10:53.597] Desconectado.
+[01:11:57.432] Token generado para identidad=javafx-video-1 sala=poc
+[01:11:57.433] Conectando a ws://localhost:7880 ...
+[01:11:57.447] evento: onConnected
+[01:11:57.447] Unido a la sala: poc (sid=RM_eV4pSurENUeP)
+[01:11:57.448] Cámaras vistas por el SDK: [MediaDeviceInfo{deviceId='0', label='USB2.0 HD UVC WebCam: USB2.0 HD', kind=VIDEO_INPUT}]
+[01:12:00.510] evento: onDisconnected motivo=CLIENT_INITIATED
+[01:12:00.511] Desconectado.
+[01:12:02.620] Token generado para identidad=javafx-video-1 sala=poc
+[01:12:02.620] Conectando a ws://localhost:7880 ...
+[01:12:02.634] evento: onConnected
+[01:12:02.634] Unido a la sala: poc (sid=RM_eV4pSurENUeP)
+[01:12:02.634] Cámaras vistas por el SDK: [MediaDeviceInfo{deviceId='0', label='USB2.0 HD UVC WebCam: USB2.0 HD', kind=VIDEO_INPUT}]
+[01:12:04.811] evento: onDisconnected motivo=CLIENT_INITIATED
+[01:12:04.812] Desconectado.

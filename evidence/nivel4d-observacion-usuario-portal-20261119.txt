@@ -1,0 +1,5 @@
+# Nivel 4d - observación del usuario (2026-11-19), tipo "observación del usuario"
+Texto literal: "aparece el portal de GNOME donde se aprecia mi imagen etc y la llamada poc"
+Interpretación y límites (del redactor, no del usuario): al ejecutar la prueba de pantalla (run-nivel4d.sh) apareció el diálogo del portal de
+GNOME para compartir pantalla. NO se registró qué ocurrió después de aceptar/cancelar, ni si la sonda obtuvo fotogramas ni si se publicó una pista
+a la sala "poc". Falta ese resultado y la salida de la sonda.
