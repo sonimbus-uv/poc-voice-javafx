@@ -9,14 +9,16 @@
 cd "$(dirname "$0")/.." || exit 1
 source ./env.sh
 N="${1:-30}"; MODE="${2:-plain}"; SECS="${3:-8}"; KIND="${4:-video}"
+JOPTS="${JOPTS:-}"   # opciones extra de la JVM, p. ej. JOPTS=-Dpoc.sdkCloseOriginal=true
+ETIQ="${ETIQ:-}"     # etiqueta opcional para el nombre de la evidencia
 STAMP="$(date +%Y%m%d-%H%M%S)"
 W="$(mktemp -d /tmp/cierre-corto.XXXXXX)"
-EV="evidence/nivel3f-cierre-corto-${KIND}-${MODE}-${STAMP}"
+EV="evidence/nivel3f-cierre-corto-${KIND}-${MODE}${ETIQ:+-$ETIQ}-${STAMP}"
 curl -s -o /dev/null --max-time 3 http://localhost:7880 || { echo "Servidor caído: docker compose up -d" >&2; exit 3; }
 mvn -q -B compile dependency:build-classpath -Dmdep.outputFile="$W/cp.txt" > "$W/mvn.log" 2>&1 || { cat "$W/mvn.log"; exit 4; }
 CP="target/classes:$(cat "$W/cp.txt")"
 OUT="$W/resumen.txt"
-echo "# cierre-corto: n=$N modo=$MODE segundos=$SECS tipo=$KIND | $(grep PRETTY /etc/os-release | cut -d= -f2) | $XDG_SESSION_TYPE | inicio $(date -Iseconds)" > "$OUT"
+echo "# cierre-corto: n=$N modo=$MODE segundos=$SECS tipo=$KIND opciones=[$JOPTS] | $(grep PRETTY /etc/os-release | cut -d= -f2) | $XDG_SESSION_TYPE | inicio $(date -Iseconds)" > "$OUT"
 fail=0; captured=0
 for i in $(seq 1 "$N"); do
   if [ "$KIND" = video ]; then
@@ -31,10 +33,10 @@ for i in $(seq 1 "$N"); do
       -ex 'handle SIGPIPE nostop noprint pass' -ex 'handle SIGCHLD nostop noprint pass' -ex 'handle SIGALRM nostop noprint pass' \
       -ex 'handle SIGQUIT nostop noprint pass' -ex 'handle SIGABRT stop print pass' \
       -ex run -ex 'echo \n===== PARADO EN UNA SEÑAL =====\n' -ex 'info threads' -ex 'thread apply all bt 40' -ex kill \
-      --args java -cp "$CP" "${ARGS[@]}" > "$W/run-$i.txt" 2>&1
+      --args java $JOPTS -cp "$CP" "${ARGS[@]}" > "$W/run-$i.txt" 2>&1
     if grep -aq 'SIGABRT' "$W/run-$i.txt"; then code=ABORT; captured=1; else code=ok; fi
   else
-    timeout 60 java -cp "$CP" "${ARGS[@]}" > "$W/run-$i.txt" 2>&1; code=$?
+    timeout 60 java $JOPTS -cp "$CP" "${ARGS[@]}" > "$W/run-$i.txt" 2>&1; code=$?
   fi
   e=$(date +%s.%N)
   msg=$(grep -aoE 'Pure virtual function called|futex facility|Assertion .pa_close|CIERRE SEGURO' "$W/run-$i.txt" | head -1)
