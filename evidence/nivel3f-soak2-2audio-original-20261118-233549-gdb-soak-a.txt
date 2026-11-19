@@ -1,0 +1,477 @@
+[New LWP 40725]
+[New LWP 40703]
+[New LWP 40695]
+[New LWP 40694]
+[New LWP 40693]
+[New LWP 40692]
+[New LWP 40672]
+[New LWP 40671]
+[New LWP 40666]
+[New LWP 40665]
+[New LWP 40664]
+[New LWP 40662]
+[New LWP 40661]
+[New LWP 40660]
+[New LWP 40659]
+[New LWP 40651]
+[New LWP 40648]
+[New LWP 40642]
+[New LWP 40640]
+[New LWP 40638]
+[New LWP 40636]
+[New LWP 40634]
+[New LWP 40629]
+
+warning: Could not load shared library symbols for /tmp/libwebrtc-java-linux-x86_6412497218333374797676.so.
+Do you need "set solib-search-path" or "set sysroot"?
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/usr/lib/x86_64-linux-gnu/libthread_db.so.1".
+__syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+
+warning: 56	../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S: No such file or directory
+Installing openjdk unwinder
+Python Exception <class 'gdb.error'>: No type named CodeBlob.
+
+===== PARADO (enganche tardío en un cliente colgado) =====
+  Id   Target Id                                           Frame 
+* 1    Thread 0x7d60d94c2b80 (LWP 40625) "java"            __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  2    Thread 0x7d5feb7fe6c0 (LWP 40725) "threaded-ml"     __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  3    Thread 0x7d60a56fb6c0 (LWP 40703) "pool-1-thread-1" __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  4    Thread 0x7d60a5afc6c0 (LWP 40695) "GC Thread#4"     __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  5    Thread 0x7d60a5bfd6c0 (LWP 40694) "GC Thread#3"     __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  6    Thread 0x7d60a5cfe6c0 (LWP 40693) "GC Thread#2"     __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  7    Thread 0x7d60a5dff6c0 (LWP 40692) "GC Thread#1"     __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  8    Thread 0x7d60b432e6c0 (LWP 40672) "Common-Cleaner"  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  9    Thread 0x7d60b442e6c0 (LWP 40671) "Notification Th" __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  10   Thread 0x7d60b45ff6c0 (LWP 40666) "C1 CompilerThre" __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  11   Thread 0x7d60b46ff6c0 (LWP 40665) "C2 CompilerThre" __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  12   Thread 0x7d60b47ff6c0 (LWP 40664) "Monitor Deflati" __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  13   Thread 0x7d60cffff6c0 (LWP 40662) "Service Thread"  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  14   Thread 0x7d60d41bf6c0 (LWP 40661) "Signal Dispatch" __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  15   Thread 0x7d60d42bf6c0 (LWP 40660) "Finalizer"       __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  16   Thread 0x7d60d43bf6c0 (LWP 40659) "Reference Handl" __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  17   Thread 0x7d60d44c06c0 (LWP 40651) "VM Thread"       __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  18   Thread 0x7d60d45c16c0 (LWP 40648) "VM Periodic Tas" __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  19   Thread 0x7d60d47df6c0 (LWP 40642) "G1 Service"      __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  20   Thread 0x7d60d48e06c0 (LWP 40640) "G1 Refine#0"     __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  21   Thread 0x7d60d56ee6c0 (LWP 40638) "G1 Conc#0"       __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  22   Thread 0x7d60d57ef6c0 (LWP 40636) "G1 Main Marker"  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  23   Thread 0x7d60d58f06c0 (LWP 40634) "GC Thread#0"     __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+  24   Thread 0x7d60d77ff6c0 (LWP 40629) "java"            __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+
+Thread 24 (Thread 0x7d60d77ff6c0 (LWP 40629) "java"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137850908556520, a2=<optimized out>, a3=<optimized out>, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=128, futex_word=0x7d5fea6fbce8, expected=<optimized out>, op=265, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d5fea6fbce8, expected=<optimized out>, clockid=0, abstime=0x0, private=128, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d5fea6fbce8, expected=<optimized out>, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=128) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a5d99 in __pthread_clockjoin_ex (threadid=137850908554944, thread_return=0x0, clockid=0, abstime=0x0, cancel=<optimized out>) at ./nptl/pthread_join_common.c:66
+#6  0x00007d6051f2150f in ?? () from /tmp/soak-gdb.qF36GD/natlib/libwebrtc-java-linux-x86_6412497218333374797676.so
+#7  0x00007d60523e0f83 in ?? () from /tmp/soak-gdb.qF36GD/natlib/libwebrtc-java-linux-x86_6412497218333374797676.so
+#8  0x00007d60523d71ba in ?? () from /tmp/soak-gdb.qF36GD/natlib/libwebrtc-java-linux-x86_6412497218333374797676.so
+#9  0x00007d6051bb8672 in Java_dev_onvoid_webrtc_media_audio_AudioDeviceModuleBase_disposeInternal () from /tmp/soak-gdb.qF36GD/natlib/libwebrtc-java-linux-x86_6412497218333374797676.so
+#10 0x00007d60bfc6b9c0 in ?? ()
+#11 0x00007d60bfc6b65f in ?? ()
+#12 0x00007d60d77fe458 in ?? ()
+#13 0x00007d6053c1fff0 in ?? ()
+#14 0x0000000000000004 in ?? ()
+#15 0x00007d6053c24490 in ?? ()
+#16 0x0000000000000000 in ?? ()
+
+Thread 23 (Thread 0x7d60d58f06c0 (LWP 40634) "GC Thread#0"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854760514536, a2=<optimized out>, a3=a3@entry=0, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=<optimized out>, futex_word=0x7d60d007f3e8, expected=0, op=<optimized out>, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d007f3e8, expected=0, clockid=0, abstime=0x0, private=<optimized out>, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d007f3e8, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=<optimized out>) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92ac62f in do_futex_wait (sem=sem@entry=0x7d60d007f3e8, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:111
+#6  0x00007d60d92ac6c8 in __new_sem_wait_slow64 (sem=0x7d60d007f3e8, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:183
+#7  0x00007d60d8a2bf0a in PosixSemaphore::wait() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d8cd2db7 in WorkerThread::run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#12 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 22 (Thread 0x7d60d57ef6c0 (LWP 40636) "G1 Main Marker"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854912802952, a2=<optimized out>, a3=a3@entry=0, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=0, futex_word=0x7d60d91bb088 <mutex_init()::CGC_lock_storage+80>, expected=0, op=393, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d91bb088 <mutex_init()::CGC_lock_storage+80>, expected=0, clockid=0, abstime=0x0, private=0, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d91bb088 <mutex_init()::CGC_lock_storage+80>, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a3087 in __pthread_cond_wait_common (cond=<optimized out>, mutex=0x7d60d91bb040 <mutex_init()::CGC_lock_storage+8>, clockid=0, abstime=0x0) at ./nptl/pthread_cond_wait.c:421
+#6  ___pthread_cond_wait (cond=<optimized out>, mutex=0x7d60d91bb040 <mutex_init()::CGC_lock_storage+8>) at ./nptl/pthread_cond_wait.c:453
+#7  0x00007d60d897366c in PlatformMonitor::wait(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d891611d in Monitor::wait_without_safepoint_check(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d840d4ca in G1ConcurrentMarkThread::run_service() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d82ae14f in ConcurrentGCThread::run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#12 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#13 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#14 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 21 (Thread 0x7d60d56ee6c0 (LWP 40638) "G1 Conc#0"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854760583720, a2=<optimized out>, a3=a3@entry=0, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=<optimized out>, futex_word=0x7d60d0090228, expected=0, op=<optimized out>, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d0090228, expected=0, clockid=0, abstime=0x0, private=<optimized out>, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d0090228, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=<optimized out>) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92ac62f in do_futex_wait (sem=sem@entry=0x7d60d0090228, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:111
+#6  0x00007d60d92ac6c8 in __new_sem_wait_slow64 (sem=0x7d60d0090228, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:183
+#7  0x00007d60d8a2bf0a in PosixSemaphore::wait() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d8cd2db7 in WorkerThread::run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#12 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 20 (Thread 0x7d60d48e06c0 (LWP 40640) "G1 Refine#0"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854761246072, a2=<optimized out>, a3=a3@entry=0, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=0, futex_word=0x7d60d0131d78, expected=0, op=393, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d0131d78, expected=0, clockid=0, abstime=0x0, private=0, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d0131d78, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a3087 in __pthread_cond_wait_common (cond=<optimized out>, mutex=0x7d60d0131d30, clockid=0, abstime=0x0) at ./nptl/pthread_cond_wait.c:421
+#6  ___pthread_cond_wait (cond=<optimized out>, mutex=0x7d60d0131d30) at ./nptl/pthread_cond_wait.c:453
+#7  0x00007d60d897366c in PlatformMonitor::wait(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d891611d in Monitor::wait_without_safepoint_check(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d8413d23 in G1PrimaryConcurrentRefineThread::wait_for_completed_buffers() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d8414104 in G1ConcurrentRefineThread::run_service() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d82ae14f in ConcurrentGCThread::run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#12 0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#13 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#14 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#15 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 19 (Thread 0x7d60d47df6c0 (LWP 40642) "G1 Service"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854761250108, a2=<optimized out>, a3=a3@entry=3643489453, a4=a4@entry=137854835354560, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=0, futex_word=0x7d60d0132d3c, expected=3643489453, op=8216969, abstime=0x7d60d47debc0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d0132d3c, expected=3643489453, clockid=32096, abstime=0x7d60d47debc0, private=0, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d0132d3c, expected=expected@entry=0, clockid=clockid@entry=1, abstime=abstime@entry=0x7d60d47ded20, private=private@entry=0) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a3342 in __pthread_cond_wait_common (cond=0x7d60d0132d18, mutex=0x7d60d0132cf0, clockid=<optimized out>, abstime=0x7d60d47ded20) at ./nptl/pthread_cond_wait.c:421
+#6  ___pthread_cond_timedwait64 (cond=0x7d60d0132d18, mutex=0x7d60d0132cf0, abstime=0x7d60d47ded20) at ./nptl/pthread_cond_wait.c:478
+#7  0x00007d60d897362f in PlatformMonitor::wait(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d891611d in Monitor::wait_without_safepoint_check(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d846a32a in G1ServiceThread::wait_for_task() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d846a6eb in G1ServiceThread::run_service() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d82ae14f in ConcurrentGCThread::run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#12 0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#13 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#14 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#15 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 18 (Thread 0x7d60d45c16c0 (LWP 40648) "VM Periodic Tas"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854912797064, a2=<optimized out>, a3=a3@entry=3642536192, a4=a4@entry=1216, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=32096, futex_word=0x7d60d91b9988 <mutex_init()::PeriodicTask_lock_storage+80>, expected=3642536192, op=31977, abstime=0x4c0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d91b9988 <mutex_init()::PeriodicTask_lock_storage+80>, expected=3642536192, clockid=0, abstime=0x4c0, private=32096, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d91b9988 <mutex_init()::PeriodicTask_lock_storage+80>, expected=expected@entry=0, clockid=clockid@entry=1, abstime=abstime@entry=0x7d60d45c0cf0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a3342 in __pthread_cond_wait_common (cond=0x7d60d91b9968 <mutex_init()::PeriodicTask_lock_storage+48>, mutex=0x7d60d91b9940 <mutex_init()::PeriodicTask_lock_storage+8>, clockid=<optimized out>, abstime=0x7d60d45c0cf0) at ./nptl/pthread_cond_wait.c:421
+#6  ___pthread_cond_timedwait64 (cond=0x7d60d91b9968 <mutex_init()::PeriodicTask_lock_storage+48>, mutex=0x7d60d91b9940 <mutex_init()::PeriodicTask_lock_storage+8>, abstime=0x7d60d45c0cf0) at ./nptl/pthread_cond_wait.c:478
+#7  0x00007d60d897362f in PlatformMonitor::wait(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d891611d in Monitor::wait_without_safepoint_check(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d892f80d in WatcherThread::sleep() const () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d892f939 in WatcherThread::run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#12 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#13 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#14 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 17 (Thread 0x7d60d44c06c0 (LWP 40651) "VM Thread"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854912792328, a2=<optimized out>, a3=a3@entry=3561749344, a4=a4@entry=137854907502080, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=1852404853, futex_word=0x7d60d91b8708 <mutex_init()::VMOperation_lock_storage+80>, expected=3561749344, op=1852405244, abstime=0x7d60d8cace00 <Events::log_vm_operation(Thread*, char const*, ...)>, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d91b8708 <mutex_init()::VMOperation_lock_storage+80>, expected=3561749344, clockid=0, abstime=0x7d60d8cace00 <Events::log_vm_operation(Thread*, char const*, ...)>, private=1852404853, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d91b8708 <mutex_init()::VMOperation_lock_storage+80>, expected=expected@entry=79, clockid=clockid@entry=1, abstime=abstime@entry=0x7d60d44bfce0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a3342 in __pthread_cond_wait_common (cond=0x7d60d91b86e8 <mutex_init()::VMOperation_lock_storage+48>, mutex=0x7d60d91b86c0 <mutex_init()::VMOperation_lock_storage+8>, clockid=<optimized out>, abstime=0x7d60d44bfce0) at ./nptl/pthread_cond_wait.c:421
+#6  ___pthread_cond_timedwait64 (cond=0x7d60d91b86e8 <mutex_init()::VMOperation_lock_storage+48>, mutex=0x7d60d91b86c0 <mutex_init()::VMOperation_lock_storage+8>, abstime=0x7d60d44bfce0) at ./nptl/pthread_cond_wait.c:478
+#7  0x00007d60d897362f in PlatformMonitor::wait(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d891611d in Monitor::wait_without_safepoint_check(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d8cac125 in VMThread::wait_for_operation() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d8cacb30 in VMThread::run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#12 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#13 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#14 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 16 (Thread 0x7d60d43bf6c0 (LWP 40659) "Reference Handl"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854912792844, a2=<optimized out>, a3=a3@entry=3632139196, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=0, futex_word=0x7d60d91b890c <mutex_init()::Heap_lock_storage+84>, expected=3632139196, op=393, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d91b890c <mutex_init()::Heap_lock_storage+84>, expected=3632139196, clockid=0, abstime=0x0, private=0, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d91b890c <mutex_init()::Heap_lock_storage+84>, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a3087 in __pthread_cond_wait_common (cond=<optimized out>, mutex=0x7d60d91b88c0 <mutex_init()::Heap_lock_storage+8>, clockid=0, abstime=0x0) at ./nptl/pthread_cond_wait.c:421
+#6  ___pthread_cond_wait (cond=<optimized out>, mutex=0x7d60d91b88c0 <mutex_init()::Heap_lock_storage+8>) at ./nptl/pthread_cond_wait.c:453
+#7  0x00007d60d897366c in PlatformMonitor::wait(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d891619f in Monitor::wait(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d862f8b2 in JVM_WaitForReferencePendingList () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60bfc6b9c0 in ?? ()
+#11 0x0000000000000004 in ?? ()
+#12 0x00007d60d43be8e8 in ?? ()
+#13 0x0000000000000000 in ?? ()
+
+Thread 15 (Thread 0x7d60d42bf6c0 (LWP 40660) "Finalizer"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854761472368, a2=<optimized out>, a3=a3@entry=1207964000, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=0, futex_word=0x7d60d0169170, expected=1207964000, op=393, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d0169170, expected=1207964000, clockid=0, abstime=0x0, private=0, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d0169170, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a3087 in __pthread_cond_wait_common (cond=<optimized out>, mutex=0x7d60d0169128, clockid=0, abstime=0x0) at ./nptl/pthread_cond_wait.c:421
+#6  ___pthread_cond_wait (cond=<optimized out>, mutex=0x7d60d0169128) at ./nptl/pthread_cond_wait.c:453
+#7  0x00007d60d8972dcd in PlatformEvent::park() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d893ff05 in ObjectMonitor::wait(long, bool, JavaThread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d8bc53cc in ObjectSynchronizer::wait(Handle, long, JavaThread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d8631511 in JVM_MonitorWait () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60bfc6b9c0 in ?? ()
+#12 0x00007d60d42be748 in ?? ()
+#13 0x00007d60bfc6b697 in ?? ()
+#14 0x00007d60d42be6f0 in ?? ()
+#15 0x00007d60bfc6b65f in ?? ()
+#16 0x00007d60d42be700 in ?? ()
+#17 0x00007d6057c1ec78 in ?? ()
+#18 0x0000000000000006 in ?? ()
+#19 0x00007d6057475058 in ?? ()
+#20 0x0000000000000000 in ?? ()
+
+Thread 14 (Thread 0x7d60d41bf6c0 (LWP 40661) "Signal Dispatch"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854760028592, a2=<optimized out>, a3=a3@entry=0, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=<optimized out>, futex_word=0x7d60d00089b0, expected=0, op=<optimized out>, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d00089b0, expected=0, clockid=0, abstime=0x0, private=<optimized out>, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d00089b0, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=<optimized out>) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92ac62f in do_futex_wait (sem=sem@entry=0x7d60d00089b0, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:111
+#6  0x00007d60d92ac6c8 in __new_sem_wait_slow64 (sem=0x7d60d00089b0, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:183
+#7  0x00007d60d8a2bf0a in PosixSemaphore::wait() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d8af73e2 in os::signal_wait() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d89593a5 in signal_thread_entry(JavaThread*, JavaThread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d85615c3 in JavaThread::thread_main_inner() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#12 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#13 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#14 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 13 (Thread 0x7d60cffff6c0 (LWP 40662) "Service Thread"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854912801032, a2=<optimized out>, a3=a3@entry=0, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=0, futex_word=0x7d60d91ba908 <mutex_init()::Service_lock_storage+80>, expected=0, op=393, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d91ba908 <mutex_init()::Service_lock_storage+80>, expected=0, clockid=0, abstime=0x0, private=0, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d91ba908 <mutex_init()::Service_lock_storage+80>, expected=expected@entry=8, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a3087 in __pthread_cond_wait_common (cond=<optimized out>, mutex=0x7d60d91ba8c0 <mutex_init()::Service_lock_storage+8>, clockid=0, abstime=0x0) at ./nptl/pthread_cond_wait.c:421
+#6  ___pthread_cond_wait (cond=<optimized out>, mutex=0x7d60d91ba8c0 <mutex_init()::Service_lock_storage+8>) at ./nptl/pthread_cond_wait.c:453
+#7  0x00007d60d897366c in PlatformMonitor::wait(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d891611d in Monitor::wait_without_safepoint_check(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d8a2d9c2 in ServiceThread::service_thread_entry(JavaThread*, JavaThread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d85615c3 in JavaThread::thread_main_inner() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#12 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#13 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#14 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 12 (Thread 0x7d60b47ff6c0 (LWP 40664) "Monitor Deflati"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854912801160, a2=<optimized out>, a3=a3@entry=3028282400, a4=a4@entry=137854298614656, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=32096, futex_word=0x7d60d91ba988 <mutex_init()::MonitorDeflation_lock_storage+80>, expected=3028282400, op=31977, abstime=0x7d60b47feb80, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d91ba988 <mutex_init()::MonitorDeflation_lock_storage+80>, expected=3028282400, clockid=0, abstime=0x7d60b47feb80, private=32096, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d91ba988 <mutex_init()::MonitorDeflation_lock_storage+80>, expected=expected@entry=0, clockid=clockid@entry=1, abstime=abstime@entry=0x7d60b47fec90, private=private@entry=0) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a3342 in __pthread_cond_wait_common (cond=0x7d60d91ba968 <mutex_init()::MonitorDeflation_lock_storage+48>, mutex=0x7d60d91ba940 <mutex_init()::MonitorDeflation_lock_storage+8>, clockid=<optimized out>, abstime=0x7d60b47fec90) at ./nptl/pthread_cond_wait.c:421
+#6  ___pthread_cond_timedwait64 (cond=0x7d60d91ba968 <mutex_init()::MonitorDeflation_lock_storage+48>, mutex=0x7d60d91ba940 <mutex_init()::MonitorDeflation_lock_storage+8>, abstime=0x7d60b47fec90) at ./nptl/pthread_cond_wait.c:478
+#7  0x00007d60d897362f in PlatformMonitor::wait(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d891611d in Monitor::wait_without_safepoint_check(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d890888b in MonitorDeflationThread::monitor_deflation_thread_entry(JavaThread*, JavaThread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d85615c3 in JavaThread::thread_main_inner() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#12 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#13 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#14 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 11 (Thread 0x7d60b46ff6c0 (LWP 40665) "C2 CompilerThre"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854912798472, a2=<optimized out>, a3=a3@entry=3491158992, a4=a4@entry=137854761495968, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=32096, futex_word=0x7d60d91b9f08 <mutex_init()::MethodCompileQueue_lock_storage+80>, expected=3491158992, op=8199401, abstime=0x7d60d016eda0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d91b9f08 <mutex_init()::MethodCompileQueue_lock_storage+80>, expected=3491158992, clockid=32096, abstime=0x7d60d016eda0, private=32096, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d91b9f08 <mutex_init()::MethodCompileQueue_lock_storage+80>, expected=expected@entry=2977, clockid=clockid@entry=1, abstime=abstime@entry=0x7d60b46feaa0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a3342 in __pthread_cond_wait_common (cond=0x7d60d91b9ee8 <mutex_init()::MethodCompileQueue_lock_storage+48>, mutex=0x7d60d91b9ec0 <mutex_init()::MethodCompileQueue_lock_storage+8>, clockid=<optimized out>, abstime=0x7d60b46feaa0) at ./nptl/pthread_cond_wait.c:421
+#6  ___pthread_cond_timedwait64 (cond=0x7d60d91b9ee8 <mutex_init()::MethodCompileQueue_lock_storage+48>, mutex=0x7d60d91b9ec0 <mutex_init()::MethodCompileQueue_lock_storage+8>, abstime=0x7d60b46feaa0) at ./nptl/pthread_cond_wait.c:478
+#7  0x00007d60d897362f in PlatformMonitor::wait(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d891619f in Monitor::wait(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d828ebca in CompileQueue::get(CompilerThread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d8292c8e in CompileBroker::compiler_thread_loop() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d85615c3 in JavaThread::thread_main_inner() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#12 0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#13 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#14 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#15 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 10 (Thread 0x7d60b45ff6c0 (LWP 40666) "C1 CompilerThre"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854912798472, a2=<optimized out>, a3=a3@entry=835403776, a4=a4@entry=15559782400, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=0, futex_word=0x7d60d91b9f08 <mutex_init()::MethodCompileQueue_lock_storage+80>, expected=835403776, op=393, abstime=0x39f6f7000, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d91b9f08 <mutex_init()::MethodCompileQueue_lock_storage+80>, expected=835403776, clockid=0, abstime=0x39f6f7000, private=0, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d91b9f08 <mutex_init()::MethodCompileQueue_lock_storage+80>, expected=expected@entry=2977, clockid=clockid@entry=1, abstime=abstime@entry=0x7d60b45feaa0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a3342 in __pthread_cond_wait_common (cond=0x7d60d91b9ee8 <mutex_init()::MethodCompileQueue_lock_storage+48>, mutex=0x7d60d91b9ec0 <mutex_init()::MethodCompileQueue_lock_storage+8>, clockid=<optimized out>, abstime=0x7d60b45feaa0) at ./nptl/pthread_cond_wait.c:421
+#6  ___pthread_cond_timedwait64 (cond=0x7d60d91b9ee8 <mutex_init()::MethodCompileQueue_lock_storage+48>, mutex=0x7d60d91b9ec0 <mutex_init()::MethodCompileQueue_lock_storage+8>, abstime=0x7d60b45feaa0) at ./nptl/pthread_cond_wait.c:478
+#7  0x00007d60d897362f in PlatformMonitor::wait(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d891619f in Monitor::wait(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d828ebca in CompileQueue::get(CompilerThread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d8292c8e in CompileBroker::compiler_thread_loop() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d85615c3 in JavaThread::thread_main_inner() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#12 0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#13 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#14 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#15 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 9 (Thread 0x7d60b442e6c0 (LWP 40671) "Notification Th"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854912800904, a2=<optimized out>, a3=a3@entry=1657983232, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=0, futex_word=0x7d60d91ba888 <mutex_init()::Notification_lock_storage+80>, expected=1657983232, op=393, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d91ba888 <mutex_init()::Notification_lock_storage+80>, expected=1657983232, clockid=0, abstime=0x0, private=0, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d91ba888 <mutex_init()::Notification_lock_storage+80>, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a3087 in __pthread_cond_wait_common (cond=<optimized out>, mutex=0x7d60d91ba840 <mutex_init()::Notification_lock_storage+8>, clockid=0, abstime=0x0) at ./nptl/pthread_cond_wait.c:421
+#6  ___pthread_cond_wait (cond=<optimized out>, mutex=0x7d60d91ba840 <mutex_init()::Notification_lock_storage+8>) at ./nptl/pthread_cond_wait.c:453
+#7  0x00007d60d897366c in PlatformMonitor::wait(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d891611d in Monitor::wait_without_safepoint_check(unsigned long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d892fdca in NotificationThread::notification_thread_entry(JavaThread*, JavaThread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d85615c3 in JavaThread::thread_main_inner() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#12 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#13 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#14 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 8 (Thread 0x7d60b432e6c0 (LWP 40672) "Common-Cleaner"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854761565288, a2=<optimized out>, a3=a3@entry=1464451016, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=32096, futex_word=0x7d60d017fc68, expected=1464451016, op=8199401, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d017fc68, expected=1464451016, clockid=32096, abstime=0x0, private=32096, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d017fc68, expected=expected@entry=0, clockid=clockid@entry=1, abstime=abstime@entry=0x7d60b432d420, private=private@entry=0) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a3342 in __pthread_cond_wait_common (cond=0x7d60d017fc48, mutex=0x7d60d017fc20, clockid=<optimized out>, abstime=0x7d60b432d420) at ./nptl/pthread_cond_wait.c:421
+#6  ___pthread_cond_timedwait64 (cond=0x7d60d017fc48, mutex=0x7d60d017fc20, abstime=0x7d60b432d420) at ./nptl/pthread_cond_wait.c:478
+#7  0x00007d60d8973242 in Parker::park(bool, long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d8c4be84 in Unsafe_Park () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60c0419fe3 in ?? ()
+#10 0x0000000725214cf0 in ?? ()
+#11 0x00007d60b8ad8004 in ?? ()
+#12 0x00007d6053055f88 in ?? ()
+#13 0x0000000725394de8 in ?? ()
+#14 0x00007d60b432d590 in ?? ()
+#15 0x00007d6057186118 in ?? ()
+#16 0x00007d60b432d670 in ?? ()
+#17 0x00007d60b8ac8e1c in ?? ()
+#18 0x00007d60b432d5f0 in ?? ()
+#19 0x00007d60bfc67180 in ?? ()
+#20 0x00007d60bfc67180 in ?? ()
+#21 0x0000000df8475252 in ?? ()
+#22 0x0000000000000000 in ?? ()
+
+Thread 7 (Thread 0x7d60a5dff6c0 (LWP 40692) "GC Thread#1"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854760514536, a2=<optimized out>, a3=a3@entry=0, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=<optimized out>, futex_word=0x7d60d007f3e8, expected=0, op=<optimized out>, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d007f3e8, expected=0, clockid=0, abstime=0x0, private=<optimized out>, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d007f3e8, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=<optimized out>) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92ac62f in do_futex_wait (sem=sem@entry=0x7d60d007f3e8, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:111
+#6  0x00007d60d92ac6c8 in __new_sem_wait_slow64 (sem=0x7d60d007f3e8, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:183
+#7  0x00007d60d8a2bf0a in PosixSemaphore::wait() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d8cd2db7 in WorkerThread::run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#12 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 6 (Thread 0x7d60a5cfe6c0 (LWP 40693) "GC Thread#2"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854760514536, a2=<optimized out>, a3=a3@entry=0, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=<optimized out>, futex_word=0x7d60d007f3e8, expected=0, op=<optimized out>, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d007f3e8, expected=0, clockid=0, abstime=0x0, private=<optimized out>, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d007f3e8, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=<optimized out>) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92ac62f in do_futex_wait (sem=sem@entry=0x7d60d007f3e8, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:111
+#6  0x00007d60d92ac6c8 in __new_sem_wait_slow64 (sem=0x7d60d007f3e8, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:183
+#7  0x00007d60d8a2bf0a in PosixSemaphore::wait() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d8cd2db7 in WorkerThread::run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#12 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 5 (Thread 0x7d60a5bfd6c0 (LWP 40694) "GC Thread#3"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854760514536, a2=<optimized out>, a3=a3@entry=0, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=<optimized out>, futex_word=0x7d60d007f3e8, expected=0, op=<optimized out>, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d007f3e8, expected=0, clockid=0, abstime=0x0, private=<optimized out>, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d007f3e8, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=<optimized out>) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92ac62f in do_futex_wait (sem=sem@entry=0x7d60d007f3e8, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:111
+#6  0x00007d60d92ac6c8 in __new_sem_wait_slow64 (sem=0x7d60d007f3e8, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:183
+#7  0x00007d60d8a2bf0a in PosixSemaphore::wait() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d8cd2db7 in WorkerThread::run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#12 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 4 (Thread 0x7d60a5afc6c0 (LWP 40695) "GC Thread#4"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854760514536, a2=<optimized out>, a3=a3@entry=0, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=<optimized out>, futex_word=0x7d60d007f3e8, expected=0, op=<optimized out>, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d007f3e8, expected=0, clockid=0, abstime=0x0, private=<optimized out>, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d007f3e8, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=<optimized out>) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92ac62f in do_futex_wait (sem=sem@entry=0x7d60d007f3e8, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:111
+#6  0x00007d60d92ac6c8 in __new_sem_wait_slow64 (sem=0x7d60d007f3e8, abstime=0x0, clockid=0) at ./nptl/sem_waitcommon.c:183
+#7  0x00007d60d8a2bf0a in PosixSemaphore::wait() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d8cd2db7 in WorkerThread::run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60d8c12500 in Thread::call_run() () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#10 0x00007d60d89678f5 in thread_native_entry(Thread*) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#11 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#12 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 3 (Thread 0x7d60a56fb6c0 (LWP 40703) "pool-1-thread-1"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137851404695864, a2=<optimized out>, a3=a3@entry=6, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=0, futex_word=0x7d6008023938, expected=6, op=393, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d6008023938, expected=6, clockid=0, abstime=0x0, private=0, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d6008023938, expected=expected@entry=0, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=0) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a3087 in __pthread_cond_wait_common (cond=<optimized out>, mutex=0x7d60080238f0, clockid=0, abstime=0x0) at ./nptl/pthread_cond_wait.c:421
+#6  ___pthread_cond_wait (cond=<optimized out>, mutex=0x7d60080238f0) at ./nptl/pthread_cond_wait.c:453
+#7  0x00007d60d8973314 in Parker::park(bool, long) () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#8  0x00007d60d8c4be84 in Unsafe_Park () from /usr/lib/jvm/java-21-openjdk-amd64/lib/server/libjvm.so
+#9  0x00007d60c0419fe3 in ?? ()
+#10 0x0000000725214cf0 in ?? ()
+#11 0x00007d60a56fa590 in ?? ()
+#12 0x00007d60a56fa4b0 in ?? ()
+#13 0x00000001d87db168 in ?? ()
+#14 0x00007d60571a3668 in ?? ()
+#15 0x00007d60080232d0 in ?? ()
+#16 0x00007d60a56fa500 in ?? ()
+#17 0x00007d60080232d0 in ?? ()
+#18 0x00007d60a56fa508 in ?? ()
+#19 0x00007d60bfc67180 in ?? ()
+#20 0x0000000000000000 in ?? ()
+
+Thread 2 (Thread 0x7d5feb7fe6c0 (LWP 40725) "threaded-ml"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a035c in __internal_syscall_cancel (a1=<optimized out>, a2=<optimized out>, a3=<optimized out>, a4=0, a5=0, a6=0, nr=7) at ./nptl/cancellation.c:49
+#2  __syscall_cancel (a1=<optimized out>, a2=<optimized out>, a3=<optimized out>, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=0, nr=7) at ./nptl/cancellation.c:75
+#3  0x00007d60d9327bce in __GI___poll (fds=<optimized out>, nfds=<optimized out>, timeout=<optimized out>) at ../sysdeps/unix/sysv/linux/poll.c:29
+#4  0x00007d60a407dd48 in ?? () from /usr/lib/x86_64-linux-gnu/libpulse.so.0
+#5  0x00007d60a40674c1 in pa_mainloop_poll () from /usr/lib/x86_64-linux-gnu/libpulse.so.0
+#6  0x00007d60a4071d41 in pa_mainloop_iterate () from /usr/lib/x86_64-linux-gnu/libpulse.so.0
+#7  0x00007d60a4071e00 in pa_mainloop_run () from /usr/lib/x86_64-linux-gnu/libpulse.so.0
+#8  0x00007d60a4082d2d in ?? () from /usr/lib/x86_64-linux-gnu/libpulse.so.0
+#9  0x00007d6050d65d7b in ?? () from /usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-17.0.so
+#10 0x00007d60d92a3dba in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:454
+#11 0x00007d60d933758c in __GI___clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 1 (Thread 0x7d60d94c2b80 (LWP 40625) "java"):
+#0  __syscall_cancel_arch () at ../sysdeps/unix/sysv/linux/x86_64/syscall_cancel.S:56
+#1  0x00007d60d92a02cc in __internal_syscall_cancel (a1=a1@entry=137854885821672, a2=<optimized out>, a3=<optimized out>, a4=a4@entry=0, a5=a5@entry=0, a6=a6@entry=4294967295, nr=202) at ./nptl/cancellation.c:49
+#2  0x00007d60d92a06a7 in __futex_abstimed_wait_common64 (private=128, futex_word=0x7d60d77ffce8, expected=<optimized out>, op=265, abstime=0x0, cancel=true) at ./nptl/futex-internal.c:57
+#3  __futex_abstimed_wait_common (futex_word=0x7d60d77ffce8, expected=<optimized out>, clockid=0, abstime=0x0, private=128, cancel=true) at ./nptl/futex-internal.c:87
+#4  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7d60d77ffce8, expected=<optimized out>, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=128) at ./nptl/futex-internal.c:139
+#5  0x00007d60d92a5d99 in __pthread_clockjoin_ex (threadid=137854885820096, thread_return=0x7ffd643d1c18, clockid=0, abstime=0x0, cancel=<optimized out>) at ./nptl/pthread_join_common.c:66
+#6  0x00007d60d94cd313 in CallJavaMainInNewThread () from /usr/lib/jvm/java-21-openjdk-amd64/bin/../lib/libjli.so
+#7  0x00007d60d94ca24d in ContinueInNewThread () from /usr/lib/jvm/java-21-openjdk-amd64/bin/../lib/libjli.so
+#8  0x00007d60d94cae5b in JLI_Launch () from /usr/lib/jvm/java-21-openjdk-amd64/bin/../lib/libjli.so
+#9  0x00005956397322ae in ?? ()
+#10 0x00007d60d922a601 in __libc_start_call_main (main=main@entry=0x595639732180, argc=argc@entry=9, argv=argv@entry=0x7ffd643d5fc8) at ../sysdeps/nptl/libc_start_call_main.h:59
+#11 0x00007d60d922a718 in __libc_start_main_impl (main=0x595639732180, argc=9, argv=0x7ffd643d5fc8, init=<optimized out>, fini=<optimized out>, rtld_fini=<optimized out>, stack_end=0x7ffd643d5fb8) at ../csu/libc-start.c:360
+#12 0x0000595639732345 in ?? ()
+[Inferior 1 (process 40625) detached]

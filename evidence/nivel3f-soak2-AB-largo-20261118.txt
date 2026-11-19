@@ -21,3 +21,17 @@ Nota sobre el SIGSEGV (par 2, original, soak-a, pid 34149, 22:26:31):
   <- MediaDevicesHelper.dispose <- PeerConnectionEngine.doClose <- close <- RtcClient.onLeave (hilo del WebSocket).
   Es una firma distinta a los cuelgues (cierre del display X11 dentro de dispose del modulo de audio), pero en la misma ruta close()->dispose.
 Archivos por corrida: evidence/nivel3f-soak2-2audio-{parche,original}-<fecha>-*.txt
+
+# ---- SEGUNDA TANDA (pares 4-6), 2026-11-18 23:02 - 2026-11-19 00:10, mismo comando y orden alternado ----
+par  cfg       soak-a                         soak-b
+4    parche    exit 0                         exit 0
+4    original  exit 0                         exit 0
+5    parche    exit 0                         exit 0
+5    original  COLGADO (futex_do_wait)->134   exit 0   [gdb/jstack capturados]
+6    parche    exit 0                         exit 0
+6    original  exit 0                         exit 134 (tras "sale soak-a": "Assertion 'pa_close(fds[1]) == 0' failed ... pa_close_pipe(). Aborting." y "malloc(): unaligned tcache chunk detected")
+Segunda tanda: parche 0/6, original 2/6.
+# ---- TOTAL (12 procesos por brazo) ----
+parche 0/12 fallos; original 5/12 (3 cuelgues, 1 SIGSEGV en XCloseDisplay, 1 aborto por corrupcion de heap/PulseAudio).
+Fisher exacta unilateral p = C(12,5)/C(24,5) = 0,019. Tasa del original ~42 % por proceso; con parche < 22 % (IC 95 % unilateral, regla de tres: 3/12 ... no acota mas).
+Lineas "CIERRE SEGURO": 0 en todas.

@@ -1,0 +1,98 @@
+# Nivel 3f segunda ronda - modo=2audio segundos=630 gdb=late sala=soak2-2audio etiqueta=[parche] opciones_jvm=[]
+# Inicio: 2026-11-18T23:24:48-06:00  | SO: "Ubuntu 26.04.1 LTS" | kernel 7.0.0-38-generic | wayland | ptrace_scope=0
+# Pids: soak-a=39621 soak-b=39622 
+# Muestreo cada 30 s SOLO con ps (sin jcmd, para no perturbar la JVM): t_s id pid rss_kib hilos
+0 soak-a 39621 42368 18
+0 soak-b 39622 43388 18
+30 soak-a 39621 126396 40
+30 soak-b 39622 126008 40
+60 soak-a 39621 126404 40
+60 soak-b 39622 126020 40
+90 soak-a 39621 126420 40
+90 soak-b 39622 126024 40
+120 soak-a 39621 126420 40
+120 soak-b 39622 126032 40
+151 soak-a 39621 126420 40
+151 soak-b 39622 126032 40
+181 soak-a 39621 126428 40
+181 soak-b 39622 126040 40
+211 soak-a 39621 126428 40
+211 soak-b 39622 126044 40
+241 soak-a 39621 126440 40
+241 soak-b 39622 126052 40
+271 soak-a 39621 126448 40
+271 soak-b 39622 126060 40
+301 soak-a 39621 126452 40
+301 soak-b 39622 126060 40
+331 soak-a 39621 126452 40
+331 soak-b 39622 126060 40
+361 soak-a 39621 126468 40
+361 soak-b 39622 126076 40
+391 soak-a 39621 126480 40
+391 soak-b 39622 126088 40
+421 soak-a 39621 126492 40
+421 soak-b 39622 126092 40
+451 soak-a 39621 126492 40
+451 soak-b 39622 126096 40
+481 soak-a 39621 126508 40
+481 soak-b 39622 126116 40
+511 soak-a 39621 126508 40
+511 soak-b 39622 126120 40
+541 soak-a 39621 126520 40
+541 soak-b 39622 126164 40
+571 soak-a 39621 126608 40
+571 soak-b 39622 126212 40
+601 soak-a 39621 126612 40
+601 soak-b 39622 126216 40
+# t=661 s: cierre previsto; esperando hasta 90s a que terminen
+# soak-a: terminó, exit=0
+# soak-b: terminó, exit=0
+# Fin: 2026-11-18T23:35:49-06:00
+
+=== log del cliente soak-a (exit=0, líneas CIERRE SEGURO: 0)
+[23:24:48.956] Token generado para identidad=soak-a sala=soak2-2audio
+[23:24:48.968] Conectando a ws://localhost:7880 ...
+[23:24:49.204] evento: onConnected
+[23:24:49.204] Unido a la sala: soak2-2audio (sid=RM_Lyme9t3rxHQL)
+[23:24:49.205] estado: CONECTADO
+[23:24:49.205] participantes: [soak-a (yo)]
+[23:24:49.211] Dispositivos de entrada vistos por el SDK: 1
+[23:24:49.223] MicrM-CM-3fono publicado (cid=audio-89deb117-1454-4daf-a60a-1186d2795e74), oferta del publisher forzada
+[23:24:49.245] evento: pista publicada TR_AMNHrDedcqndrv (AUDIO) por soak-a
+[23:24:49.246] participantes: [soak-a (yo)]
+[23:24:49.375] evento: pista publicada TR_AMEi3WA3cTydpR (AUDIO) por soak-b
+[23:24:49.377] participantes: [soak-a (yo), soak-b]
+[23:24:49.378] evento: entra soak-b
+[23:24:49.378] participantes: [soak-a (yo), soak-b]
+[23:24:49.388] evento: suscrito a TR_AMEi3WA3cTydpR (AUDIO) de soak-b
+[23:35:18.993] evento: onDisconnected motivo=CLIENT_INITIATED
+[23:35:18.994] estado: DESCONECTADO
+[23:35:18.993] evento: onDisconnected motivo=CLIENT_INITIATED
+[23:35:18.994] estado: DESCONECTADO
+[23:35:18.994] participantes: []
+[23:35:18.995] estado: DESCONECTADO
+[23:35:18.995] Desconectado.
+
+=== log del cliente soak-b (exit=0, líneas CIERRE SEGURO: 0)
+[23:24:48.999] Token generado para identidad=soak-b sala=soak2-2audio
+[23:24:49.010] Conectando a ws://localhost:7880 ...
+[23:24:49.233] evento: entra soak-a
+[23:24:49.239] participantes: [soak-b (yo), soak-a [sin pistas]]
+[23:24:49.239] evento: onConnected
+[23:24:49.239] Unido a la sala: soak2-2audio (sid=RM_Lyme9t3rxHQL)
+[23:24:49.240] estado: CONECTADO
+[23:24:49.240] participantes: [soak-b (yo), soak-a [sin pistas]]
+[23:24:49.248] Dispositivos de entrada vistos por el SDK: 1
+[23:24:49.349] MicrM-CM-3fono publicado (cid=audio-5cb44dcf-2cf3-456d-96b6-51d3ad98db70), oferta del publisher forzada
+[23:24:49.369] evento: pista publicada TR_AMNHrDedcqndrv (AUDIO) por soak-a
+[23:24:49.370] participantes: [soak-b (yo), soak-a]
+[23:24:49.376] evento: pista publicada TR_AMEi3WA3cTydpR (AUDIO) por soak-b
+[23:24:49.376] participantes: [soak-b (yo), soak-a]
+[23:24:49.389] evento: suscrito a TR_AMNHrDedcqndrv (AUDIO) de soak-a
+[23:35:18.989] evento: sale soak-a
+[23:35:18.989] participantes: [soak-b (yo)]
+[23:35:19.032] evento: onDisconnected motivo=CLIENT_INITIATED
+[23:35:19.032] estado: DESCONECTADO
+[23:35:19.033] participantes: []
+[23:35:19.033] estado: DESCONECTADO
+[23:35:19.033] Desconectado.

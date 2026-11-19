@@ -1,0 +1,93 @@
+# Nivel 3f segunda ronda - modo=2audio segundos=630 gdb=late sala=soak2-2audio etiqueta=[original] opciones_jvm=[-Dpoc.sdkCloseOriginal=true]
+# Inicio: 2026-11-18T23:59:32-06:00  | SO: "Ubuntu 26.04.1 LTS" | kernel 7.0.0-38-generic | wayland | ptrace_scope=0
+# Pids: soak-a=43006 soak-b=43007 
+# Muestreo cada 30 s SOLO con ps (sin jcmd, para no perturbar la JVM): t_s id pid rss_kib hilos
+0 soak-a 43006 43220 18
+0 soak-b 43007 43760 18
+30 soak-a 43006 130280 40
+30 soak-b 43007 128408 40
+60 soak-a 43006 130292 40
+60 soak-b 43007 128416 40
+90 soak-a 43006 130300 40
+90 soak-b 43007 128424 40
+120 soak-a 43006 130304 40
+120 soak-b 43007 128432 40
+150 soak-a 43006 130308 40
+150 soak-b 43007 128432 40
+180 soak-a 43006 130312 40
+180 soak-b 43007 128440 40
+210 soak-a 43006 130320 40
+210 soak-b 43007 128440 40
+240 soak-a 43006 130324 40
+240 soak-b 43007 128448 40
+270 soak-a 43006 130332 40
+270 soak-b 43007 128456 40
+300 soak-a 43006 130332 40
+300 soak-b 43007 128456 40
+330 soak-a 43006 130336 40
+330 soak-b 43007 128456 40
+360 soak-a 43006 130352 40
+360 soak-b 43007 128476 40
+390 soak-a 43006 130364 40
+390 soak-b 43007 128492 40
+420 soak-a 43006 130368 40
+420 soak-b 43007 128496 40
+450 soak-a 43006 130372 40
+450 soak-b 43007 128504 40
+480 soak-a 43006 130384 40
+480 soak-b 43007 128512 40
+510 soak-a 43006 130388 40
+510 soak-b 43007 128520 40
+540 soak-a 43006 130404 40
+540 soak-b 43007 128532 40
+570 soak-a 43006 130488 40
+570 soak-b 43007 128616 40
+600 soak-a 43006 130496 40
+600 soak-b 43007 128620 40
+# t=660 s: cierre previsto; esperando hasta 90s a que terminen
+# soak-a: terminó, exit=0
+# soak-b: terminó CON ERROR, exit=134
+# Fin: 2026-11-19T00:10:33-06:00
+
+=== log del cliente soak-a (exit=0, líneas CIERRE SEGURO: 0)
+[23:59:33.193] Token generado para identidad=soak-a sala=soak2-2audio
+[23:59:33.201] Conectando a ws://localhost:7880 ...
+[23:59:33.429] evento: onConnected
+[23:59:33.430] Unido a la sala: soak2-2audio (sid=RM_aqyvgdfUNXdw)
+[23:59:33.430] estado: CONECTADO
+[23:59:33.430] participantes: [soak-a (yo)]
+[23:59:33.435] Dispositivos de entrada vistos por el SDK: 1
+[23:59:33.450] MicrM-CM-3fono publicado (cid=audio-05abd152-0301-40d0-9073-48110b3bc93e), oferta del publisher forzada
+[23:59:33.475] evento: pista publicada TR_AMsok3Yzam79tA (AUDIO) por soak-a
+[23:59:33.476] participantes: [soak-a (yo)]
+[23:59:33.499] evento: pista publicada TR_AM7a3M56QJUxaM (AUDIO) por soak-b
+[23:59:33.501] participantes: [soak-a (yo), soak-b]
+[23:59:33.501] evento: entra soak-b
+[23:59:33.501] participantes: [soak-a (yo), soak-b]
+[23:59:33.511] evento: suscrito a TR_AM7a3M56QJUxaM (AUDIO) de soak-b
+[00:10:03.228] evento: onDisconnected motivo=CLIENT_INITIATED
+[00:10:03.228] estado: DESCONECTADO
+[00:10:03.229] participantes: []
+[00:10:03.229] estado: DESCONECTADO
+[00:10:03.230] Desconectado.
+
+=== log del cliente soak-b (exit=134, líneas CIERRE SEGURO: 0)
+[23:59:33.215] Token generado para identidad=soak-b sala=soak2-2audio
+[23:59:33.228] Conectando a ws://localhost:7880 ...
+[23:59:33.457] evento: entra soak-a
+[23:59:33.461] participantes: [soak-b (yo), soak-a [sin pistas]]
+[23:59:33.461] evento: onConnected
+[23:59:33.461] Unido a la sala: soak2-2audio (sid=RM_aqyvgdfUNXdw)
+[23:59:33.462] estado: CONECTADO
+[23:59:33.462] participantes: [soak-b (yo), soak-a [sin pistas]]
+[23:59:33.466] Dispositivos de entrada vistos por el SDK: 1
+[23:59:33.480] MicrM-CM-3fono publicado (cid=audio-3303e5cf-8808-4273-baec-cf742512a6a3), oferta del publisher forzada
+[23:59:33.494] evento: pista publicada TR_AMsok3Yzam79tA (AUDIO) por soak-a
+[23:59:33.495] participantes: [soak-b (yo), soak-a]
+[23:59:33.498] evento: pista publicada TR_AM7a3M56QJUxaM (AUDIO) por soak-b
+[23:59:33.499] participantes: [soak-b (yo), soak-a]
+[23:59:33.607] evento: suscrito a TR_AMsok3Yzam79tA (AUDIO) de soak-a
+[00:10:03.223] evento: sale soak-a
+[00:10:03.224] participantes: [soak-b (yo)]
+Assertion 'pa_close(fds[1]) == 0' failed at ../src/pulsecore/core-util.c:2717, function pa_close_pipe(). Aborting.
+malloc(): unaligned tcache chunk detected

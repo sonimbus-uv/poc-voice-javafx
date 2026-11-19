@@ -1,0 +1,94 @@
+# Nivel 3f segunda ronda - modo=2audio segundos=630 gdb=late sala=soak2-2audio etiqueta=[original] opciones_jvm=[-Dpoc.sdkCloseOriginal=true]
+# Inicio: 2026-11-18T23:13:46-06:00  | SO: "Ubuntu 26.04.1 LTS" | kernel 7.0.0-38-generic | wayland | ptrace_scope=0
+# Pids: soak-a=38305 soak-b=38306 
+# Muestreo cada 30 s SOLO con ps (sin jcmd, para no perturbar la JVM): t_s id pid rss_kib hilos
+0 soak-a 38305 42044 18
+0 soak-b 38306 49608 20
+30 soak-a 38305 128280 40
+30 soak-b 38306 125776 40
+60 soak-a 38305 128288 40
+60 soak-b 38306 125780 40
+90 soak-a 38305 128296 40
+90 soak-b 38306 125792 40
+120 soak-a 38305 128304 40
+120 soak-b 38306 125796 40
+150 soak-a 38305 128304 40
+150 soak-b 38306 125800 40
+180 soak-a 38305 128312 40
+180 soak-b 38306 125804 40
+210 soak-a 38305 128312 40
+210 soak-b 38306 125804 40
+240 soak-a 38305 128324 40
+240 soak-b 38306 125812 40
+270 soak-a 38305 128328 40
+270 soak-b 38306 125820 40
+300 soak-a 38305 128332 40
+300 soak-b 38306 125820 40
+330 soak-a 38305 128332 40
+330 soak-b 38306 125820 40
+360 soak-a 38305 128344 40
+360 soak-b 38306 125840 40
+390 soak-a 38305 128360 40
+390 soak-b 38306 125852 40
+420 soak-a 38305 128368 40
+420 soak-b 38306 125860 40
+451 soak-a 38305 128372 40
+451 soak-b 38306 125860 40
+481 soak-a 38305 128380 40
+481 soak-b 38306 125876 40
+511 soak-a 38305 128384 40
+511 soak-b 38306 125880 40
+541 soak-a 38305 128416 40
+541 soak-b 38306 125892 40
+571 soak-a 38305 128492 40
+571 soak-b 38306 125980 40
+601 soak-a 38305 128492 40
+601 soak-b 38306 125984 40
+# t=661 s: cierre previsto; esperando hasta 90s a que terminen
+# soak-a: terminó, exit=0
+# soak-b: terminó, exit=0
+# Fin: 2026-11-18T23:24:47-06:00
+
+=== log del cliente soak-a (exit=0, líneas CIERRE SEGURO: 0)
+[23:13:46.538] Token generado para identidad=soak-a sala=soak2-2audio
+[23:13:46.547] Conectando a ws://localhost:7880 ...
+[23:13:46.771] evento: entra soak-b
+[23:13:46.775] participantes: [soak-a (yo), soak-b [sin pistas]]
+[23:13:46.776] evento: onConnected
+[23:13:46.776] Unido a la sala: soak2-2audio (sid=RM_zQ3bZpYD8K74)
+[23:13:46.776] estado: CONECTADO
+[23:13:46.776] participantes: [soak-a (yo), soak-b [sin pistas]]
+[23:13:46.781] Dispositivos de entrada vistos por el SDK: 1
+[23:13:46.795] MicrM-CM-3fono publicado (cid=audio-acb1bd51-686c-4b77-a500-413cd123d5b4), oferta del publisher forzada
+[23:13:46.817] evento: pista publicada TR_AMqzBdfnPHkTQP (AUDIO) por soak-b
+[23:13:46.817] participantes: [soak-a (yo), soak-b]
+[23:13:46.824] evento: pista publicada TR_AMht5QcMR5kmCF (AUDIO) por soak-a
+[23:13:46.824] participantes: [soak-a (yo), soak-b]
+[23:13:46.891] evento: suscrito a TR_AMqzBdfnPHkTQP (AUDIO) de soak-b
+[23:24:16.577] evento: onDisconnected motivo=CLIENT_INITIATED
+[23:24:16.578] estado: DESCONECTADO
+[23:24:16.578] participantes: []
+[23:24:16.578] estado: DESCONECTADO
+[23:24:16.579] Desconectado.
+
+=== log del cliente soak-b (exit=0, líneas CIERRE SEGURO: 0)
+[23:13:46.529] Token generado para identidad=soak-b sala=soak2-2audio
+[23:13:46.540] Conectando a ws://localhost:7880 ...
+[23:13:46.763] evento: onConnected
+[23:13:46.763] Unido a la sala: soak2-2audio (sid=RM_zQ3bZpYD8K74)
+[23:13:46.763] estado: CONECTADO
+[23:13:46.763] participantes: [soak-b (yo)]
+[23:13:46.769] Dispositivos de entrada vistos por el SDK: 1
+[23:13:46.782] MicrM-CM-3fono publicado (cid=audio-ab489475-cd66-4d10-b625-96ddaf297f5c), oferta del publisher forzada
+[23:13:46.805] evento: pista publicada TR_AMqzBdfnPHkTQP (AUDIO) por soak-b
+[23:13:46.805] participantes: [soak-b (yo)]
+[23:13:46.821] evento: pista publicada TR_AMht5QcMR5kmCF (AUDIO) por soak-a
+[23:13:46.824] participantes: [soak-b (yo), soak-a]
+[23:13:46.824] evento: entra soak-a
+[23:13:46.824] participantes: [soak-b (yo), soak-a]
+[23:13:46.834] evento: suscrito a TR_AMht5QcMR5kmCF (AUDIO) de soak-a
+[23:24:16.569] evento: onDisconnected motivo=CLIENT_INITIATED
+[23:24:16.570] estado: DESCONECTADO
+[23:24:16.571] participantes: []
+[23:24:16.572] estado: DESCONECTADO
+[23:24:16.573] Desconectado.
