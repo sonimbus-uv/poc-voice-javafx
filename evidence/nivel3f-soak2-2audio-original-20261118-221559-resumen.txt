@@ -1,0 +1,101 @@
+# Nivel 3f segunda ronda - modo=2audio segundos=630 gdb=late sala=soak2-2audio etiqueta=[original] opciones_jvm=[-Dpoc.sdkCloseOriginal=true]
+# Inicio: 2026-11-18T22:16:01-06:00  | SO: "Ubuntu 26.04.1 LTS" | kernel 7.0.0-38-generic | wayland | ptrace_scope=0
+# Pids: soak-a=34149 soak-b=34150 
+# Muestreo cada 30 s SOLO con ps (sin jcmd, para no perturbar la JVM): t_s id pid rss_kib hilos
+0 soak-a 34149 40824 18
+0 soak-b 34150 44220 18
+30 soak-a 34149 127600 40
+30 soak-b 34150 130312 40
+60 soak-a 34149 127608 40
+60 soak-b 34150 130328 40
+90 soak-a 34149 127616 40
+90 soak-b 34150 130340 40
+120 soak-a 34149 127624 40
+120 soak-b 34150 130340 40
+150 soak-a 34149 127624 40
+150 soak-b 34150 130344 40
+180 soak-a 34149 127628 40
+180 soak-b 34150 130352 40
+210 soak-a 34149 127628 40
+210 soak-b 34150 130352 40
+240 soak-a 34149 127644 40
+240 soak-b 34150 130360 40
+270 soak-a 34149 127644 40
+270 soak-b 34150 130368 40
+301 soak-a 34149 127648 40
+301 soak-b 34150 130368 40
+331 soak-a 34149 127648 40
+331 soak-b 34150 130368 40
+361 soak-a 34149 127664 40
+361 soak-b 34150 130384 40
+391 soak-a 34149 127676 40
+391 soak-b 34150 130400 40
+421 soak-a 34149 127684 40
+421 soak-b 34150 130408 40
+451 soak-a 34149 127688 40
+451 soak-b 34150 130408 40
+481 soak-a 34149 127700 40
+481 soak-b 34150 130424 40
+511 soak-a 34149 127704 40
+511 soak-b 34150 130424 40
+541 soak-a 34149 127740 40
+541 soak-b 34150 130472 40
+571 soak-a 34149 127812 40
+571 soak-b 34150 130524 40
+601 soak-a 34149 127820 40
+601 soak-b 34150 130536 40
+# t=661 s: cierre previsto; esperando hasta 90s a que terminen
+# soak-a: terminó CON ERROR, exit=134
+# soak-b: terminó, exit=0
+# Fin: 2026-11-18T22:27:02-06:00
+
+=== log del cliente soak-a (exit=134, líneas CIERRE SEGURO: 0)
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x000073fa01391c52, pid=34149, tid=34220
+#
+# JRE version: OpenJDK Runtime Environment (21.0.13+1) (build 21.0.13.0.3+1-1-26.04.1-Ubuntu)
+# Java VM: OpenJDK 64-Bit Server VM (21.0.13.0.3+1-1-26.04.1-Ubuntu, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, linux-amd64)
+# Problematic frame:
+# C  [libX11.so.6+0x49c52]  _XReply+0x92
+#
+# Core dump will be written. Default location: Determined by the following: "/usr/share/apport/apport -p%p -s%s -c%c -d%d -P%P -u%u -g%g -F%F -- %E" (alternatively, falling back to /run/media/gurov/Universidad/Septimo Semestre/Discord /poc-voice-javafx/core.34149)
+#
+# An error report file with more information is saved as:
+# /run/media/gurov/Universidad/Septimo Semestre/Discord /poc-voice-javafx/hs_err_pid34149.log
+[22:26:31.852] evento: onDisconnected motivo=CLIENT_INITIATED
+[22:26:31.853] estado: DESCONECTADO
+[22:26:31.855] participantes: []
+[22:26:31.856] estado: DESCONECTADO
+[22:26:31.856] Desconectado.
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugs.launchpad.net/ubuntu/+source/openjdk-21
+# The crash happened outside the Java Virtual Machine in native code.
+# See problematic frame for where to report the bug.
+#
+
+=== log del cliente soak-b (exit=0, líneas CIERRE SEGURO: 0)
+[22:16:01.831] Token generado para identidad=soak-b sala=soak2-2audio
+[22:16:01.846] Conectando a ws://localhost:7880 ...
+[22:16:02.119] evento: entra soak-a
+[22:16:02.125] participantes: [soak-b (yo), soak-a [sin pistas]]
+[22:16:02.126] evento: onConnected
+[22:16:02.126] Unido a la sala: soak2-2audio (sid=RM_49HTDb62HXut)
+[22:16:02.127] estado: CONECTADO
+[22:16:02.127] participantes: [soak-b (yo), soak-a [sin pistas]]
+[22:16:02.140] Dispositivos de entrada vistos por el SDK: 1
+[22:16:02.153] MicrM-CM-3fono publicado (cid=audio-b9e1dd1a-5186-4900-b074-0b7714a36c61), oferta del publisher forzada
+[22:16:02.175] evento: pista publicada TR_AM2pAFbboo9YPb (AUDIO) por soak-a
+[22:16:02.176] participantes: [soak-b (yo), soak-a]
+[22:16:02.180] evento: pista publicada TR_AM2vKU4fi5qwnX (AUDIO) por soak-b
+[22:16:02.181] participantes: [soak-b (yo), soak-a]
+[22:16:02.189] evento: suscrito a TR_AM2pAFbboo9YPb (AUDIO) de soak-a
+[22:26:31.848] evento: sale soak-a
+[22:26:31.848] participantes: [soak-b (yo)]
+[22:26:31.870] evento: onDisconnected motivo=CLIENT_INITIATED
+[22:26:31.871] estado: DESCONECTADO
+[22:26:31.871] participantes: []
+[22:26:31.871] estado: DESCONECTADO
+[22:26:31.872] Desconectado.

@@ -1,0 +1,96 @@
+# Nivel 3f segunda ronda - modo=2audio segundos=630 gdb=late sala=soak2-2audio etiqueta=[original] opciones_jvm=[-Dpoc.sdkCloseOriginal=true]
+# Inicio: 2026-11-18T22:38:06-06:00  | SO: "Ubuntu 26.04.1 LTS" | kernel 7.0.0-38-generic | wayland | ptrace_scope=0
+# Pids: soak-a=35794 soak-b=35795 
+# Muestreo cada 30 s SOLO con ps (sin jcmd, para no perturbar la JVM): t_s id pid rss_kib hilos
+0 soak-a 35794 43916 18
+0 soak-b 35795 49024 20
+30 soak-a 35794 130920 40
+30 soak-b 35795 126400 40
+60 soak-a 35794 130932 40
+60 soak-b 35795 126404 40
+90 soak-a 35794 130940 40
+90 soak-b 35795 126416 40
+120 soak-a 35794 130944 40
+120 soak-b 35795 126424 40
+150 soak-a 35794 130944 40
+150 soak-b 35795 126424 40
+181 soak-a 35794 130948 40
+181 soak-b 35795 126428 40
+211 soak-a 35794 130952 40
+211 soak-b 35795 126432 40
+241 soak-a 35794 130960 40
+241 soak-b 35795 126436 40
+271 soak-a 35794 130968 40
+271 soak-b 35795 126448 40
+301 soak-a 35794 130968 40
+301 soak-b 35795 126448 40
+331 soak-a 35794 130968 40
+331 soak-b 35795 126448 40
+361 soak-a 35794 130988 40
+361 soak-b 35795 126464 40
+391 soak-a 35794 131004 40
+391 soak-b 35795 126476 40
+421 soak-a 35794 131008 40
+421 soak-b 35795 126484 40
+451 soak-a 35794 131012 40
+451 soak-b 35795 126492 40
+481 soak-a 35794 131024 40
+481 soak-b 35795 126500 40
+511 soak-a 35794 131024 40
+511 soak-b 35795 126500 40
+541 soak-a 35794 131040 40
+541 soak-b 35795 126520 40
+571 soak-a 35794 131132 40
+571 soak-b 35795 126604 40
+601 soak-a 35794 131132 40
+601 soak-b 35795 126608 40
+631 soak-b 35795 126100 24
+# t=661 s: cierre previsto; esperando hasta 90s a que terminen
+# soak-a: terminó, exit=0
+# 22:50:38 soak-b COLGADO: pid 35795, wchan=futex_do_wait, estado=S (sleeping)
+# 22:50:44 soak-b: esperando 120 s más a ver si termina solo
+# soak-b: COLGADO (sigue vivo tras 90s), exit=134
+# Fin: 2026-11-18T22:50:44-06:00
+
+=== log del cliente soak-a (exit=0, líneas CIERRE SEGURO: 0)
+[22:38:06.971] Token generado para identidad=soak-a sala=soak2-2audio
+[22:38:06.980] Conectando a ws://localhost:7880 ...
+[22:38:07.207] evento: entra soak-b
+[22:38:07.212] participantes: [soak-a (yo), soak-b [sin pistas]]
+[22:38:07.212] evento: onConnected
+[22:38:07.213] Unido a la sala: soak2-2audio (sid=RM_rcUBaQFrsaLL)
+[22:38:07.213] estado: CONECTADO
+[22:38:07.213] participantes: [soak-a (yo), soak-b [sin pistas]]
+[22:38:07.220] Dispositivos de entrada vistos por el SDK: 1
+[22:38:07.234] MicrM-CM-3fono publicado (cid=audio-4de968a1-9d0d-477f-90d1-45f8e8b6c77b), oferta del publisher forzada
+[22:38:07.251] evento: pista publicada TR_AM5TY9ayBszLH8 (AUDIO) por soak-b
+[22:38:07.252] participantes: [soak-a (yo), soak-b]
+[22:38:07.256] evento: pista publicada TR_AMo6JmLsbB6X5S (AUDIO) por soak-a
+[22:38:07.256] participantes: [soak-a (yo), soak-b]
+[22:38:07.313] evento: suscrito a TR_AM5TY9ayBszLH8 (AUDIO) de soak-b
+[22:48:36.991] evento: sale soak-b
+[22:48:37.002] evento: onDisconnected motivo=CLIENT_INITIATED
+[22:48:37.003] estado: DESCONECTADO
+[22:48:37.003] participantes: []
+[22:48:37.003] estado: DESCONECTADO
+[22:48:37.003] Desconectado.
+
+=== log del cliente soak-b (exit=134, líneas CIERRE SEGURO: 0)
+[22:38:06.960] Token generado para identidad=soak-b sala=soak2-2audio
+[22:38:06.970] Conectando a ws://localhost:7880 ...
+[22:38:07.193] evento: onConnected
+[22:38:07.193] Unido a la sala: soak2-2audio (sid=RM_rcUBaQFrsaLL)
+[22:38:07.194] estado: CONECTADO
+[22:38:07.194] participantes: [soak-b (yo)]
+[22:38:07.200] Dispositivos de entrada vistos por el SDK: 1
+[22:38:07.214] MicrM-CM-3fono publicado (cid=audio-0bf65f38-0ed8-4f26-be98-04f66586eb68), oferta del publisher forzada
+[22:38:07.235] evento: pista publicada TR_AM5TY9ayBszLH8 (AUDIO) por soak-b
+[22:38:07.235] participantes: [soak-b (yo)]
+[22:38:07.256] evento: pista publicada TR_AMo6JmLsbB6X5S (AUDIO) por soak-a
+[22:38:07.257] participantes: [soak-b (yo), soak-a]
+[22:38:07.258] evento: entra soak-a
+[22:38:07.258] participantes: [soak-b (yo), soak-a]
+[22:38:07.286] evento: suscrito a TR_AMo6JmLsbB6X5S (AUDIO) de soak-a
+[22:48:36.999] evento: onDisconnected motivo=CLIENT_INITIATED
+[22:48:36.999] estado: DESCONECTADO
+The futex facility returned an unexpected error code.

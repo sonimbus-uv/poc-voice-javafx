@@ -1,0 +1,96 @@
+# Nivel 3f segunda ronda - modo=2audio segundos=630 gdb=late sala=soak2-2audio etiqueta=[parche] opciones_jvm=[]
+# Inicio: 2026-11-18T22:27:04-06:00  | SO: "Ubuntu 26.04.1 LTS" | kernel 7.0.0-38-generic | wayland | ptrace_scope=0
+# Pids: soak-a=34886 soak-b=34887 
+# Muestreo cada 30 s SOLO con ps (sin jcmd, para no perturbar la JVM): t_s id pid rss_kib hilos
+0 soak-a 34886 42076 18
+0 soak-b 34887 42208 18
+30 soak-a 34886 131692 40
+30 soak-b 34887 121928 40
+60 soak-a 34886 132356 40
+60 soak-b 34887 122532 40
+90 soak-a 34886 132368 40
+90 soak-b 34887 122544 40
+120 soak-a 34886 132432 40
+120 soak-b 34887 122548 40
+150 soak-a 34886 132436 40
+150 soak-b 34887 122556 40
+180 soak-a 34886 132440 40
+180 soak-b 34887 122556 40
+210 soak-a 34886 132448 40
+210 soak-b 34887 122560 40
+240 soak-a 34886 132448 40
+240 soak-b 34887 122572 40
+270 soak-a 34886 132456 40
+270 soak-b 34887 122576 40
+300 soak-a 34886 132456 40
+300 soak-b 34887 122576 40
+330 soak-a 34886 132456 40
+330 soak-b 34887 122576 40
+360 soak-a 34886 132476 40
+360 soak-b 34887 122596 40
+390 soak-a 34886 132488 40
+390 soak-b 34887 122616 40
+420 soak-a 34886 132496 40
+420 soak-b 34887 122624 40
+450 soak-a 34886 132496 40
+450 soak-b 34887 122624 40
+480 soak-a 34886 132516 40
+480 soak-b 34887 122640 40
+510 soak-a 34886 132516 40
+510 soak-b 34887 122648 40
+540 soak-a 34886 132544 40
+540 soak-b 34887 122684 40
+571 soak-a 34886 132616 40
+571 soak-b 34887 122736 40
+601 soak-a 34886 132620 40
+601 soak-b 34887 122752 40
+# t=661 s: cierre previsto; esperando hasta 90s a que terminen
+# soak-a: terminó, exit=0
+# soak-b: terminó, exit=0
+# Fin: 2026-11-18T22:38:05-06:00
+
+=== log del cliente soak-a (exit=0, líneas CIERRE SEGURO: 0)
+[22:27:04.448] Token generado para identidad=soak-a sala=soak2-2audio
+[22:27:04.456] Conectando a ws://localhost:7880 ...
+[22:27:04.673] evento: onConnected
+[22:27:04.673] Unido a la sala: soak2-2audio (sid=RM_j2es46JQTPVW)
+[22:27:04.674] estado: CONECTADO
+[22:27:04.674] participantes: [soak-a (yo)]
+[22:27:04.679] Dispositivos de entrada vistos por el SDK: 1
+[22:27:04.691] MicrM-CM-3fono publicado (cid=audio-40a99a68-554c-43cb-9a7c-9c746bbb182f), oferta del publisher forzada
+[22:27:04.716] evento: pista publicada TR_AMgC2oThSw9Nfd (AUDIO) por soak-a
+[22:27:04.716] participantes: [soak-a (yo)]
+[22:27:04.839] evento: pista publicada TR_AMSNwpB4tQsmPS (AUDIO) por soak-b
+[22:27:04.841] participantes: [soak-a (yo), soak-b]
+[22:27:04.841] evento: entra soak-b
+[22:27:04.842] participantes: [soak-a (yo), soak-b]
+[22:27:04.852] evento: suscrito a TR_AMSNwpB4tQsmPS (AUDIO) de soak-b
+[22:37:34.487] evento: onDisconnected motivo=CLIENT_INITIATED
+[22:37:34.488] estado: DESCONECTADO
+[22:37:34.489] participantes: []
+[22:37:34.489] estado: DESCONECTADO
+[22:37:34.490] Desconectado.
+
+=== log del cliente soak-b (exit=0, líneas CIERRE SEGURO: 0)
+[22:27:04.542] Token generado para identidad=soak-b sala=soak2-2audio
+[22:27:04.556] Conectando a ws://localhost:7880 ...
+[22:27:04.799] evento: entra soak-a
+[22:27:04.802] participantes: [soak-b (yo), soak-a [sin pistas]]
+[22:27:04.802] evento: onConnected
+[22:27:04.803] Unido a la sala: soak2-2audio (sid=RM_j2es46JQTPVW)
+[22:27:04.803] estado: CONECTADO
+[22:27:04.803] participantes: [soak-b (yo), soak-a [sin pistas]]
+[22:27:04.807] Dispositivos de entrada vistos por el SDK: 1
+[22:27:04.819] MicrM-CM-3fono publicado (cid=audio-929afe0a-3563-4804-bc5b-5674bf2d2ce3), oferta del publisher forzada
+[22:27:04.835] evento: pista publicada TR_AMgC2oThSw9Nfd (AUDIO) por soak-a
+[22:27:04.835] participantes: [soak-b (yo), soak-a]
+[22:27:04.839] evento: pista publicada TR_AMSNwpB4tQsmPS (AUDIO) por soak-b
+[22:27:04.839] participantes: [soak-b (yo), soak-a]
+[22:27:04.857] evento: suscrito a TR_AMgC2oThSw9Nfd (AUDIO) de soak-a
+[22:37:34.478] evento: sale soak-a
+[22:37:34.479] participantes: [soak-b (yo)]
+[22:37:34.587] evento: onDisconnected motivo=CLIENT_INITIATED
+[22:37:34.588] estado: DESCONECTADO
+[22:37:34.588] participantes: []
+[22:37:34.588] estado: DESCONECTADO
+[22:37:34.588] Desconectado.

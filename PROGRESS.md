@@ -127,6 +127,10 @@
   - Siguiente si se sigue: repetir soak con `sudo sysctl kernel.yama.ptrace_scope=0` (lo ejecuta el usuario) y gdb; probar un solo
     cliente por sesión; probar el cierre con video; `bash run-nivel4d.sh` mirando la pantalla (diálogo del portal).
 
+  - A/B largo con audio (2026-11-18 21:41-22:50, 3 pares alternados, 2audio 630 s): parche 0/6 procesos con fallo; original 3/6 (2 cuelgues + 1 SIGSEGV
+    en XCloseDisplay/disposeInternal). p=0,09, no concluyente. evidence/nivel3f-soak2-AB-largo-20261118.txt. REPORT.md actualizado.
+  - El usuario debe correr `sudo sysctl kernel.yama.ptrace_scope=1` cuando termine con gdb. Siguiente: ampliar pares, sesiones largas con video.
+
 ## Decisiones (versiones a fijar, tras OK)
 - Java 21 (source /media/.../env.sh o export JAVA_HOME), Maven 3.8.7
 - livekit/livekit-server:v1.13.7

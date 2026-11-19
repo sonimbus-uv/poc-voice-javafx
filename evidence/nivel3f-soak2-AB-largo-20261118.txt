@@ -1,0 +1,23 @@
+# Nivel 3f - A/B largo del parche de PeerConnectionEngine.close() (2 clientes de audio, 630 s, GDB=late)
+# Fecha: 2026-11-18, 21:41-22:50 (hora local). Orden alternado: parche, original, parche, original, parche, original.
+# Comando: JOPTS="[-Dpoc.sdkCloseOriginal=true]" ETIQ=<cfg> GDB=late bash tools/soak-gdb.sh 630 2audio
+# Salida del lote: /tmp/claude-1000/.../tasks/bivutymoo.output (copiada abajo)
+
+par  cfg       soak-a                         soak-b
+1    parche    exit 0                         exit 0
+1    original  exit 0                         COLGADO (futex_do_wait) -> exit 134  [gdb/jstack capturados]
+2    parche    exit 0                         exit 0
+2    original  exit 134 (SIGSEGV, hs_err)     exit 0
+3    parche    exit 0                         exit 0
+3    original  exit 0                         COLGADO (futex_do_wait) -> exit 134  [gdb/jstack capturados]
+
+Totales por proceso: parche 0/6 fallos; original 3/6 fallos (2 cuelgues + 1 SIGSEGV).
+Fisher exacta unilateral: p = 20/220 = 0,091 (bilateral ~0,18). Muestra pequena: NO concluyente por si sola.
+Lineas "CIERRE SEGURO": 0 (la mitigacion estaba apagada).
+
+Nota sobre el SIGSEGV (par 2, original, soak-a, pid 34149, 22:26:31):
+  hs_err en evidence/nivel3f-soak2-2audio-original-20261118-221559-hs_err-soak-a.txt.
+  Marco problematico: libX11 _XReply <- XSync <- XCloseDisplay <- libwebrtc-java <- AudioDeviceModuleBase.disposeInternal
+  <- MediaDevicesHelper.dispose <- PeerConnectionEngine.doClose <- close <- RtcClient.onLeave (hilo del WebSocket).
+  Es una firma distinta a los cuelgues (cierre del display X11 dentro de dispose del modulo de audio), pero en la misma ruta close()->dispose.
+Archivos por corrida: evidence/nivel3f-soak2-2audio-{parche,original}-<fecha>-*.txt

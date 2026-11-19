@@ -25,16 +25,15 @@
   ~15 min y luego `exit=134`); con **video** aborta en ~10 % de las sesiones de 8 s (`Pure virtual function called!`).
   **Causa del aborto con video: `PeerConnectionEngine.close()` del SDK se ejecuta dos veces a la vez** (desde el hilo que cierra y
   desde el hilo del WebSocket al llegar el `leave` del servidor). **Un parche de esa sola clase lo elimina en las pruebas: 0 de 60 con parche
-  frente a 4 de 30 sin él (p = 0,011)** (7.4). **El cuelgue de las sesiones largas de audio (`pthread_join` sobre un hilo inexistente
-  en `disposeInternal`) encaja con la misma causa, pero no se ha comprobado que el parche lo elimine.**
+  frente a 4 de 30 sin él (p = 0,011)** (7.4). **En sesiones largas de audio (2 clientes, 630 s, 6 procesos por brazo) el parche tuvo 0 fallos y el SDK original 3 (2 cuelgues en `disposeInternal` y 1 SIGSEGV en el cierre): coherente con la misma causa, pero con p = 0,09 no es concluyente.**
 - **El entorno cambió entre niveles:** los niveles 0 a 3 corrieron en Ubuntu 24.04 / PipeWire 1.0.5 / Maven 3.8.7
   y el Nivel 4 en Ubuntu 26.04.1 / PipeWire 1.6.2 / Maven 3.9.12 (3.1). De los niveles 0 a 3 solo se repitió el 3f
   en el entorno nuevo (el fallo de cierre se reproduce); el resto no.
 - **No se probó:** red real (todo en localhost), cortes de más de ~13 s, Windows y macOS (solo disponibilidad de
   natives), calidad de la cancelación de eco y supresión de ruido, CPU/RAM de la ventana recibiendo video.
 - **Recomendación:** A (webrtc-java + SDK comunitario en JavaFX) para voz y cámara, **condicionada** a adoptar el
-  SDK como código propio (el parche del cierre es pequeño y ya está probado en sesiones cortas) y a confirmar que elimina el cuelgue
-  de las sesiones largas; la pantalla compartida necesita otra vía
+  SDK como código propio (el parche del cierre es pequeño; 0 fallos en 60 cierres cortos y en 6 procesos largos, frente a 4/30 y 3/6 sin él)
+  y a repetir las sesiones largas con más muestra; la pantalla compartida necesita otra vía
   (sección 9).
 
 ## 2. Objetivo y alcance
@@ -75,7 +74,7 @@ Valores: pasa / falla / parcial / no probado.
 | 4c | Ventana JavaFX con vista previa local y video remoto | pasa (misma observación) | `nivel4-cliente-javafx-video-20261118-124200.txt`, `nivel4-observacion-usuario-20261118.txt` |
 | 4d | Compartir pantalla (opcional) | **falla** en Wayland: 50 de 50 capturas `ERROR_TEMPORARY`; el SDK no la expone | `nivel4d-pantalla-captura-wayland-20261118.txt` |
 | 4e | Recibir una pantalla compartida desde el navegador en JavaFX (añadido) | pasa: pista `SCREEN_SHARE` VP8 1852x910, ~1 fps, 0 perdidos, 0 descartados; el usuario: "en efecto recibe la pantalla compartida" | `nivel4e-recibir-pantalla-navegador-20261118.txt`, `nivel4-cliente-javafx-video-1-20261118-140150.txt`, `nivel4-cliente-javafx-video-1-20261118-141352.txt` |
-| 4f | Cierre limpio con video (añadido) | **parcial/falla sin parche:** 3 de 30 cierres de 8 s con video abortan (`Pure virtual function called!`); **con el parche de `close()`: 0 de 60** frente a 4 de 30 sin él en el mismo experimento (Fisher p = 0,011) | `nivel3f-cierre-corto-video-plain-20261118-205435-resumen.txt`, `nivel3f-cierre-corto-AB-parche-close-20261118.txt`, `nivel3f-cierre-corto-video-plain-parche1-*`, `-original-*`, `-parche2-*`, `nivel3f-cierre-corto-video-gdb-20261118-205846-gdb-run3.txt` |
+| 4f | Cierre limpio con video (añadido) | **parcial/falla sin parche:** 3 de 30 cierres de 8 s con video abortan (`Pure virtual function called!`); **con el parche de `close()`: 0 de 60** frente a 4 de 30 sin él en el mismo experimento (Fisher p = 0,011) | `nivel3f-cierre-corto-video-plain-20261118-205435-resumen.txt`, `nivel3f-cierre-corto-AB-parche-close-20261118.txt`, `nivel3f-soak2-AB-largo-20261118.txt` (audio largo: 0/6 vs 3/6), `nivel3f-cierre-corto-video-plain-parche1-*`, `-original-*`, `-parche2-*`, `nivel3f-cierre-corto-video-gdb-20261118-205846-gdb-run3.txt` |
 | 4 medidas | CPU, memoria, ancho de banda | parcial: medido el cliente publicando sin ventana; sin medir la ventana recibiendo | `nivel4-medidas-cpu-memoria-20261118.txt` |
 
 ## 3. Entorno
@@ -459,8 +458,13 @@ Convención: **parche** = hay corrección en el código de la PoC; **workaround*
 
   **0 de 60 con parche frente a 4 de 30 sin él** (Fisher exacta unilateral p = 0,011; si la tasa real fuese ~10 %, observar 0 de 60 tendría probabilidad
   0,2 %). Con el parche la tasa es < 5 % (IC 95 % unilateral, regla de tres). **Límites:** no demuestra 0 %, el escenario es de 8 s con video, y
-  **no se ha probado el parche contra el cuelgue de las sesiones largas de audio**: hace falta repetir `bash tools/soak-gdb.sh 630 2audio` con el parche
-  (ahora en `target/classes`) varias veces; el cuelgue era 1 de 2 procesos en algunas sesiones y limpio en otras.
+  véase abajo el A/B largo con audio.
+- **A/B LARGO con audio (hecho, `nivel3f-soak2-AB-largo-20261118.txt`):** 3 pares alternados (parche/original) de `bash tools/soak-gdb.sh 630 2audio`
+  (2 clientes, `GDB=late`). **Parche: 0 fallos de 6 procesos. Original: 3 de 6** (2 cuelgues en `futex_do_wait` seguidos de `exit=134`,
+  con pila nativa en `pthread_join`, y 1 SIGSEGV en `XCloseDisplay` dentro de `AudioDeviceModuleBase.disposeInternal`, llamado desde `RtcClient.onLeave`
+  en el hilo del WebSocket; `hs_err` en `nivel3f-soak2-2audio-original-20261118-221559-hs_err-soak-a.txt`). Fisher unilateral p = 0,09: **la señal es fuerte
+  pero la muestra es pequeña y no es concluyente por sí sola.** No se identificó el hilo del `pthread_join`; el SIGSEGV tiene una firma distinta
+  (misma ruta `close()` → `dispose`). El resultado del brazo original reproduce la tasa estimada (~50 % por proceso en esta tanda).
 - **Mitigación experimental `CierreSeguro` (apagada por defecto, `-Dpoc.cierreSeguroMs=N`):** un hilo vigilante termina
   el proceso (`Runtime.halt` y, si no basta, `kill -9`) si un paso del cierre pasa de N ms; **no arregla la causa**.
   Mecanismo probado con un bloqueo simulado (salida a los ~1,6 s). **No comprobada con un cuelgue real** (es intermitente) ni
@@ -517,7 +521,7 @@ Ver 6.4: no expuesta por el SDK; captura local falla en Wayland (`ERROR_TEMPORAR
    lo use lo mantiene.
 2. **Fallos nativos que matan o congelan el proceso**, no excepciones: el orden de cierre (resuelto con workaround)
    y el cierre fallido (7.4), reproducido en dos entornos, con audio y con video. Su causa es **un doble `close()` concurrente en el SDK**
-   (comprobado para el aborto con video con un parche de una clase; pendiente de comprobar para el cuelgue de audio), aunque el síntoma aparece en el
+   (el parche de una clase eliminó el aborto con video, 0/60 vs 4/30, y fue 0/6 vs 3/6 con audio largo, aún con poca muestra), aunque el síntoma aparece en el
    código nativo de `webrtc-java`. En una app de escritorio esto cierra o congela
    toda la aplicación, y una llamada normal dura más de 7 minutos.
 3. **El entorno cambió y casi toda la evidencia de audio es del entorno anterior** (3.1): Ubuntu 24.04/X11 frente a
@@ -557,7 +561,7 @@ evidencia actual (recibirla sí funciona).
   el mayor riesgo abierto, pero **mejor de lo que parecía**: el síntoma aparece en el código nativo de `webrtc-java`
   (`disposeInternal`, `RTCPeerConnection.close`), pero la causa es de la capa del SDK: cierra el motor dos veces desde dos hilos. **Un parche de una clase
   del SDK eliminó el aborto con video en las pruebas (0 de 60 frente a 4 de 30)**, lo que favorece a la opción A: el arreglo está en el código que
-  adoptaríamos como propio. Falta comprobar que elimina también el cuelgue de las sesiones largas de audio.
+  adoptaríamos como propio. En sesiones largas de audio el parche tuvo 0 fallos en 6 procesos frente a 3 en 6 sin él (p = 0,09): favorable, no concluyente.
 - C y D resolverían un problema que la evidencia no muestra: el escritorio JavaFX sí puede hacer voz y cámara. B queda
   como salida si A se complica y es la vía más probable para **pantalla compartida**; no se evaluó en esta PoC, así que
   su coste real es desconocido.
@@ -581,9 +585,8 @@ evidencia actual (recibirla sí funciona).
 **Qué se debe resolver antes de integrar**
 
 1. **Confirmar el arreglo del fallo de cierre (7.4):** el parche de `PeerConnectionEngine.close()` elimina el aborto con video (0 de 60 frente a 4 de 30).
-   Falta repetir `bash tools/soak-gdb.sh 630 2audio` varias veces **con el parche** para ver si desaparece el cuelgue de las sesiones largas de audio
-   (sin parche ocurrió 1 de 2 procesos en algunas sesiones), y repetir las sesiones largas con video. Si el cuelgue persiste con el parche, la causa de ese síntoma es otra
-   (la pila del cuelgue está en `disposeInternal`; hay que identificar el hilo del `pthread_join`) y A sigue condicionada a resolverlo.
+   El A/B largo con audio dio 0 de 6 con parche frente a 3 de 6 sin él. Falta ampliar la muestra (más pares) y repetir las sesiones largas con video;
+   si apareciera algún fallo con parche, la causa sería otra (identificar el hilo del `pthread_join`) y A seguiría condicionada.
 2. Repetir en el entorno actual (Ubuntu 26.04, PipeWire 1.6.2, Wayland) el resto de los niveles 0 a 3, salvo el 3f.
 3. Medir CPU, memoria y latencia de la ventana recibiendo video, con más luz y/o otra cámara, y con 2+ participantes
    con video; probar publicar simulcast.
