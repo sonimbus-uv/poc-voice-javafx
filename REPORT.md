@@ -422,10 +422,26 @@ Convención: **parche** = hay corrección en el código de la PoC; **workaround*
   tocarlo con `jcmd` o `gdb` (unos 75 s y 10 s después), mientras que en octubre un cuelgue duró 33 min sin abortar. La hipótesis de
   la carrera entre dos cierres simultáneos **sigue sin contrastar** (`1audio` salió limpio, pero `2audio` también salió limpio
   con `gdb`).
-- **Aborto en sesiones cortas con video (hecho):** `VideoHeadless` de 8 s con cámara terminó con `exit=134` y
-  `libc++abi: Pure virtual function called!` en **1 de 8** corridas (otra tanda: 0 de 6) **sin ninguna mitigación**, antes de imprimir
-  `Desconectado.` (`nivel3f-mitigacion-cierreseguro-regresion-20261118.txt`). Es el mismo mensaje visto en octubre en sesiones largas de audio. Por tanto el fallo
-  de cierre **no exige sesiones largas** cuando hay video.
+- **Aborto en sesiones cortas con video (hecho):** `VideoHeadless` de 8 s con cámara termina con `exit=134` y
+  `libc++abi: Pure virtual function called!` **sin ninguna mitigación**: **3 de 30 corridas (10 %)** con `tools/cierre-corto.sh 30 plain 8 video`
+  (corridas 8, 12 y 28, siempre antes de imprimir `Desconectado.`; `nivel3f-cierre-corto-video-plain-20261118-205435-resumen.txt`), y antes 1 de 8 y 0 de 6
+  (`nivel3f-mitigacion-cierreseguro-regresion-20261118.txt`). Es el mismo mensaje visto en octubre en sesiones largas de audio. Por tanto el fallo
+  de cierre **no exige sesiones largas** cuando hay video, y hay un reproductor de ~4 minutos.
+- **PILA NATIVA del aborto (hecho, `nivel3f-cierre-corto-video-gdb-20261118-205846-gdb-run3.txt`, 3.ª corrida bajo `gdb`):** `SIGABRT` en el hilo
+  llamado `WebSocketConnec…` (el hilo del WebSocket de señalización del SDK), **dentro de `Java_dev_onvoid_webrtc_RTCPeerConnection_close`** (`abort()` llamado
+  desde `libwebrtc-java`, justo tras `jni_GetObjectClass`), mientras el hilo principal estaba todavía en medio de la llamada de cierre (en `JVM_StartThread`).
+  En esa corrida el log mostró `Pure virtual function called!` justo antes de `Desconectado.`.
+- **CAUSA PROBABLE (hipótesis fuertemente respaldada, NO probada):** **doble cierre concurrente del motor WebRTC del SDK.** Por lectura del código
+  (hecho): `RtcClient.disconnect()` (`RtcClient.java:71-76`) envía `sendLeave()` y llama a `rtcEngine.close()` **en el hilo del llamante**; la respuesta
+  `LeaveRequest` del servidor llega por el hilo del WebSocket y ejecuta `RtcClient.onLeave()` (`RtcClient.java:330-345`), que **también** llama a
+  `rtcEngine.close()`; y `PeerConnectionEngine.close()` (`PeerConnectionEngine.java:224-244`) **no está sincronizado ni protegido contra dobles llamadas**
+  (comprueba `!= null` y luego cierra/dispone, sin exclusión). Si las dos llamadas se solapan, ambas pasan las comprobaciones y se llama dos veces a
+  `RTCPeerConnection.close`, a `AudioDeviceModule.dispose` y a `PeerConnectionFactory.dispose`. Eso explicaría los dos síntomas:
+  **(a)** el aborto `Pure virtual function called!` (objeto nativo destruido mientras otro hilo lo usa), visto con el hilo WebSocket dentro de `RTCPeerConnection.close`;
+  **(b)** el cuelgue: el segundo `AudioDeviceModuleBase.dispose` hace `pthread_join` sobre el hilo de audio que **el primero ya terminó y liberó**, que es
+  exactamente lo observado (hilo esperado inexistente). También explicaría por qué es intermitente y por qué depende del momento en que llega la respuesta del servidor
+  (la «sesión» de octubre sería, en realidad, el estado de carga del servidor/máquina), y por qué ejecutar el cierre en otro hilo (versión 1 de `CierreSeguro`)
+  lo empeora. No se ha comprobado: falta fijar `close()` y medir la tasa.
 - **Mitigación experimental `CierreSeguro` (apagada por defecto, `-Dpoc.cierreSeguroMs=N`):** un hilo vigilante termina
   el proceso (`Runtime.halt` y, si no basta, `kill -9`) si un paso del cierre pasa de N ms; **no arregla la causa**.
   Mecanismo probado con un bloqueo simulado (salida a los ~1,6 s). **No comprobada con un cuelgue real** (es intermitente) ni
