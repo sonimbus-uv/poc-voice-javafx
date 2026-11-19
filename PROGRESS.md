@@ -130,6 +130,7 @@
   - A/B largo con audio (2026-11-18 21:41-22:50, 3 pares alternados, 2audio 630 s): parche 0/6 procesos con fallo; original 3/6 (2 cuelgues + 1 SIGSEGV
     en XCloseDisplay/disposeInternal). p=0,09, no concluyente. evidence/nivel3f-soak2-AB-largo-20261118.txt. REPORT.md actualizado.
   - Segunda tanda (pares 4-6): parche 0/6, original 2/6. TOTAL parche 0/12 vs original 5/12, p=0,019.
+  - 4d CERRADO por decisión del usuario (2026-11-19): falla en Wayland (50/50 y 40/40 ERROR_TEMPORARY); no se prueba X11.
   - El usuario debe correr `sudo sysctl kernel.yama.ptrace_scope=1` cuando termine con gdb. Siguiente: ampliar pares, sesiones largas con video.
 
 ## Decisiones (versiones a fijar, tras OK)
