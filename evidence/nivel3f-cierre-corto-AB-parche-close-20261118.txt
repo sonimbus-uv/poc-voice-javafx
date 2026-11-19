@@ -1,0 +1,25 @@
+# Experimento A/B del parche de PeerConnectionEngine.close() (serializado e idempotente). 2026-11-18 21:10-21:23. Ubuntu 26.04, Wayland, Java 21.0.13.
+# Cliente: VideoHeadless 8 s, cámara 640x480@15, sala propia, tools/cierre-corto.sh (plain). Bloques entrelazados para evitar deriva.
+# Parche: src/main/java/io/livekit/sdk/rtc/PeerConnectionEngine.java (copia modificada, Apache-2.0, commit SDK 0fa2340; cargada desde target/classes, comprobado con -verbose:class).
+# Original = mismo binario con -Dpoc.sdkCloseOriginal=true (close() sin sincronizar, como el SDK).
+
+| bloque | opciones | corridas | con error (exit=134, Pure virtual function called) |
+|---|---|---|---|
+| 1 | parche | 30 | 0 |
+| 2 | original | 30 | 4 (corridas 12, 16, 22, 27) |
+| 3 | parche | 30 | 0 |
+| TOTAL parche | | 60 | 0 (0 %) |
+| TOTAL original | | 30 | 4 (13 %) |
+
+Los 4 fallos del original: exit=134, 'libc++abi: Pure virtual function called!', siempre sin llegar a 'Desconectado.' (como en la línea base: 3 de 30 el mismo día sin parche, 1 de 8 y 0 de 6 antes).
+
+## Estadística (calculada)
+- Fisher exacta unilateral (parche 0/60 vs original 4/30): p = 0,0107.
+- Si el parche no tuviera efecto y la tasa fuera ~10 %, P(0 de 60) = 0,0018.
+- Regla de tres: con el parche la tasa es < 5 % (IC 95 % unilateral).
+
+## Lectura
+- HECHO: con close() serializado e idempotente, 0 de 60 cierres de 8 s con video abortan; con el close() original, 4 de 30.
+- HECHO: confirma que el aborto 'Pure virtual function called!' de las sesiones cortas con video se debe a close() concurrente/doble (RtcClient.disconnect + RtcClient.onLeave).
+- NO PROBADO: que el mismo parche elimine el CUELGUE de las sesiones largas de audio (pthread_join sobre un hilo inexistente). La hipótesis es la misma, pero hace falta repetir tools/soak-gdb.sh 630 2audio con el parche.
+- LIMITE: 60 corridas no demuestran 0 % (cota superior ~5 %); el escenario es un cliente que solo conecta/publica/sale (8 s).
