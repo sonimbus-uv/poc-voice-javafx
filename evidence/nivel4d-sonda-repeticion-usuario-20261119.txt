@@ -1,0 +1,12 @@
+# Nivel 4d - repetición de la sonda por el usuario (2026-11-19 01:26, `bash run-nivel4d.sh /tmp/screen.png`), salida pegada por el usuario
+Pantallas vistas: 1
+  pantalla: DesktopSource@32 [title=null, id=1]
+Ventanas vistas: 1
+  ventana: DesktopSource@33 [title=null, id=2]
+onCaptureResult: ERROR_TEMPORARY frame=null   (x40 líneas idénticas)
+No llegó ningún fotograma válido en 5 s.
+$ ls -l /tmp/screen.png
+ls: cannot access '/tmp/screen.png': No such file or directory
+# Observación previa del usuario (literal): "aparece el portal de GNOME donde se aprecia mi imagen etc y la llamada poc"
+# Nota del redactor: no está claro si ese diálogo salió durante esta sonda o en otra parte (p. ej. la llamada en el navegador);
+# en cualquier caso la sonda no recibió fotogramas.

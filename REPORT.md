@@ -304,7 +304,7 @@ Todas en `nivel4-medidas-cpu-memoria-20261118.txt` y `nivel4bc-servidor-estadist
   contiene cadenas de `org.freedesktop.portal.ScreenCast` y `libpipewire-0.3.so.0`, y los portales
   `xdg-desktop-portal-gnome` están instalados.
 - **No probado:** captura bajo sesión X11 (Ubuntu on Xorg), si apareció algún diálogo del portal (en la medición de las 50 capturas no se estaba
-  mirando la pantalla; en una repetición posterior el usuario sí vio el diálogo del portal de GNOME, `nivel4d-observacion-usuario-portal-20261119.txt`, pero no se registró el resultado tras aceptarlo), ni la publicación de una pista de pantalla. `run-nivel4d.sh` permite repetir la sonda viendo
+  mirando la pantalla; en una repetición posterior el usuario dijo ver un diálogo del portal de GNOME, `nivel4d-observacion-usuario-portal-20261119.txt`, **pero la sonda volvió a fallar: 40 de 40 `ERROR_TEMPORARY`, sin fotograma ni PNG**, `nivel4d-sonda-repeticion-usuario-20261119.txt`; no está claro si el diálogo salió durante la sonda), ni la publicación de una pista de pantalla. `run-nivel4d.sh` permite repetir la sonda viendo
   la pantalla.
 
 ### 6.5 Recibir una pantalla compartida: funciona (4e)
