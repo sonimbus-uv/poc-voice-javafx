@@ -1,0 +1,39 @@
+# Mitigación experimental CierreSeguro: mecanismo y regresión. 2026-11-18 (~20:46-20:53). Ubuntu 26.04, Wayland, Java 21.0.13.
+# Código: src/main/java/sonimbus/poc/level4/CierreSeguro.java (+ CierreSeguroSelfTest.java). Apagada por defecto: -Dpoc.cierreSeguroMs=N
+
+## A. VERSIÓN 1 (los pasos de cierre corrían en un hilo auxiliar con join por tiempo) — DAÑINA
+Cliente VideoHeadless 8 s, cámara 640x480@15, 6 corridas por modo:
+  con la mitigación: exit=0, 134, 134, 134, 0, 134  -> 4 de 6 abortan (libc++abi: Pure virtual function called!), a los ~8,4 s, sin imprimir 'Desconectado.'
+  sin la mitigación:  exit=0 x6                    -> 0 de 6
+  (antes, 1 corrida con la mitigación activa salió exit=0 pero sin la línea 'Desconectado.' y 0,6 s más lenta: probable misma causa)
+LECCIÓN (hecho): ejecutar el cierre en otro hilo provoca el aborto con mucha más frecuencia. Versión 1 descartada.
+
+## B. VERSIÓN 2 (el cierre sigue en el hilo principal; un hilo vigilante aparte termina el proceso si tarda más de N ms)
+### B1. Mecanismo con un paso bloqueado a propósito (CierreSeguroSelfTest, -Dpoc.cierreSeguroMs=1500)
+  halt:    'CIERRE SEGURO: bloqueado ... terminando el proceso' -> exit=0 a los 1,57 s; el paso corrió en el hilo 'main'
+  kill -9: con -Dpoc.cierreSeguroSoloKill=true -> terminado por la señal 9 a los 1,59 s
+### B2. Regresión, VideoHeadless 8 s, 8 corridas por modo
+on #1 exit=0 t=8.31s desconectado_en_log=1 
+on #2 exit=134 t=8.44s desconectado_en_log=0 Pure virtual function called
+on #3 exit=0 t=8.28s desconectado_en_log=1 
+on #4 exit=0 t=8.31s desconectado_en_log=1 
+on #5 exit=0 t=8.28s desconectado_en_log=1 
+on #6 exit=0 t=8.29s desconectado_en_log=1 
+on #7 exit=0 t=8.29s desconectado_en_log=1 
+on #8 exit=0 t=8.27s desconectado_en_log=1 
+--> on: 1 de 8 con exit distinto de 0
+off #1 exit=0 t=8.29s desconectado_en_log=1 
+off #2 exit=0 t=8.32s desconectado_en_log=1 
+off #3 exit=0 t=8.29s desconectado_en_log=1 
+off #4 exit=0 t=8.30s desconectado_en_log=1 
+off #5 exit=0 t=8.30s desconectado_en_log=1 
+off #6 exit=0 t=8.30s desconectado_en_log=1 
+off #7 exit=0 t=8.30s desconectado_en_log=1 
+off #8 exit=134 t=8.44s desconectado_en_log=0 Pure virtual function called
+--> off: 1 de 8 con exit distinto de 0
+
+## Lectura
+- HECHO: la versión 2 mantiene el cierre en el hilo de siempre y el mecanismo de terminación funciona con un bloqueo simulado.
+- HECHO: en cierres normales la versión 2 no añade fallos distintos de los de línea base: 1 de 8 con y 1 de 8 sin la mitigación.
+- HECHO (NUEVO): el aborto 'libc++abi: Pure virtual function called!' ocurre SIN mitigación en sesiones CORTAS (8 s) con video (1 de 8 aquí; 0 de 6 en la tanda anterior): el fallo de cierre no exige sesiones largas en video.
+- NO COMPROBADO: que la mitigación convierta un cuelgue REAL en una salida rápida (el cuelgue es intermitente y solo se vio en sesiones de audio de 10 min). Tampoco cubre el aborto instantáneo, que no es un cuelgue.

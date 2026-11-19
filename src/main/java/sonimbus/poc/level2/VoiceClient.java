@@ -105,7 +105,8 @@ public class VoiceClient {
 
     private void step(String name, Runnable action) {
         try {
-            action.run();
+            // Opcional y apagado por defecto: -Dpoc.cierreSeguroMs=N (ver level4/CierreSeguro.java, REPORT.md 7.4)
+            sonimbus.poc.level4.CierreSeguro.run(name, action, log);
         } catch (Throwable e) {
             log.accept("ERROR en " + name + ": " + e);
         }

@@ -23,6 +23,7 @@ source ./env.sh
 SECS="${1:-630}"
 MODE="${2:-2audio}"
 GDB="${GDB:-1}"
+JOPTS="${JOPTS:-}"           # opciones extra de la JVM, p. ej. JOPTS=-Dpoc.cierreSeguroMs=15000
 GRACE="${GRACE:-90}"        # s de espera tras el cierre previsto antes de dar un cliente por colgado
 STAMP="$(date +%Y%m%d-%H%M%S)"
 W="$(mktemp -d /tmp/soak-gdb.XXXXXX)"
@@ -53,7 +54,7 @@ ROOM="soak2-$MODE"
 declare -A PIDS GDBPIDS
 launch() {  # launch <id> <clase> <args...>
   local id="$1"; shift
-  java -cp "$CP" "$@" > "$W/$id.log" 2>&1 &
+  java $JOPTS -cp "$CP" "$@" > "$W/$id.log" 2>&1 &
   PIDS[$id]=$!
 }
 case "$MODE" in
@@ -155,7 +156,7 @@ for id in "${!GDBPIDS[@]}"; do wait "${GDBPIDS[$id]}" 2>/dev/null; done
 {
 echo "# Fin: $(date -Iseconds)"
 for id in "${!PIDS[@]}"; do
-  echo; echo "=== log del cliente $id (exit=$(cat $W/$id.exit))"; grep -av SLF4J "$W/$id.log" | cat -v | tail -25
+  echo; echo "=== log del cliente $id (exit=$(cat $W/$id.exit), líneas CIERRE SEGURO: $(grep -ac 'CIERRE SEGURO' "$W/$id.log"))"; grep -av SLF4J "$W/$id.log" | cat -v | tail -25
 done
 } >> "$OUT"
 

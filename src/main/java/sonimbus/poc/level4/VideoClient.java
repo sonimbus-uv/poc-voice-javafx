@@ -131,7 +131,8 @@ public class VideoClient {
 
     private void step(String name, Runnable action) {
         try {
-            action.run();
+            // Opcional y apagado por defecto: -Dpoc.cierreSeguroMs=N (ver CierreSeguro.java, REPORT.md 7.4)
+            CierreSeguro.run(name, action, log);
         } catch (Throwable e) {
             log.accept("ERROR en " + name + ": " + e);
         }
