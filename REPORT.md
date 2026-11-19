@@ -20,17 +20,20 @@
 - **Con qué:** `webrtc-java` 0.18.0 (medios) + el SDK comunitario `Trirrin/livekit-java-sdk` v0.1.4 (señalización).
   `webrtc-java` se comportó bien; el SDK comunitario es el punto débil: hacen falta workarounds para publicar
   (audio y video) y para cerrar sin que la JVM muera (sección 7).
-- **Defecto más grave abierto:** tras sesiones de más de ~7 minutos, el cierre a veces **aborta en código nativo o
-  se queda colgado**: 4 de 7 sesiones largas con audio en el entorno anterior y **1 de 2 procesos en la repetición
-  en Ubuntu 26.04** (colgado ~15 min en `disposeInternal` y luego `exit=134`). Causa sin localizar tras refutar
-  cuatro hipótesis y sin pila nativa (7.4). **No se probó con video.**
+- **Defecto más grave abierto:** el cierre a veces **aborta en código nativo o se queda colgado**: 4 de 7 sesiones
+  largas con audio en el entorno anterior y **1 de 2 procesos en Ubuntu 26.04** (colgado ~15 min y luego `exit=134`).
+  **La pila nativa del cuelgue ya se capturó:** el hilo que cierra espera con `pthread_join` a un hilo que ya no existe,
+  dentro de `AudioDeviceModuleBase.disposeInternal`, es decir, **en el código nativo de `webrtc-java`**, no solo en el SDK
+  (7.4). Con **video** también hay abortos al cerrar (`Pure virtual function called!`), incluso en sesiones de 8 s.
+  Causa de fondo sin determinar.
 - **El entorno cambió entre niveles:** los niveles 0 a 3 corrieron en Ubuntu 24.04 / PipeWire 1.0.5 / Maven 3.8.7
   y el Nivel 4 en Ubuntu 26.04.1 / PipeWire 1.6.2 / Maven 3.9.12 (3.1). De los niveles 0 a 3 solo se repitió el 3f
   en el entorno nuevo (el fallo de cierre se reproduce); el resto no.
 - **No se probó:** red real (todo en localhost), cortes de más de ~13 s, Windows y macOS (solo disponibilidad de
   natives), calidad de la cancelación de eco y supresión de ruido, CPU/RAM de la ventana recibiendo video.
 - **Recomendación:** A (webrtc-java + SDK comunitario en JavaFX) para voz y cámara, **condicionada** a adoptar el
-  SDK como código propio y a resolver el cierre tras sesiones largas; la pantalla compartida necesita otra vía
+  SDK como código propio y a resolver el fallo de cierre (que ya no se puede atribuir solo al SDK); la pantalla
+  compartida necesita otra vía
   (sección 9).
 
 ## 2. Objetivo y alcance
@@ -62,7 +65,7 @@ Valores: pasa / falla / parcial / no probado.
 | 3c | Silenciar/reactivar se refleja en ambos lados | pasa | `nivel3-observacion-usuario-20261004.txt` (1), `nivel2-cliente-javafx-1-20261004-092228.txt` |
 | 3d | Entradas/salidas de participantes | parcial: las normales bien; si el servidor expulsa al cliente (identidad duplicada) este queda colgado (7.3) | `nivel3d-entradas-salidas-identidad-duplicada-20261004.txt` |
 | 3e | Cortar la red 10 s | pasa para un corte de ~13 s (IPv4 + IPv6): vuelve solo; la ventana no avisa. Cortes más largos sin probar | `nivel3e-corte-red-total-20261004.txt`, `nivel3e-corte-red-20261004.txt` (primer intento no concluyente) |
-| 3f | 10 min sin caídas ni fugas | parcial: dos corridas de 10 min 29 s sin caídas y memoria plana (RSS +0,3 %); **pero 4 de 7 sesiones largas fallaron al cerrar** (7.4). **Repetido en Ubuntu 26.04 (2026-11-18): 1 de 2 procesos colgado ~15 min en `disposeInternal` y luego `exit=134`**; memoria plana | `nivel3f-investigacion-cierre-20261004.txt`, `nivel3f-10min-memoria-20261004.txt`, `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel3f-caida-al-salir-ventana-20261004.txt`, `nivel3f-repeticion-ubuntu2604-20261118.txt`, `nivel3f-repeticion-ubuntu2604-hilos-soakb-20261118.txt` |
+| 3f | 10 min sin caídas ni fugas | parcial: dos corridas de 10 min 29 s sin caídas y memoria plana (RSS +0,3 %); **pero 4 de 7 sesiones largas fallaron al cerrar** (7.4). **Repetido en Ubuntu 26.04 (2026-11-18): 1 de 2 procesos colgado ~15 min en `disposeInternal` y luego `exit=134`**; memoria plana. **Segunda ronda con captura de pila:** con `gdb` enganchado, 2audio, 1audio y video cerraron limpios (630 s); en modo `late` (sin `gdb` hasta el cuelgue) el primer 2audio colgó 1 de 2 y se capturó la pila nativa (7.4) | `nivel3f-investigacion-cierre-20261004.txt`, `nivel3f-10min-memoria-20261004.txt`, `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel3f-caida-al-salir-ventana-20261004.txt`, `nivel3f-repeticion-ubuntu2604-20261118.txt`, `nivel3f-repeticion-ubuntu2604-hilos-soakb-20261118.txt`, `nivel3f-soak2-*-20261118-*.txt` |
 | 3g | Latencia < 400 ms en red local | pasa en la misma máquina: ~92 ms y ~159 ms, RTT 1–2 ms (con una corrección de 75 ms medida aparte) | `nivel3g-retardo-javafx-navegador-20261004.txt`, `nivel3g-retardo-navegador-javafx-20261004.txt` |
 | 3h | Dos JavaFX + un navegador | pasa (2 corridas, 0 pérdidas; el usuario confirma que se oían los tres) | `nivel3h-dos-javafx-navegador-2-20261004.txt`, `nivel3-observacion-usuario-20261004.txt` (4), `nivel3h-dos-javafx-navegador-20261004.txt` |
 | Extra | Natives para Windows y macOS (solo disponibilidad) | disponibles en Maven Central; no ejecutados | `extra-natives-windows-macos-20261004.txt` |
@@ -358,7 +361,7 @@ Convención: **parche** = hay corrección en el código de la PoC; **workaround*
 
 - **Síntoma:** al salir tras una sesión de más de ~7 min, el proceso a veces **aborta en código nativo o se queda
   colgado**. El servidor sí recibe la salida (`CLIENT_REQUEST_LEAVE`): lo que falla es liberar el audio local. Las
-  salidas tras sesiones de 8 s a ~5 min fueron limpias.
+  salidas de audio tras sesiones de 8 s a ~5 min fueron limpias (con **video** sí hubo abortos en sesiones de 8 s: ver más abajo).
 - **Errores vistos:** `The futex facility returned an unexpected error code.` (exit=134, 2026-11-18, Ubuntu 26.04);
   `Assertion 'pa_close(fds[0]) == 0' failed at ../src/pulsecore/core-util.c:2713` (exit=134);
   `XIO: fatal IO error 0 (Success) on X server`; `SIGSEGV` en `libX11.so.6 _XReply` con
@@ -392,8 +395,43 @@ Convención: **parche** = hay corrección en el código de la PoC; **workaround*
   nueva (no probada):** carrera entre dos `disposeInternal` simultáneos sobre el servidor de audio compartido, pues los dos
   clientes cerraron en el mismo milisegundo (14:29:42.04); no explica los fallos de octubre con un solo cliente por proceso
   en sesiones distintas.
-- **Pendiente importante:** sigue sin pila nativa: `gdb -p` falló por `kernel.yama.ptrace_scope=1` (requiere `sudo`, que ejecuta
-  el usuario) y el proceso murió antes. **No se ha probado con video:** una sesión de video de más de 7 minutos no se probó.
+- **Segunda ronda con `tools/soak-gdb.sh` (2026-11-18, 630 s, Ubuntu 26.04; ejecuta el usuario `sudo sysctl kernel.yama.ptrace_scope=0`
+  antes):**
+
+  | Corrida | Resultado |
+  |---|---|
+  | `2audio` con `gdb` enganchado 30 s antes del cierre | limpio en los dos clientes |
+  | `1audio` con `gdb` | limpio |
+  | `video` (cámara 640x480@15) con `gdb` | limpio (primer cierre con cámara probado a 630 s) |
+  | `2audio` en modo `late` (sin `gdb` hasta que haya cuelgue), corrida 1 | `soak-b` limpio; **`soak-a` colgado** al cerrar (16:30:48) y luego `exit=134` con `The futex facility returned an unexpected error code` |
+
+  Con `gdb` enganchado el fallo no volvió a aparecer en 3 corridas; es compatible con que `gdb` lo enmascare, pero no
+  está demostrado. Evidencia: `nivel3f-soak2-*-20261118-*.txt`.
+- **PILA NATIVA del cuelgue (hecho, `nivel3f-soak2-2audio-20261118-162014-gdb-soak-a.txt`):** el hilo principal de Java
+  (`HeadlessCheck.main`) está dentro de `Java_dev_onvoid_webrtc_media_audio_AudioDeviceModuleBase_disposeInternal`, que llama
+  a tres funciones internas de `libwebrtc-java` (sin símbolos, el binario está `stripped`) y estas a
+  `__pthread_clockjoin_ex`, esperando un `futex`. **El hilo al que espera (`0x7cb8ae4f96c0`) no figura entre los 24 hilos
+  vivos del proceso.** El hilo `threaded-ml` de PulseAudio sigue vivo en `pa_mainloop_run` y no es el esperado. `jcmd
+  Thread.print` no pudo adjuntarse (`doesn't respond within 10s`, `nivel3f-soak2-2audio-20261118-162014-jstack-soak-a.txt`).
+  **El bloqueo está dentro del código nativo de `webrtc-java`/WebRTC al destruir el módulo de audio**; el SDK lo invoca en
+  `MediaDevicesHelper.java:173`, pero la causa no está en la capa de señalización.
+- **Hipótesis nuevas (sin probar):** (1) `disposeInternal` hace `pthread_join` sobre un hilo ya terminado o con un
+  identificador no válido (por ejemplo, una carrera entre la salida del hilo de audio y el cierre), por lo que espera un
+  `futex` que nadie despierta; (2) el `exit=134` con `The futex facility returned an unexpected error code` sería una
+  **consecuencia de interrumpir un proceso ya colgado**: los dos abortos con ese mensaje (2026-11-18, 14:44 y 16:33) ocurrieron tras
+  tocarlo con `jcmd` o `gdb` (unos 75 s y 10 s después), mientras que en octubre un cuelgue duró 33 min sin abortar. La hipótesis de
+  la carrera entre dos cierres simultáneos **sigue sin contrastar** (`1audio` salió limpio, pero `2audio` también salió limpio
+  con `gdb`).
+- **Aborto en sesiones cortas con video (hecho):** `VideoHeadless` de 8 s con cámara terminó con `exit=134` y
+  `libc++abi: Pure virtual function called!` en **1 de 8** corridas (otra tanda: 0 de 6) **sin ninguna mitigación**, antes de imprimir
+  `Desconectado.` (`nivel3f-mitigacion-cierreseguro-regresion-20261118.txt`). Es el mismo mensaje visto en octubre en sesiones largas de audio. Por tanto el fallo
+  de cierre **no exige sesiones largas** cuando hay video.
+- **Mitigación experimental `CierreSeguro` (apagada por defecto, `-Dpoc.cierreSeguroMs=N`):** un hilo vigilante termina
+  el proceso (`Runtime.halt` y, si no basta, `kill -9`) si un paso del cierre pasa de N ms; **no arregla la causa**.
+  Mecanismo probado con un bloqueo simulado (salida a los ~1,6 s). **No comprobada con un cuelgue real** (es intermitente) ni
+  contra el aborto instantáneo, que no es un cuelgue. **Lección (hecho):** una primera versión ejecutaba los pasos de cierre en un hilo
+  auxiliar y provocó el aborto `Pure virtual function called!` en 4 de 6 cierres; **ejecutar el cierre en otro hilo es dañino**, así que la
+  versión actual lo deja en el hilo principal (`CierreSeguro.java`, `VoiceClient.java`, `VideoClient.java`).
 - **Parche:** sin parche.
 - **Evidencia:** `nivel3f-investigacion-cierre-20261004.txt`, `nivel3f-10min-memoria-20261004.txt`,
   `nivel3f-salida-sin-jcmd-20261004.txt`, `nivel3f-caida-al-salir-ventana-20261004.txt`,
@@ -443,7 +481,8 @@ Ver 6.4: no expuesta por el SDK; captura local falla en Wayland (`ERROR_TEMPORAR
    previa, no revalidado), último cambio de código 2025-12-06 (commit `0fa2340`), fijado a webrtc-java 0.14.0. Quien
    lo use lo mantiene.
 2. **Fallos nativos que matan o congelan el proceso**, no excepciones: el orden de cierre (resuelto con workaround)
-   y el cierre tras sesiones largas (7.4), reproducido en dos entornos y con causa sin localizar. En una app de escritorio esto cierra o congela
+   y el cierre fallido (7.4), reproducido en dos entornos, con audio y con video, y con la pila del cuelgue
+   dentro del código nativo de `webrtc-java`; causa de fondo sin determinar. En una app de escritorio esto cierra o congela
    toda la aplicación, y una llamada normal dura más de 7 minutos.
 3. **El entorno cambió y casi toda la evidencia de audio es del entorno anterior** (3.1): Ubuntu 24.04/X11 frente a
    26.04/Wayland. Solo el 3f se repitió en el entorno nuevo, y reprodujo el fallo; el resto de los niveles 0–3 no.
@@ -479,7 +518,9 @@ evidencia actual (recibirla sí funciona).
   propios más allá del orden de liberación (7.2) y tiene natives para las tres plataformas.
 - Los fallos con causa identificada (7.1, 7.2, 7.3, 7.5, 7.6) están en la capa de señalización del SDK, pequeña y
   legible: es un problema de mantenimiento, no de viabilidad. El cierre tras sesiones largas (7.4) es la excepción y
-  el mayor riesgo abierto: no se sabe si la causa está en el SDK, en `webrtc-java` o en el entorno de audio.
+  el mayor riesgo abierto: la pila del cuelgue lo sitúa **dentro del código nativo de `webrtc-java`** (`disposeInternal`),
+  aunque el SDK es quien lo invoca y crea un módulo de audio huérfano; arreglarlo podría exigir un cambio o un parche en
+  `webrtc-java` y no solo en el SDK, lo que aumenta el riesgo de la opción A. Con video también hay abortos al cerrar.
 - C y D resolverían un problema que la evidencia no muestra: el escritorio JavaFX sí puede hacer voz y cámara. B queda
   como salida si A se complica y es la vía más probable para **pantalla compartida**; no se evaluó en esta PoC, así que
   su coste real es desconocido.
@@ -501,11 +542,11 @@ evidencia actual (recibirla sí funciona).
 
 **Qué se debe resolver antes de integrar**
 
-1. **Localizar y corregir el cierre tras sesiones largas (7.4)**: ya se reproduce en Ubuntu 26.04 y falta probarlo con
-   video. Repetir sesiones de 10 minutos con `ptrace` permitido (`sudo sysctl kernel.yama.ptrace_scope=0`, lo ejecuta
-   el usuario) o bajo `gdb`, con el proyecto en ext4, hasta capturar la pila nativa; probar también un solo cliente por
-   sesión, para descartar la carrera entre dos cierres simultáneos. Si no tiene arreglo razonable, A deja de ser
-   recomendable.
+1. **Localizar y corregir el fallo de cierre (7.4)**: ya se reproduce en Ubuntu 26.04, con audio (cuelgue) y con video
+   (aborto en sesiones de 8 s), y se tiene la pila nativa del cuelgue. Falta identificar el hilo al que `disposeInternal`
+   hace `pthread_join` (necesita una compilación de `webrtc-java` con símbolos o ingeniería inversa del binario) y la pila
+   del aborto `Pure virtual function called!` (reproductor rápido: `tools/cierre-corto.sh`). Valorar si lo arregla una
+   versión nueva de `webrtc-java`. Si no tiene arreglo razonable, A deja de ser recomendable.
 2. Repetir en el entorno actual (Ubuntu 26.04, PipeWire 1.6.2, Wayland) el resto de los niveles 0 a 3, salvo el 3f.
 3. Medir CPU, memoria y latencia de la ventana recibiendo video, con más luz y/o otra cámara, y con 2+ participantes
    con video; probar publicar simulcast.
@@ -569,6 +610,11 @@ medidas de latencia y de fps de la cámara.
    - Retardo (da palmadas, con un solo micrófono abierto): `bash tools/latency.sh 40` (necesita `ffmpeg`).
    - Corte de red de 10 s (**pide sudo; ejecútalo tú**): `sudo bash tools/cut-network.sh 10`.
    - Segunda ventana: `bash run-nivel2.sh javafx-2` (cada ventana necesita una identidad distinta).
+   - **Fallo de cierre con captura de pila (7.4):** tras `sudo sysctl kernel.yama.ptrace_scope=0` (lo ejecuta el usuario y se
+     deshace con `=1`), `bash tools/soak-gdb.sh 630 2audio` (modos `2audio`, `1audio`, `video`; `GDB=late` engancha `gdb` solo si
+     hay cuelgue; `JOPTS=-Dpoc.cierreSeguroMs=15000` activa la mitigación experimental).
+   - **Reproductor rápido del aborto con video:** `bash tools/cierre-corto.sh 30 plain 8 video` mide la tasa;
+     `bash tools/cierre-corto.sh 40 gdb 8 video` lo ejecuta bajo `gdb` y vuelca la pila en el primer `SIGABRT`.
 9. **Parar el servidor:** `docker compose down`.
 
 Los logs de las ventanas se guardan en `evidence/` (el de `run-nivel2.sh` directamente; el de `run-nivel4.sh` se
